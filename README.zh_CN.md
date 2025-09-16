@@ -90,8 +90,8 @@ python3 ./demo_gestures_ok.py
 
 详细 API 使用说明请参考以下链接：
 
-- [OmniHand Pro 2025 SDK C++ API 文档](document/API_CPP.md)
-- [OmniHand Pro 2025 SDK Python API 文档](document/API_PYTHON.md)
+- [OmniHand 2025 SDK C++ API 文档](document/API_CPP.md)
+- [OmniHand 2025 SDK Python API 文档](document/API_PYTHON.md)
 
 ## 常见问题
 
@@ -117,7 +117,7 @@ pip3 install build setuptools wheel
 
 ## 版权声明
 
-Copyright (c) 2025 Agibot Co., Ltd. OmniHand Pro 2025 SDK is licensed under Mulan PSL v2.
+Copyright (c) 2025 Agibot Co., Ltd. OmniHand 2025 SDK is licensed under Mulan PSL v2.
 
 ---
 

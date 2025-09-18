@@ -11,6 +11,7 @@
 #define CMD_VER_REQ 0xCD
 #define CMD_GET_JOINT_MOTOR_POSI 0x07
 #define CMD_GET_ALL_JOINT_MOTOR_POSI 0x9
+#define CMD_GET_ALL_JOINT_MOTOR_VELO 0xB
 
 UartRs485Interface::UartRs485Interface()
     : Rs485_device_ptr_(UART_PORT, UART_BAUD,
@@ -49,6 +50,14 @@ void UartRs485Interface::RecBuffParse(void) {
               getalljointmotorposi_result_.at(i) = rec_buffer_[index + 6 + 2 * i] + rec_buffer_[index + 6 + 2 * i + 1] * 256;
             }
             getalljointmotorposi_feedback_state_ = 1;
+            break;
+
+          case CMD_GET_ALL_JOINT_MOTOR_VELO:
+            printf("get all joint motor velocity response data ready !\n");
+            for (int i = 0; i < 10; i++) {
+              getalljointmotorvelo_result_.at(i) = rec_buffer_[index + 6 + 2 * i] + rec_buffer_[index + 6 + 2 * i + 1] * 256;
+            }
+            getalljointmotorvelo_feedback_state_ = 1;
             break;
 
           default:

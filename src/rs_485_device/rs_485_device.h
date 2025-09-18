@@ -85,6 +85,18 @@ class UartRs485Interface {
    */
   std::vector<int16_t> getalljointmotorposi_result_ = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // to get the hand motor position
 
+  /**
+   * @brief   getalljointmotorvelo_feedback_state_
+   * @return
+   */
+  uint8_t getalljointmotorvelo_feedback_state_ = 0;
+
+  /**
+   * @brief   getalljointmotorvelo_result_
+   * @return
+   */
+  std::vector<int16_t> getalljointmotorvelo_result_ = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // to get the hand motor position
+
  private:
   std::thread serial_rec_pthread_;
   uint8_t rec_buffer_[REC_BUF_LEN] = {0};

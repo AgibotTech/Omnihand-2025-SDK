@@ -112,8 +112,8 @@ std::vector<int16_t> AgibotHandO10::GetAllJointMotorPosi() {
   getalljoint_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getalljoint_cmd, sizeof(getalljoint_cmd));
   uint8_t check_time = 5;
-  while (check_time--) {
-    usleep(100000);
+  while (check_time--) { //check several times
+    usleep(100000); //100ms
     if (handrs485_interface_->getalljointmotorposi_feedback_state_) {
       return handrs485_interface_->getalljointmotorposi_result_;
       handrs485_interface_->getalljointmotorposi_feedback_state_ = 0;
@@ -171,14 +171,57 @@ int16_t AgibotHandO10::GetJointMotorVelo(unsigned char joint_motor_index) {
 }
 
 void AgibotHandO10::SetAllJointMotorVelo(std::vector<int16_t> vec_velo) {
+  if (vec_velo.size() < 10) {
+    printf("velocity data number should not less than 10\n");
+    return;
+  }
+  uint8_t setalljointvelo_cmd[28] = {0};
+  setalljointvelo_cmd[0] = 0xEE;
+  setalljointvelo_cmd[1] = 0xAA;
+  setalljointvelo_cmd[2] = 0x1;
+  setalljointvelo_cmd[3] = 0x0;
+  setalljointvelo_cmd[4] = 0x15;  // 21 bytes
+  setalljointvelo_cmd[5] = 0x20;
+
+  for (int i = 0; i < 10; ++i) {
+    uint16_t pos = static_cast<uint16_t>(vec_velo[i]);
+    setalljointvelo_cmd[6 + 2 * i] = pos & 0xFF;    // low byte
+    setalljointvelo_cmd[6 + 2 * i + 1] = pos >> 8;  // high byte
+  }
+
+  uint16_t crc_val = Crc16(setalljointvelo_cmd, 26);
+  setalljointvelo_cmd[26] = crc_val % 256;
+  setalljointvelo_cmd[27] = (crc_val >> 8) & 0xFF;
+  handrs485_interface_->WriteDevice(setalljointvelo_cmd, sizeof(setalljointvelo_cmd));
   return;
 }
 
 std::vector<int16_t> AgibotHandO10::GetAllJointMotorVelo() {
-  return {};
+  uint8_t getalljointvelo_cmd[8] = {0};
+  getalljointvelo_cmd[0] = 0xEE;
+  getalljointvelo_cmd[1] = 0xAA;
+  getalljointvelo_cmd[2] = 0x1;
+  getalljointvelo_cmd[3] = 0x0;
+  getalljointvelo_cmd[4] = 0x1;  // 21 bytes
+  getalljointvelo_cmd[5] = 0xB;
+  uint16_t crc_val = Crc16(getalljointvelo_cmd, 6);
+  getalljointvelo_cmd[6] = crc_val % 256;
+  getalljointvelo_cmd[7] = (crc_val >> 8) & 0xFF;
+  handrs485_interface_->WriteDevice(getalljointvelo_cmd, sizeof(getalljointvelo_cmd));
+  uint8_t check_time = 5;
+  while (check_time--) { //check several times
+    usleep(100000); //100ms
+    if (handrs485_interface_->getalljointmotorvelo_feedback_state_) {
+      return handrs485_interface_->getalljointmotorvelo_result_;
+      handrs485_interface_->getalljointmotorvelo_feedback_state_ = 0;
+    }
+  }
+  printf("get all joint motor velocity failed, joint_motor_index: \n");
+  return handrs485_interface_->getalljointmotorvelo_result_;
 }
 
 TouchSensorData AgibotHandO10::GetTouchSensorData(EFinger eFinger) {
+  
   return {};
 }
 

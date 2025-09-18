@@ -408,6 +408,8 @@ std::vector<uint16_t> AgibotHandO10::GetAllTemperatureReport() {
       return alltempresult;
       handrs485_interface_->getalltempreport_feedback_state_ = 0;
     }
+    return alltempresult;
+    handrs485_interface_->getalltempreport_feedback_state_ = 0;
   }
   printf("get all motor temprature failed\n");
   return alltempresult;  // 0xC

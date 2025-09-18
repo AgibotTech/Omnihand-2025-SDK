@@ -49,6 +49,9 @@ enum class AGIBOT_EXPORT EFinger : unsigned char {
   eMiddle = 0x03,
   eRing = 0x04,
   eLittle = 0x05,
+  ePalm = 0x06,    // 手心
+  eDorsum = 0x07,  // 手背
+  eUnknown = 0xff
 };
 
 /**

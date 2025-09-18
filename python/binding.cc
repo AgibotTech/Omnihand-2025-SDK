@@ -8,7 +8,7 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE(agibot_hand_core, m) {
-  m.doc() = "AgibotHandO12 Python Interface";
+  m.doc() = "AgibotHandO10 Python Interface";
 
   // Bind CommuParams structure
   py::class_<CommuParams>(m, "CommuParams")
@@ -103,61 +103,61 @@ PYBIND11_MODULE(agibot_hand_core, m) {
       .def_readwrite("tgt_torque", &MixCtrl::tgt_torque_);
 
   //  Bind main class with custom constructor
-  py::class_<AgibotHandO12>(m, "AgibotHandO12")
+  py::class_<AgibotHandO10>(m, "AgibotHandO10")
       .def(py::init([](unsigned char device_id, int hand_type) {
-             return new AgibotHandO12(device_id, static_cast<EHandType>(hand_type));
+             return new AgibotHandO10(device_id, static_cast<EHandType>(hand_type));
            }),
            py::arg("device_id") = DEFAULT_DEVICE_ID, py::arg("hand_type") = 0)
-      .def("set_device_id", &AgibotHandO12::SetDeviceId)
-      .def("set_joint_position", &AgibotHandO12::SetJointMotorPosi)
-      .def("get_joint_position", &AgibotHandO12::GetJointMotorPosi)
-      .def("set_all_joint_positions", &AgibotHandO12::SetAllJointMotorPosi)
-      .def("get_all_joint_positions", &AgibotHandO12::GetAllJointMotorPosi)
+      .def("set_device_id", &AgibotHandO10::SetDeviceId)
+      .def("set_joint_position", &AgibotHandO10::SetJointMotorPosi)
+      .def("get_joint_position", &AgibotHandO10::GetJointMotorPosi)
+      .def("set_all_joint_positions", &AgibotHandO10::SetAllJointMotorPosi)
+      .def("get_all_joint_positions", &AgibotHandO10::GetAllJointMotorPosi)
 #if !DISABLE_FUNC
-      .def("set_joint_angle", &AgibotHandO12::SetJointAngle)
-      .def("get_joint_angle", &AgibotHandO12::GetJointAngle)
+      .def("set_active_joint_angle", &AgibotHandO10::SetActiveJointAngle)
+      .def("get_active_joint_angle", &AgibotHandO10::GetActiveJointAngle)
 #endif
-      .def("set_all_joint_angles", &AgibotHandO12::SetAllJointAngles)
-      .def("get_all_joint_angles", &AgibotHandO12::GetAllJointAngles)
-      .def("set_joint_velocity", &AgibotHandO12::SetJointMotorVelo)
-      .def("get_joint_velocity", &AgibotHandO12::GetJointMotorVelo)
-      .def("set_all_joint_velocities", &AgibotHandO12::SetAllJointMotorVelo)
-      .def("get_all_joint_velocities", &AgibotHandO12::GetAllJointMotorVelo)
+      .def("set_all_active_joint_angles", &AgibotHandO10::SetAllActiveJointAngles)
+      .def("get_all_active_joint_angles", &AgibotHandO10::GetAllActiveJointAngles)
+      .def("set_joint_velocity", &AgibotHandO10::SetJointMotorVelo)
+      .def("get_joint_velocity", &AgibotHandO10::GetJointMotorVelo)
+      .def("set_all_joint_velocities", &AgibotHandO10::SetAllJointMotorVelo)
+      .def("get_all_joint_velocities", &AgibotHandO10::GetAllJointMotorVelo)
 #if !DISABLE_FUNC
-      .def("set_joint_torque", &AgibotHandO12::SetJointMotorTorque)
-      .def("get_joint_torque", &AgibotHandO12::GetJointMotorTorque)
-      .def("set_all_joint_torques", &AgibotHandO12::SetAllJointMotorTorque)
-      .def("get_all_joint_torques", &AgibotHandO12::GetAllJointMotorTorque)
+      .def("set_joint_torque", &AgibotHandO10::SetJointMotorTorque)
+      .def("get_joint_torque", &AgibotHandO10::GetJointMotorTorque)
+      .def("set_all_joint_torques", &AgibotHandO10::SetAllJointMotorTorque)
+      .def("get_all_joint_torques", &AgibotHandO10::GetAllJointMotorTorque)
 #endif
-      .def("get_touch_sensor_data", [](AgibotHandO12 &self, int finger_index) {
+      .def("get_touch_sensor_data", [](AgibotHandO10 &self, int finger_index) {
         return self.GetTouchSensorData(static_cast<EFinger>(finger_index));
       })
-      .def("set_control_mode", [](AgibotHandO12 &self, int joint_motor_index, int mode) {
+      .def("set_control_mode", [](AgibotHandO10 &self, int joint_motor_index, int mode) {
         self.SetControlMode(joint_motor_index, static_cast<EControlMode>(mode));
       })
-      .def("get_control_mode", [](AgibotHandO12 &self, int joint_motor_index) -> int {
+      .def("get_control_mode", [](AgibotHandO10 &self, int joint_motor_index) -> int {
         return static_cast<int>(self.GetControlMode(joint_motor_index));
       })
-      .def("set_all_control_modes", &AgibotHandO12::SetAllControlMode)
-      .def("get_all_control_modes", &AgibotHandO12::GetAllControlMode)
-      .def("set_current_threshold", &AgibotHandO12::SetCurrentThreshold)
-      .def("get_current_threshold", &AgibotHandO12::GetCurrentThreshold)
-      .def("set_all_current_thresholds", &AgibotHandO12::SetAllCurrentThreshold)
-      .def("get_all_current_thresholds", &AgibotHandO12::GetAllCurrentThreshold)
-      .def("mix_ctrl_joint_motor", &AgibotHandO12::MixCtrlJointMotor)
-      .def("get_error_report", &AgibotHandO12::GetErrorReport)
-      .def("get_all_error_reports", &AgibotHandO12::GetAllErrorReport)
-      .def("set_error_report_period", &AgibotHandO12::SetErrorReportPeriod)
-      .def("set_all_error_report_periods", &AgibotHandO12::SetAllErrorReportPeriod)
-      .def("get_temperature_report", &AgibotHandO12::GetTemperatureReport)
-      .def("get_all_temperature_reports", &AgibotHandO12::GetAllTemperatureReport)
-      .def("set_temperature_report_period", &AgibotHandO12::SetTemperReportPeriod)
-      .def("set_all_temperature_report_periods", &AgibotHandO12::SetAllTemperReportPeriod)
-      .def("get_current_report", &AgibotHandO12::GetCurrentReport)
-      .def("get_all_current_reports", &AgibotHandO12::GetAllCurrentReport)
-      .def("set_current_report_period", &AgibotHandO12::SetCurrentReportPeriod)
-      .def("set_all_current_report_periods", &AgibotHandO12::SetAllCurrentReportPeriod)
-      .def("get_vendor_info", &AgibotHandO12::GetVendorInfo)
-      .def("get_device_info", &AgibotHandO12::GetDeviceInfo)
-      .def("show_data_details", &AgibotHandO12::ShowDataDetails);
+      .def("set_all_control_modes", &AgibotHandO10::SetAllControlMode)
+      .def("get_all_control_modes", &AgibotHandO10::GetAllControlMode)
+      .def("set_current_threshold", &AgibotHandO10::SetCurrentThreshold)
+      .def("get_current_threshold", &AgibotHandO10::GetCurrentThreshold)
+      .def("set_all_current_thresholds", &AgibotHandO10::SetAllCurrentThreshold)
+      .def("get_all_current_thresholds", &AgibotHandO10::GetAllCurrentThreshold)
+      .def("mix_ctrl_joint_motor", &AgibotHandO10::MixCtrlJointMotor)
+      .def("get_error_report", &AgibotHandO10::GetErrorReport)
+      .def("get_all_error_reports", &AgibotHandO10::GetAllErrorReport)
+      .def("set_error_report_period", &AgibotHandO10::SetErrorReportPeriod)
+      .def("set_all_error_report_periods", &AgibotHandO10::SetAllErrorReportPeriod)
+      .def("get_temperature_report", &AgibotHandO10::GetTemperatureReport)
+      .def("get_all_temperature_reports", &AgibotHandO10::GetAllTemperatureReport)
+      .def("set_temperature_report_period", &AgibotHandO10::SetTemperReportPeriod)
+      .def("set_all_temperature_report_periods", &AgibotHandO10::SetAllTemperReportPeriod)
+      .def("get_current_report", &AgibotHandO10::GetCurrentReport)
+      .def("get_all_current_reports", &AgibotHandO10::GetAllCurrentReport)
+      .def("set_current_report_period", &AgibotHandO10::SetCurrentReportPeriod)
+      .def("set_all_current_report_periods", &AgibotHandO10::SetAllCurrentReportPeriod)
+      .def("get_vendor_info", &AgibotHandO10::GetVendorInfo)
+      .def("get_device_info", &AgibotHandO10::GetDeviceInfo)
+      .def("show_data_details", &AgibotHandO10::ShowDataDetails);
 }

@@ -1,14 +1,14 @@
 # Copyright (c) 2025, Agibot Co., Ltd.
 # OmniHand 2025 SDK is licensed under Mulan PSL v2.
 
-from agibot_hand import AgibotHandO12, EFinger
+from agibot_hand import AgibotHandO10, EFinger
 import matplotlib.pyplot as plt
 from collections import deque
 import time
 
 
 def main():
-    hand = AgibotHandO12()
+    hand = AgibotHandO10()
 
     touch_data = hand.get_touch_sensor_data(EFinger.THUMB)
     print(f"Thumb touch sensor data:")

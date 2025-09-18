@@ -184,7 +184,7 @@ int ZlgUsbcanfdSDK::SendFrame(unsigned int id, unsigned char* data, unsigned cha
 
   canfd_msg.hdr.id = id;
   canfd_msg.hdr.chn = 0;
-  canfd_msg.hdr.len = 64;  // 数据长度
+  canfd_msg.hdr.len = length;  // 数据长度
 
   // TODO 注意非法长度
   memcpy(canfd_msg.dat, data, length);

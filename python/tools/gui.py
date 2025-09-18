@@ -1,9 +1,9 @@
 import tkinter as tk
-from agibot_hand import AgibotHandO12
+from agibot_hand import AgibotHandO10
 
 class OmniHandGUI:
     def __init__(self):
-        self.hand = AgibotHandO12()
+        self.hand = AgibotHandO10()
         self.setup_ui()
         self.init_hand()
         
@@ -86,7 +86,9 @@ class OmniHandGUI:
         """初始化机械手"""
         try:
             init_positions = [1990, 201, 3998, 409, 4097, 4096, 2048, 4096, 2038, 4100]
-            self.hand.set_all_joint_positions(init_positions)
+            # self.hand.set_all_joint_positions(init_positions)
+            for i in range(10):
+                self.hand.set_joint_position(i + 1, init_positions[i])
             self.update_slider_display(init_positions)
         except Exception as e:
             print(f"初始化失败: {e}")

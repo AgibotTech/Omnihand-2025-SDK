@@ -1,14 +1,14 @@
 # Copyright (c) 2025, Agibot Co., Ltd.
 # OmniHand 2025 SDK is licensed under Mulan PSL v2.
 
-from agibot_hand import AgibotHandO12, EFinger, EControlMode
+from agibot_hand import AgibotHandO10, EFinger, EControlMode
 import time
 
 def main():
-    hand = AgibotHandO12()
+    hand = AgibotHandO10()
         
     # set temperature report period for all fingers
-    periods = [500] * 12
+    periods = [500] * 10
     hand.set_all_temperature_report_periods(periods)
 
     time.sleep(1)

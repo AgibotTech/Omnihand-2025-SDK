@@ -113,8 +113,8 @@ std::vector<int16_t> AgibotHandO10::GetAllJointMotorPosi() {
   getalljoint_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getalljoint_cmd, sizeof(getalljoint_cmd));
   uint8_t check_time = CHECK_TIME;
-  while (check_time--) { //check several times
-    usleep(100000); //100ms
+  while (check_time--) {  // check several times
+    usleep(100000);       // 100ms
     if (handrs485_interface_->getalljointmotorposi_feedback_state_) {
       handrs485_interface_->getalljointmotorposi_feedback_state_ = 0;
       return handrs485_interface_->getalljointmotorposi_result_;
@@ -231,8 +231,8 @@ std::vector<int16_t> AgibotHandO10::GetAllJointMotorVelo() {
   getalljointvelo_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getalljointvelo_cmd, sizeof(getalljointvelo_cmd));
   uint8_t check_time = CHECK_TIME;
-  while (check_time--) { //check several times
-    usleep(100000); //100ms
+  while (check_time--) {  // check several times
+    usleep(100000);       // 100ms
     if (handrs485_interface_->getalljointmotorvelo_feedback_state_) {
       handrs485_interface_->getalljointmotorvelo_feedback_state_ = 0;
       return handrs485_interface_->getalljointmotorvelo_result_;
@@ -331,8 +331,8 @@ JointMotorErrorReport AgibotHandO10::GetErrorReport(unsigned char joint_motor_in
   geterrorport_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(geterrorport_cmd, sizeof(geterrorport_cmd));
   uint8_t check_time = CHECK_TIME;
-  while (check_time--) { //check several times
-    usleep(100000); //100ms
+  while (check_time--) {  // check several times
+    usleep(100000);       // 100ms
     if (handrs485_interface_->getallerrorreport_feedback_state_) {
       uint16_t check_res = handrs485_interface_->getallerrorreport_result_.res_[0] + handrs485_interface_->getallerrorreport_result_.res_[1] * 256;
       if (check_res > 0 && check_res < 11) {
@@ -346,7 +346,7 @@ JointMotorErrorReport AgibotHandO10::GetErrorReport(unsigned char joint_motor_in
       } else if (check_res == 101) {
         ret_error.commu_except_ = check_res;
       }
-      //return handrs485_interface_->getallerrorreport_result_;
+      // return handrs485_interface_->getallerrorreport_result_;
       handrs485_interface_->getallerrorreport_feedback_state_ = 0;
       return ret_error;
     }
@@ -371,8 +371,8 @@ std::vector<JointMotorErrorReport> AgibotHandO10::GetAllErrorReport() {
   geterrorport_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(geterrorport_cmd, sizeof(geterrorport_cmd));
   uint8_t check_time = CHECK_TIME;
-  while (check_time--) { //check several times
-    usleep(100000); //100ms
+  while (check_time--) {  // check several times
+    usleep(100000);       // 100ms
     if (handrs485_interface_->getallerrorreport_feedback_state_) {
       uint16_t check_res = handrs485_interface_->getallerrorreport_result_.res_[0] + handrs485_interface_->getallerrorreport_result_.res_[1] * 256;
       if (check_res > 0 && check_res < 11) {
@@ -384,7 +384,7 @@ std::vector<JointMotorErrorReport> AgibotHandO10::GetAllErrorReport() {
       } else if (check_res > 60 && check_res < 71) {
         all_errorreport[check_res - 60].motor_except_ = check_res - 60;
       }
-      //return handrs485_interface_->getallerrorreport_result_;
+      // return handrs485_interface_->getallerrorreport_result_;
       handrs485_interface_->getallerrorreport_feedback_state_ = 0;
       return all_errorreport;
     }

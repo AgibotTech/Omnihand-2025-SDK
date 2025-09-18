@@ -4,10 +4,12 @@
 #切换基于不同CAN盒和CAN卡的SDK还是socketCAN，1~ZLG周立功的usbcanfd的CAN盒SDK;2~socketCAN
 set(CanfdDevice 1)
 
-file(GLOB MODULE_SOURCES 
-  ${CMAKE_CURRENT_SOURCE_DIR}/*.cc 
-  ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/*.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/kinematics_solver/*.cc)
+# 基于是否使用can(否则就是串口 todo 逻辑优化)
+
+set(USE_CAN_BUS 0)
+add_definitions(-DUSE_CAN_BUS=${USE_CAN_BUS})
+
+file(GLOB MODULE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/kinematics_solver/*.cc)
 
 if(CanfdDevice EQUAL 1) #ZLG周立功的usbcanfd的CAN盒SDK
   list(APPEND MODULE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/zlg_usb_canfd/c_zlg_usbcanfd_sdk.cc)
@@ -15,11 +17,17 @@ elseif(CanfdDevice EQUAL 2) #socketCAN
   list(APPEND MODULE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/socket_can/c_can_bus_device_socket_can.cc)
 endif()
 
+list(APPEND MODULE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/rs_485_device/rs_485_device.cc)
 add_library(omniHand25Can SHARED ${MODULE_SOURCES})
 
-set_target_properties(omniHand25Can PROPERTIES
-  INSTALL_RPATH "$ORIGIN"
-  BUILD_WITH_INSTALL_RPATH TRUE)
+set_target_properties(omniHand25Can PROPERTIES INSTALL_RPATH "$ORIGIN" BUILD_WITH_INSTALL_RPATH TRUE)
+
+target_include_directories(
+  omniHand25Can
+  PUBLIC ${serial_SOURCE_DIR}/include)
+target_link_libraries(
+  omniHand25Can
+  PRIVATE serial)
 
 if(CanfdDevice EQUAL 1)
   target_compile_definitions(omniHand25Can PRIVATE ZLG_USBCANFD_SDK)
@@ -38,7 +46,7 @@ if(CanfdDevice EQUAL 1)
 elseif(CanfdDevice EQUAL 2)
   target_compile_definitions(omniHand25Can PRIVATE SOCKET_CAN)
 endif()
- 
+
 install(TARGETS omniHand25Can DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(FILES c_agibot_hand.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 install(FILES can_bus_device/c_can_bus_device.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/can_bus_device)

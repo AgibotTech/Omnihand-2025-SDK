@@ -21,7 +21,7 @@ void positionControlDemo() {
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     // 批量设置所有关节位置
-    std::vector<short> positions = {2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 0};
+    std::vector<short> positions = {4096, 316, 1179, 0, 2470, 3731, 2409, 3832, 2307, 3922};
     hand.SetAllJointMotorPosi(positions);
     std::cout << "批量设置所有关节位置完成" << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -41,7 +41,7 @@ void positionControlDemo() {
 }
 
 int main() {
-  std::cout << "OmniHand Pro 2025 C++ SDK 功能演示" << std::endl;
+  std::cout << "OmniHand 2025 C++ SDK 功能演示" << std::endl;
 
   positionControlDemo();
 

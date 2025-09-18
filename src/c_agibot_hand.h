@@ -3,7 +3,7 @@
 
 /**
  * @file c_agibot_hand.h
- * @brief O12灵巧手类
+ * @brief O10灵巧手类
  * @author WSJ
  * @date 25-8-1
  **/
@@ -16,6 +16,8 @@
 #include "can_bus_device/c_can_bus_device.h"
 #include "kinematics_solver/kinematics_solver.h"
 #include "proto.h"
+#include "rs_485_device/crc16.h"
+#include "rs_485_device/rs_485_device.h"
 
 #include "export_symbols.h"
 
@@ -23,8 +25,10 @@
 
 #define DISABLE_FUNC 1
 
+constexpr uint8_t HEADER[] = {0xEE, 0xAA, 0x1, 0x0};
+
 /**
- * @brief O12灵巧手类
+ * @brief O10灵巧手类
  */
 class AGIBOT_EXPORT AgibotHandO10 {
  public:
@@ -392,9 +396,14 @@ class AGIBOT_EXPORT AgibotHandO10 {
   bool is_left_hand_{true};
 
   /**
-   * @brief O12运动学求解器
+   * @brief O10运动学求解器
    */
   std::unique_ptr<OmnihandCtrl> kinematics_solver_ptr_;
+
+  /**
+   * @brief serial receive data thread
+   */
+  std::unique_ptr<UartRs485Interface> handrs485_interface_;
 };
 
 #endif  // C_AGIBOT_HAND_H

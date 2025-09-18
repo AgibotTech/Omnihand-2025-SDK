@@ -2,9 +2,9 @@
 
 #include <thread>
 #include <vector>
+#include "proto.h"
 #include "serial/serial.h"
 #include "serial/v8stdint.h"
-#include "proto.h"
 #define REC_BUF_LEN 1024
 #define MIN_RESULT_LEN 8
 
@@ -84,7 +84,7 @@ class UartRs485Interface {
    * @brief   getalljointmotorposi_result_
    * @return
    */
-  std::vector<int16_t> getalljointmotorposi_result_ = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // to get the hand motor position
+  std::vector<int16_t> getalljointmotorposi_result_ = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};  // to get the hand motor position
 
   /**
    * @brief   getalljointmotorvelo_feedback_state_
@@ -96,14 +96,14 @@ class UartRs485Interface {
    * @brief   getalljointmotorvelo_result_
    * @return
    */
-  std::vector<int16_t> getalljointmotorvelo_result_ = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // to get the hand motor position
+  std::vector<int16_t> getalljointmotorvelo_result_ = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};  // to get the hand motor position
 
- /**
+  /**
    * @brief   getsensordata_feedback_state_
    * @return
    */
   uint8_t getsensordata_feedback_state_ = 0;
-  
+
   /**
    * @brief   getsensordata_result_
    * @return
@@ -115,7 +115,7 @@ class UartRs485Interface {
    * @return
    */
   uint8_t getallerrorreport_feedback_state_ = 0;
-  
+
   /**
    * @brief   getallerrorreport_result_
    * @return
@@ -127,7 +127,7 @@ class UartRs485Interface {
    * @return
    */
   uint8_t getalltempreport_feedback_state_ = 0;
-  
+
   /**
    * @brief  getalltempreport_result_;
 
@@ -140,7 +140,7 @@ class UartRs485Interface {
    * @return
    */
   uint8_t getallcurrentreport_feedback_state_ = 0;
-  
+
   /**
    * @brief getallcurrentreport_result_;
 
@@ -153,7 +153,7 @@ class UartRs485Interface {
    * @return
    */
   uint8_t getvendorinfo_feedback_state_ = 0;
-  
+
   /**
    * @brief getvendorinfo_result_;
 

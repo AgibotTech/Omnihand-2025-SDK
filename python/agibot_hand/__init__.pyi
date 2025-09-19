@@ -6,7 +6,10 @@ class EFinger(IntEnum):
     INDEX = 2
     MIDDLE = 3
     RING = 4
-    LITTLE = 5
+    LITTLE = 5,    
+    PALM = 6,    
+    DORSUM = 7,  
+    UNKNOWN = 255
 
 class EControlMode(IntEnum):
     POSITION = 0
@@ -60,19 +63,6 @@ class DeviceInfo:
     
     def __str__(self) -> str: ...
 
-class TouchSensorData:
-    online_state: int
-    normal_force: int
-    tangent_force: int
-    tangent_force_angle: int
-
-    def __init__(self) -> None: ...
-    
-    @property
-    def channel_values(self) -> List[int]: ...
-    
-    @property
-    def capacitive_approach(self) -> List[int]: ...
 
 class JointMotorErrorReport:
     stalled: bool
@@ -125,7 +115,7 @@ class AgibotHandO10:
     # def get_all_joint_torques(self) -> List[int]: ...
     
     # Sensor data
-    def get_touch_sensor_data(self, eFinger: EFinger) -> TouchSensorData: ...
+    def get_touch_sensor_data(self, eFinger: EFinger) -> List[int]: ...
     
     # Control mode
     def set_control_mode(self, joint_motor_index: int, mode: int) -> None: ...

@@ -177,7 +177,7 @@ class AGIBOT_EXPORT AgibotHandO10 {
    * @param eFinger
    * @return
    */
-  TouchSensorData GetTouchSensorData(EFinger eFinger);
+  std::vector<uint8_t> GetTouchSensorData(EFinger eFinger);
 
   /**
    * @brief 设置单个关节电机控制模式

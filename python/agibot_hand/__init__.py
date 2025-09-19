@@ -3,7 +3,6 @@
 
 from .agibot_hand_core import (
     AgibotHandO10,
-    TouchSensorData,
     JointMotorErrorReport,
     MixCtrl,
     VendorInfo,   
@@ -19,6 +18,9 @@ class EFinger(IntEnum):
     MIDDLE = 0x03
     RING = 0x04
     LITTLE = 0x05
+    PALM = 0x06,    
+    DORSUM = 0x07,  
+    UNKNOWN = 0xff
 
 class EControlMode(IntEnum):
     POSITION = 0
@@ -39,7 +41,6 @@ __all__ = [
     'EFinger',
     'EHandType',
     'EControlMode',
-    'TouchSensorData',
     'JointMotorErrorReport',
     'MixCtrl',
     'VendorInfo',   

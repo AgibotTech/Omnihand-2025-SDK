@@ -143,7 +143,16 @@ void ZlgUsbcanfdSDK::RecvFrame() {
       memcpy(rep.data_, canfd_data[i].dat, rep.len_);
 
       if (show_data_details_.load()) {
-        std::cout << "RCV: " << rep;
+        auto now = std::chrono::system_clock::now();
+        auto now_time_t = std::chrono::system_clock::to_time_t(now);
+
+        // 获取微秒
+        auto now_us = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % 1000000;
+
+        std::cout << "["
+                  << std::put_time(std::localtime(&now_time_t), "%Y-%m-%d %H:%M:%S")
+                  << "." << std::dec << std::setfill('0') << std::setw(6) << now_us.count()
+                  << "] RCV: " << rep;
       }
 
       {

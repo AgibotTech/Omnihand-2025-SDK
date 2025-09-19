@@ -422,8 +422,12 @@ std::vector<int16_t> AgibotHandO10::GetAllJointMotorVelo() {
   }
 }
 
-TouchSensorData AgibotHandO10::GetTouchSensorData(EFinger eFinger) {
-  TouchSensorData touchSensorData{};
+std::vector<uint8_t> AgibotHandO10::GetTouchSensorData(EFinger eFinger) {
+  int touchSensorDataLen = 16;
+  if (eFinger == EFinger::eDorsum || eFinger == EFinger::ePalm) {
+    touchSensorDataLen = 25;
+  }
+  std::vector<uint8_t> touchSensorData(touchSensorDataLen, 0);
 
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
@@ -437,7 +441,7 @@ TouchSensorData AgibotHandO10::GetTouchSensorData(EFinger eFinger) {
   touchSensorDataReq.len_ = CANFD_MAX_DATA_LENGTH;
   try {
     CanfdFrame touchSensorDataRep = canfd_device_->SendRequestSynch(touchSensorDataReq);
-    memcpy(&touchSensorData, touchSensorDataRep.data_, sizeof(touchSensorData));
+    memcpy(touchSensorData.data(), touchSensorDataRep.data_, touchSensorData.size());
   } catch (std::exception& ex) {
     std::cerr << ex.what() << std::endl;
   }

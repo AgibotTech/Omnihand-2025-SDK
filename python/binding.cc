@@ -44,26 +44,6 @@ PYBIND11_MODULE(agibot_hand_core, m) {
       .def_readwrite("dof", &VendorInfo::dof)
       .def("__str__", &VendorInfo::toString);
 
-  //  Bind TouchSensorData structures
-  py::class_<TouchSensorData>(m, "TouchSensorData")
-      .def(py::init<>())
-      .def_readwrite("online_state", &TouchSensorData::online_state_)
-      .def_property_readonly("channel_values",
-                             [](const TouchSensorData &self) {
-                               return std::vector<unsigned short>(
-                                   self.channel_value_,
-                                   self.channel_value_ + 9);
-                             })
-      .def_readwrite("normal_force", &TouchSensorData::normal_force_)
-      .def_readwrite("tangent_force", &TouchSensorData::tangent_force_)
-      .def_readwrite("tangent_force_angle",
-                     &TouchSensorData::tangent_force_angle_)
-      .def_property_readonly(
-          "capacitive_approach", [](const TouchSensorData &self) {
-            return std::vector<unsigned char>(self.capa_approach_,
-                                              self.capa_approach_ + 4);
-          });
-
   //  Bind JointMotorErrorReport structure with bit field accessors
   py::class_<JointMotorErrorReport>(m, "JointMotorErrorReport")
       .def(py::init<>())

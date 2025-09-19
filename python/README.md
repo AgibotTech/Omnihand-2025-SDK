@@ -84,18 +84,6 @@ class ControlMode:
 
 ### 数据结构
 
-#### TouchSensorData (触觉传感器数据)
-
-```python
-class TouchSensorData:
-    online_state: int           # 传感器在线状态 (1:在线, 0:离线)
-    channel_values: List[int]   # 各通道值 (9个通道)
-    normal_force: int           # 法向力 (0-3000, 单位:0.1N)
-    tangent_force: int         # 切向力
-    tangent_force_angle: int   # 切向力角度 (0-359度)
-    capacitive_approach: List[int]  # 自电容接近值 (4个通道)
-```
-
 #### JointMotorErrorReport (关节电机错误报告)
 
 ```python
@@ -255,26 +243,6 @@ def get_all_joint_torques() -> List[int]:
 
     Returns:
         List[int]: 所有关节的当前力矩列表，长度为12
-    """
-```
-
-#### 传感器数据
-
-```python
-def get_touch_sensor_data(finger: Finger) -> TouchSensorData:
-    """获取指定手指的触觉传感器数据
-
-    Args:
-        finger (Finger): 手指枚举值，可选值：THUMB, INDEX, MIDDLE, RING, LITTLE
-
-    Returns:
-        TouchSensorData: 触觉传感器数据结构，包含：
-            - online_state: 传感器在线状态 (1:在线, 0:离线)
-            - channel_values: 各通道值 (9个通道)
-            - normal_force: 法向力 (0-3000, 单位:0.1N)
-            - tangent_force: 切向力
-            - tangent_force_angle: 切向力角度 (0-359度)
-            - capacitive_approach: 自电容接近值 (4个通道)
     """
 ```
 

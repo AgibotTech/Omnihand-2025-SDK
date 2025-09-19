@@ -54,18 +54,6 @@ enum class AGIBOT_EXPORT EFinger : unsigned char {
   eUnknown = 0xff
 };
 
-/**
- * @brief 触觉传感器数据
- */
-struct AGIBOT_EXPORT TouchSensorData {
-  unsigned char online_state_;          //: 1~传感器在线;0~传感器不在线
-  unsigned short channel_value_[9];     // 各通道值
-  unsigned short normal_force_;         // 法向力:(0-3000,0.1N)
-  unsigned short tangent_force_;        // 切向力
-  unsigned short tangent_force_angle_;  // 切向力角度，指尖向上为0度，顺时针旋转:(0~359)
-  unsigned char capa_approach_[4];      // 自电容接近
-};
-
 enum class AGIBOT_EXPORT EHandType : unsigned char {
   eLeft = 0,
   eRight = 1,

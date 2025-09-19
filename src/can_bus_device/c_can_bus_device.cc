@@ -41,7 +41,7 @@ CanfdFrame CanBusDeviceBase::SendRequestSynch(const CanfdFrame& req) {
     std::cout << "["
               << std::put_time(std::localtime(&now_time_t), "%Y-%m-%d %H:%M:%S")
               << "." << std::dec << std::setfill('0') << std::setw(6) << now_us.count()
-              << "] RCV: " << req;
+              << "] SND: " << req;
   }
 
   auto start = std::chrono::high_resolution_clock::now();

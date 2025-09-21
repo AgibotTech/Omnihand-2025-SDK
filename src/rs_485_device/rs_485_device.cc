@@ -12,6 +12,11 @@
 #define CMD_GET_JOINT_MOTOR_POSI 0x07
 #define CMD_GET_ALL_JOINT_MOTOR_POSI 0x9
 #define CMD_GET_ALL_JOINT_MOTOR_VELO 0xB
+#define CMD_GET_SENSOR_DATA 0x11
+#define CMD_GET_ALL_ERROR_REPORT 0x0D
+#define CMD_GET_ALL_TEMP_REPORT 0x0C
+#define CMD_GET_ALL_CURRENT_REPORT 0x0A
+#define CMD_GET_VENDOR_INFO 0xCD
 
 UartRs485Interface::UartRs485Interface()
     : Rs485_device_ptr_(UART_PORT, UART_BAUD,
@@ -36,9 +41,9 @@ void UartRs485Interface::RecBuffParse(void) {
       if (expect_complete_frame_end <= buf_write_pos_) {
         detect_frame_len += rec_buffer_[index + 4] + 5 + 2;
         switch (rec_buffer_[index + 5]) {
-          case CMD_VER_REQ:
-            printf("version request response data ready !\n");
-            break;
+          //case CMD_VER_REQ:
+          //  printf("version request response data ready !\n");
+          //  break;
           case CMD_GET_JOINT_MOTOR_POSI:
             printf("get joint motor position response data ready !\n");
             getjointmotorposi_result_ = rec_buffer_[index + 7] + rec_buffer_[index + 8] * 256;
@@ -58,6 +63,54 @@ void UartRs485Interface::RecBuffParse(void) {
               getalljointmotorvelo_result_.at(i) = rec_buffer_[index + 6 + 2 * i] + rec_buffer_[index + 6 + 2 * i + 1] * 256;
             }
             getalljointmotorvelo_feedback_state_ = 1;
+            break;
+          
+          case CMD_GET_SENSOR_DATA:
+            printf("get sensor data response data ready! finger index : %d\n", rec_buffer_[index + 6]);
+            getsensordata_result_.online_state_ = rec_buffer_[index + 6];
+            getsensordata_feedback_state_ = 1;
+            break;
+
+          case CMD_GET_ALL_ERROR_REPORT:
+            printf("get all error report response data ready! \n");
+            getallerrorreport_result_.res_[0] = rec_buffer_[index + 6];
+            getallerrorreport_result_.res_[0] = rec_buffer_[index + 7];
+            getallerrorreport_feedback_state_ = 1;
+            break;
+
+          case CMD_GET_ALL_TEMP_REPORT:
+            printf("get all temprature report response data ready! \n");
+            for(int i = 0; i < 8; i++) {
+              getalltempreport_result_[i] = rec_buffer_[index + 6 + i];
+            }
+            getalltempreport_feedback_state_ = 1;
+            break;
+
+          case CMD_GET_ALL_CURRENT_REPORT:
+            printf("get all current report response data ready! \n");
+            for(int i = 0; i < 10; i++) {
+              //printf("all current data[%d]: %d \n", i, rec_buffer_[i]);
+              getallcurrentreport_result_[i] = rec_buffer_[index + 6 + 2 * i] + rec_buffer_[index + 6 + 2 * i + 1] * 256;
+            }
+            getallcurrentreport_feedback_state_ = 1;
+            break;
+
+          case CMD_GET_VENDOR_INFO:
+            printf("get vender info response data ready! \n");
+            for(int i = 0; i < 10; i++) {
+              //printf("vendor info data[%d]: %d \n", i, rec_buffer_[i]);
+              getvendorinfo_result_.productModel = (rec_buffer_[index + 6] == 1) ? "O12":"O10";
+              getvendorinfo_result_.hardwareVersion.major_ = rec_buffer_[index + 12];
+              getvendorinfo_result_.hardwareVersion.minor_ = rec_buffer_[index + 13];
+              getvendorinfo_result_.hardwareVersion.patch_ = rec_buffer_[index + 14];
+
+              getvendorinfo_result_.softwareVersion.major_ = rec_buffer_[index + 9];
+              getvendorinfo_result_.softwareVersion.minor_ = rec_buffer_[index + 10];
+              getvendorinfo_result_.softwareVersion.patch_ = rec_buffer_[index + 11];
+
+              getvendorinfo_result_.dof = rec_buffer_[index + 15];
+            }
+            getvendorinfo_feedback_state_ = 1;
             break;
 
           default:

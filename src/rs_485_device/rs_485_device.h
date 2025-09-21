@@ -4,6 +4,7 @@
 #include <vector>
 #include "serial/serial.h"
 #include "serial/v8stdint.h"
+#include "proto.h"
 #define REC_BUF_LEN 1024
 #define MIN_RESULT_LEN 8
 
@@ -96,6 +97,69 @@ class UartRs485Interface {
    * @return
    */
   std::vector<int16_t> getalljointmotorvelo_result_ = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // to get the hand motor position
+
+ /**
+   * @brief   getsensordata_feedback_state_
+   * @return
+   */
+  uint8_t getsensordata_feedback_state_ = 0;
+  
+  /**
+   * @brief   getsensordata_result_
+   * @return
+   */
+  struct TouchSensorData getsensordata_result_;
+
+  /**
+   * @brief   getallerrorreport_feedback_state_
+   * @return
+   */
+  uint8_t getallerrorreport_feedback_state_ = 0;
+  
+  /**
+   * @brief   getallerrorreport_result_
+   * @return
+   */
+  struct JointMotorAllErrorReport getallerrorreport_result_;
+
+  /**
+   * @brief   getalltempreport_feedback_state_
+   * @return
+   */
+  uint8_t getalltempreport_feedback_state_ = 0;
+  
+  /**
+   * @brief  getalltempreport_result_;
+
+   * @return
+   */
+  uint16_t getalltempreport_result_[10] = {0};
+
+  /**
+   * @brief   getallcurrentreport_feedback_state_
+   * @return
+   */
+  uint8_t getallcurrentreport_feedback_state_ = 0;
+  
+  /**
+   * @brief getallcurrentreport_result_;
+
+   * @return
+   */
+  uint16_t getallcurrentreport_result_[10] = {0};
+
+  /**
+   * @brief   getvendorinfo_feedback_state_
+   * @return
+   */
+  uint8_t getvendorinfo_feedback_state_ = 0;
+  
+  /**
+   * @brief getvendorinfo_result_;
+
+   * @return
+   */
+  struct VendorInfo getvendorinfo_result_ = {0};
 
  private:
   std::thread serial_rec_pthread_;

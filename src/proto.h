@@ -92,6 +92,10 @@ struct AGIBOT_EXPORT JointMotorErrorReport {
   unsigned char res2_;
 };
 
+struct AGIBOT_EXPORT JointMotorAllErrorReport {
+  unsigned char res_[2];
+};
+
 enum class AGIBOT_EXPORT EMsgType : unsigned char {
   eVendorInfo = 0x01,
   eDeviceInfo = 0x02,

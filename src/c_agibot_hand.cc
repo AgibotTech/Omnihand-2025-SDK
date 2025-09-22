@@ -27,6 +27,7 @@
 #define CANID_PRODUCT_ID 0x01
 
 #define DEGREE_OF_FREEDOM 10
+#define CHECK_TIME 5
 #if !USE_CAN_BUS
 AgibotHandO10::AgibotHandO10(unsigned char device_id, EHandType hand_type)
     : device_id_(device_id) {
@@ -61,12 +62,12 @@ int16_t AgibotHandO10::GetJointMotorPosi(unsigned char joint_motor_index) {
   getjoint_cmd[7] = crc_val % 256;
   getjoint_cmd[8] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getjoint_cmd, sizeof(getjoint_cmd));
-  uint8_t check_time = 5;
+  uint8_t check_time = CHECK_TIME;
   while (check_time--) {
     usleep(100000);
     if (handrs485_interface_->getjointmotorposi_feedback_state_) {
-      return handrs485_interface_->getjointmotorposi_result_;
       handrs485_interface_->getjointmotorposi_feedback_state_ = 0;
+      return handrs485_interface_->getjointmotorposi_result_;
     }
   }
   printf("get joint motor posi failed, joint_motor_index: %d\n", joint_motor_index);
@@ -111,12 +112,12 @@ std::vector<int16_t> AgibotHandO10::GetAllJointMotorPosi() {
   getalljoint_cmd[6] = crc_val % 256;
   getalljoint_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getalljoint_cmd, sizeof(getalljoint_cmd));
-  uint8_t check_time = 5;
-  while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
+  uint8_t check_time = CHECK_TIME;
+  while (check_time--) { //check several times
+    usleep(100000); //100ms
     if (handrs485_interface_->getalljointmotorposi_feedback_state_) {
-      return handrs485_interface_->getalljointmotorposi_result_;
       handrs485_interface_->getalljointmotorposi_feedback_state_ = 0;
+      return handrs485_interface_->getalljointmotorposi_result_;
     }
   }
   printf("get all joint motor posi failed, joint_motor_index: \n");
@@ -133,15 +134,36 @@ double AgibotHandO10::GetJointAngle(unsigned char joint_motor_index) {
   #endif
 
 void AgibotHandO10::SetAllActiveJointAngles(std::vector<double> vec_angle) {
+  if (vec_angle.size() != DEGREE_OF_FREEDOM) {
+    std::cerr << "[Error]: 无效参数，需与主动自由度数量 " << std::dec << DEGREE_OF_FREEDOM << " 相匹配." << std::endl;
+    return;
+  }
+
+  // 使用运动学求解器转换关节角度为电机位置
+  std::vector<int> motor_positions = kinematics_solver_ptr_->ActiveJointPos2ActuatorInput(vec_angle);
+
+  // 转换为short向量
+  std::vector<int16_t> motor_posi_short(motor_positions.begin(), motor_positions.end());
+
+  // 设置所有电机位置
+  SetAllJointMotorPosi(motor_posi_short);
   return;
 }
 
 std::vector<double> AgibotHandO10::GetAllActiveJointAngles() {
-  return {};
+  // 获取所有电机位置
+  std::vector<int16_t> motor_posi = GetAllJointMotorPosi();
+
+  // 转换为int向量供运动学求解器使用
+  std::vector<int> motor_positions(motor_posi.begin(), motor_posi.end());
+
+  // 使用运动学求解器转换电机位置为关节角度
+  return kinematics_solver_ptr_->ActuatorInput2ActiveJointPos(motor_positions);
 }
 
 std::vector<double> AgibotHandO10::GetAllJointAngles() {
-  return {};
+  std::vector<double> active_joint_angles = GetAllActiveJointAngles();
+  return kinematics_solver_ptr_->GetAllJointPos(active_joint_angles);
 }
 
   #if !DISABLE_FUNC
@@ -208,12 +230,12 @@ std::vector<int16_t> AgibotHandO10::GetAllJointMotorVelo() {
   getalljointvelo_cmd[6] = crc_val % 256;
   getalljointvelo_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getalljointvelo_cmd, sizeof(getalljointvelo_cmd));
-  uint8_t check_time = 5;
-  while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
+  uint8_t check_time = CHECK_TIME;
+  while (check_time--) { //check several times
+    usleep(100000); //100ms
     if (handrs485_interface_->getalljointmotorvelo_feedback_state_) {
-      return handrs485_interface_->getalljointmotorvelo_result_;
       handrs485_interface_->getalljointmotorvelo_feedback_state_ = 0;
+      return handrs485_interface_->getalljointmotorvelo_result_;
     }
   }
   printf("get all joint motor velocity failed, joint_motor_index: \n");
@@ -230,7 +252,7 @@ std::vector<uint8_t> AgibotHandO10::GetTouchSensorData(EFinger eFinger) {
   getsensordata_cmd[7] = crc_val % 256;
   getsensordata_cmd[8] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getsensordata_cmd, sizeof(getsensordata_cmd));
-  uint8_t check_time = 5;
+  uint8_t check_time = CHECK_TIME;
   while (check_time--) {
     usleep(100000);
     if (handrs485_interface_->getsensordata_feedback_state_) {
@@ -308,9 +330,9 @@ JointMotorErrorReport AgibotHandO10::GetErrorReport(unsigned char joint_motor_in
   geterrorport_cmd[6] = crc_val % 256;
   geterrorport_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(geterrorport_cmd, sizeof(geterrorport_cmd));
-  uint8_t check_time = 5;
-  while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
+  uint8_t check_time = CHECK_TIME;
+  while (check_time--) { //check several times
+    usleep(100000); //100ms
     if (handrs485_interface_->getallerrorreport_feedback_state_) {
       uint16_t check_res = handrs485_interface_->getallerrorreport_result_.res_[0] + handrs485_interface_->getallerrorreport_result_.res_[1] * 256;
       if (check_res > 0 && check_res < 11) {
@@ -324,9 +346,9 @@ JointMotorErrorReport AgibotHandO10::GetErrorReport(unsigned char joint_motor_in
       } else if (check_res == 101) {
         ret_error.commu_except_ = check_res;
       }
-      return ret_error;
-      // return handrs485_interface_->getallerrorreport_result_;
+      //return handrs485_interface_->getallerrorreport_result_;
       handrs485_interface_->getallerrorreport_feedback_state_ = 0;
+      return ret_error;
     }
   }
   printf("get error report failed, joint_motor_index: %d\n", joint_motor_index);
@@ -348,9 +370,9 @@ std::vector<JointMotorErrorReport> AgibotHandO10::GetAllErrorReport() {
   geterrorport_cmd[6] = crc_val % 256;
   geterrorport_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(geterrorport_cmd, sizeof(geterrorport_cmd));
-  uint8_t check_time = 5;
-  while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
+  uint8_t check_time = CHECK_TIME;
+  while (check_time--) { //check several times
+    usleep(100000); //100ms
     if (handrs485_interface_->getallerrorreport_feedback_state_) {
       uint16_t check_res = handrs485_interface_->getallerrorreport_result_.res_[0] + handrs485_interface_->getallerrorreport_result_.res_[1] * 256;
       if (check_res > 0 && check_res < 11) {
@@ -362,9 +384,9 @@ std::vector<JointMotorErrorReport> AgibotHandO10::GetAllErrorReport() {
       } else if (check_res > 60 && check_res < 71) {
         all_errorreport[check_res - 60].motor_except_ = check_res - 60;
       }
-      return all_errorreport;
-      // return handrs485_interface_->getallerrorreport_result_;
+      //return handrs485_interface_->getallerrorreport_result_;
       handrs485_interface_->getallerrorreport_feedback_state_ = 0;
+      return all_errorreport;
     }
   }
   printf("get error report failed\n");
@@ -387,12 +409,12 @@ uint16_t AgibotHandO10::GetTemperatureReport(unsigned char joint_motor_index) {
   gettempreport_cmd[6] = crc_val % 256;
   gettempreport_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(gettempreport_cmd, sizeof(gettempreport_cmd));
-  uint8_t check_time = 5;
+  uint8_t check_time = CHECK_TIME;
   while (check_time--) {
     usleep(100000);
     if (handrs485_interface_->getalltempreport_feedback_state_) {
-      return handrs485_interface_->getalltempreport_result_[joint_motor_index];
       handrs485_interface_->getalltempreport_feedback_state_ = 0;
+      return handrs485_interface_->getalltempreport_result_[joint_motor_index];
     }
   }
   printf("get motor temprature failed, joint_motor_index: %d\n", joint_motor_index);
@@ -408,15 +430,15 @@ std::vector<uint16_t> AgibotHandO10::GetAllTemperatureReport() {
   getalltempreport_cmd[6] = crc_val % 256;
   getalltempreport_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getalltempreport_cmd, sizeof(getalltempreport_cmd));
-  uint8_t check_time = 5;
+  uint8_t check_time = CHECK_TIME;
   while (check_time--) {
     usleep(100000);
     if (handrs485_interface_->getalltempreport_feedback_state_) {
       for (int i = 0; i < 8; i++) {
         alltempresult[i] = handrs485_interface_->getalltempreport_result_[i];
       }
-      return alltempresult;
       handrs485_interface_->getalltempreport_feedback_state_ = 0;
+      return alltempresult;
     }
   }
   printf("get all motor temprature failed\n");
@@ -440,12 +462,12 @@ int16_t AgibotHandO10::GetCurrentReport(unsigned char joint_motor_index) {
   getcurrent_cmd[6] = crc_val % 256;
   getcurrent_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getcurrent_cmd, sizeof(getcurrent_cmd));
-  uint8_t check_time = 5;
+  uint8_t check_time = CHECK_TIME;
   while (check_time--) {
     usleep(100000);
     if (handrs485_interface_->getallcurrentreport_feedback_state_) {
-      return handrs485_interface_->getallcurrentreport_result_[joint_motor_index];
       handrs485_interface_->getallcurrentreport_feedback_state_ = 0;
+      return handrs485_interface_->getallcurrentreport_result_[joint_motor_index];
     }
   }
   printf("get motor current failed, joint_motor_index: %d\n", joint_motor_index);
@@ -461,15 +483,15 @@ std::vector<uint16_t> AgibotHandO10::GetAllCurrentReport() {
   getallcurrent_cmd[6] = crc_val % 256;
   getallcurrent_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getallcurrent_cmd, sizeof(getallcurrent_cmd));
-  uint8_t check_time = 5;
+  uint8_t check_time = CHECK_TIME;
   while (check_time--) {
     usleep(100000);
     if (handrs485_interface_->getallcurrentreport_feedback_state_) {
       for (int i = 0; i < 8; i++) {
         allcurrentresult[i] = handrs485_interface_->getallcurrentreport_result_[i];
       }
-      return allcurrentresult;
       handrs485_interface_->getallcurrentreport_feedback_state_ = 0;
+      return allcurrentresult;
     }
   }
   printf("get all motor current failed.\n");
@@ -496,12 +518,12 @@ VendorInfo AgibotHandO10::GetVendorInfo() {
   getvendorinfo_cmd[6] = crc_val % 256;
   getvendorinfo_cmd[7] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getvendorinfo_cmd, sizeof(getvendorinfo_cmd));
-  uint8_t check_time = 5;
+  uint8_t check_time = CHECK_TIME;
   while (check_time--) {
     usleep(100000);
     if (handrs485_interface_->getvendorinfo_feedback_state_) {
-      return handrs485_interface_->getvendorinfo_result_;
       handrs485_interface_->getvendorinfo_feedback_state_ = 0;
+      return handrs485_interface_->getvendorinfo_result_;
     }
   }
   printf("get vendor info failed.\n");

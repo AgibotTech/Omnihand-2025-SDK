@@ -67,7 +67,9 @@ void UartRs485Interface::RecBuffParse(void) {
 
           case CMD_GET_SENSOR_DATA:
             printf("get sensor data response data ready! finger index : %d\n", rec_buffer_[index + 6]);
-            getsensordata_result_.online_state_ = rec_buffer_[index + 6];
+
+            memcpy(getsensordata_result_.data(), rec_buffer_ + index + 7, 25);
+
             getsensordata_feedback_state_ = 1;
             break;
 

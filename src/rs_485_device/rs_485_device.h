@@ -108,7 +108,7 @@ class UartRs485Interface {
    * @brief   getsensordata_result_
    * @return
    */
-  struct TouchSensorData getsensordata_result_;
+  std::vector<uint8_t> getsensordata_result_;
 
   /**
    * @brief   getallerrorreport_feedback_state_

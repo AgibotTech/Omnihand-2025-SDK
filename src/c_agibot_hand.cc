@@ -220,7 +220,7 @@ std::vector<int16_t> AgibotHandO10::GetAllJointMotorVelo() {
   return handrs485_interface_->getalljointmotorvelo_result_;
 }
 
-TouchSensorData AgibotHandO10::GetTouchSensorData(EFinger eFinger) {
+std::vector<uint8_t> AgibotHandO10::GetTouchSensorData(EFinger eFinger) {
   // 0x11 finger and hand, not finished: parse the right data
   uint8_t getsensordata_cmd[9] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x1, 0x55, 0x55};
   getsensordata_cmd[4] = 2;
@@ -234,7 +234,17 @@ TouchSensorData AgibotHandO10::GetTouchSensorData(EFinger eFinger) {
   while (check_time--) {
     usleep(100000);
     if (handrs485_interface_->getsensordata_feedback_state_) {
-      return handrs485_interface_->getsensordata_result_;
+      std::vector<uint8_t> result;
+      const size_t FINGER_DATA_LENGTH = 16;
+
+      if (eFinger == EFinger::eDorsum || eFinger == EFinger::ePalm) {
+        result = handrs485_interface_->getsensordata_result_;
+      } else {
+        const auto& full_data = handrs485_interface_->getsensordata_result_;
+        result.assign(full_data.begin(), full_data.begin() + FINGER_DATA_LENGTH);
+      }
+
+      return result;
       handrs485_interface_->getsensordata_feedback_state_ = 0;
     }
   }
@@ -408,8 +418,6 @@ std::vector<uint16_t> AgibotHandO10::GetAllTemperatureReport() {
       return alltempresult;
       handrs485_interface_->getalltempreport_feedback_state_ = 0;
     }
-    return alltempresult;
-    handrs485_interface_->getalltempreport_feedback_state_ = 0;
   }
   printf("get all motor temprature failed\n");
   return alltempresult;  // 0xC

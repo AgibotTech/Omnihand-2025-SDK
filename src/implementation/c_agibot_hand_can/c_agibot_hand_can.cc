@@ -1,14 +1,7 @@
 // Copyright (c) 2025, Agibot Co., Ltd.
 // OmniHand 2025 SDK is licensed under Mulan PSL v2.
 
-/**
- * @file c_agibot_hand.cpp
- * @brief
- * @author WSJ
- * @date 25-8-1
- **/
-
-#include "c_agibot_hand.h"
+#include "c_agibot_hand_can.h"
 
 #include <cstring>
 #include <fstream>
@@ -28,562 +21,21 @@
 
 #define DEGREE_OF_FREEDOM 10
 #define CHECK_TIME 5
-#if !USE_CAN_BUS
-AgibotHandO10::AgibotHandO10(unsigned char device_id, EHandType hand_type)
-    : device_id_(device_id) {
-  handrs485_interface_ =
-      std::make_unique<UartRs485Interface>();
-  handrs485_interface_->InitDevice();
-  // uint8_t check_cmd[] = {0xEE, 0xAA, 0x01, 0x00, 0x01, 0xCD, 0x55, 0x55};
-  // handrs485_interface_->WriteDevice(check_cmd, sizeof(check_cmd)); //for debug the uart-485 connection
-}
 
-AgibotHandO10::~AgibotHandO10() {
-}
-
-void AgibotHandO10::SetJointMotorPosi(unsigned char joint_motor_index, int16_t posi) {
-  uint8_t setjoint_cmd[11] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x6, 0x1, 0x33, 0x2, 0x55, 0x55};
-  setjoint_cmd[6] = joint_motor_index;
-  setjoint_cmd[7] = posi % 256;
-  setjoint_cmd[8] = (posi >> 8) & 0xFF;
-  uint16_t crc_val = Crc16(setjoint_cmd, 9);
-  setjoint_cmd[9] = crc_val % 256;
-  setjoint_cmd[10] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(setjoint_cmd, sizeof(setjoint_cmd));
-  return;
-}
-
-int16_t AgibotHandO10::GetJointMotorPosi(unsigned char joint_motor_index) {
-  uint8_t getjoint_cmd[9] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x1, 0x55, 0x55};
-  getjoint_cmd[4] = 2;
-  getjoint_cmd[5] = 7;
-  getjoint_cmd[6] = joint_motor_index;
-  uint16_t crc_val = Crc16(getjoint_cmd, 7);
-  getjoint_cmd[7] = crc_val % 256;
-  getjoint_cmd[8] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(getjoint_cmd, sizeof(getjoint_cmd));
-  uint8_t check_time = CHECK_TIME;
-  while (check_time--) {
-    usleep(100000);
-    if (handrs485_interface_->getjointmotorposi_feedback_state_) {
-      handrs485_interface_->getjointmotorposi_feedback_state_ = 0;
-      return handrs485_interface_->getjointmotorposi_result_;
-    }
-  }
-  printf("get joint motor posi failed, joint_motor_index: %d\n", joint_motor_index);
-  return 0;
-}
-
-void AgibotHandO10::SetAllJointMotorPosi(std::vector<int16_t> vec_posi) {
-  if (vec_posi.size() < 10) {
-    printf("joint number should not less than 10\n");
-    return;
-  }
-  uint8_t setalljoint_cmd[28] = {0};
-  setalljoint_cmd[0] = 0xEE;
-  setalljoint_cmd[1] = 0xAA;
-  setalljoint_cmd[2] = 0x1;
-  setalljoint_cmd[3] = 0x0;
-  setalljoint_cmd[4] = 0x15;  // 21 bytes
-  setalljoint_cmd[5] = 0x8;
-
-  for (int i = 0; i < 10; ++i) {
-    uint16_t pos = static_cast<uint16_t>(vec_posi[i]);
-    setalljoint_cmd[6 + 2 * i] = pos & 0xFF;    // low byte
-    setalljoint_cmd[6 + 2 * i + 1] = pos >> 8;  // high byte
-  }
-
-  uint16_t crc_val = Crc16(setalljoint_cmd, 26);
-  setalljoint_cmd[26] = crc_val % 256;
-  setalljoint_cmd[27] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(setalljoint_cmd, sizeof(setalljoint_cmd));
-  return;
-}
-
-std::vector<int16_t> AgibotHandO10::GetAllJointMotorPosi() {
-  uint8_t getalljoint_cmd[8] = {0};
-  getalljoint_cmd[0] = 0xEE;
-  getalljoint_cmd[1] = 0xAA;
-  getalljoint_cmd[2] = 0x1;
-  getalljoint_cmd[3] = 0x0;
-  getalljoint_cmd[4] = 0x1;  // 21 bytes
-  getalljoint_cmd[5] = 0x9;
-  uint16_t crc_val = Crc16(getalljoint_cmd, 6);
-  getalljoint_cmd[6] = crc_val % 256;
-  getalljoint_cmd[7] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(getalljoint_cmd, sizeof(getalljoint_cmd));
-  uint8_t check_time = CHECK_TIME;
-  while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
-    if (handrs485_interface_->getalljointmotorposi_feedback_state_) {
-      handrs485_interface_->getalljointmotorposi_feedback_state_ = 0;
-      return handrs485_interface_->getalljointmotorposi_result_;
-    }
-  }
-  printf("get all joint motor posi failed, joint_motor_index: \n");
-  return handrs485_interface_->getalljointmotorposi_result_;
-}
-  #if !DISABLE_FUNC
-void AgibotHandO10::SetJointAngle(unsigned char joint_motor_index, double angle) {
-  return;
-}
-
-double AgibotHandO10::GetJointAngle(unsigned char joint_motor_index) {
-  return 0.0;
-}
-  #endif
-
-void AgibotHandO10::SetAllActiveJointAngles(std::vector<double> vec_angle) {
-  if (vec_angle.size() != DEGREE_OF_FREEDOM) {
-    std::cerr << "[Error]: 无效参数，需与主动自由度数量 " << std::dec << DEGREE_OF_FREEDOM << " 相匹配." << std::endl;
-    return;
-  }
-
-  // 使用运动学求解器转换关节角度为电机位置
-  std::vector<int> motor_positions = kinematics_solver_ptr_->ActiveJointPos2ActuatorInput(vec_angle);
-
-  // 转换为short向量
-  std::vector<int16_t> motor_posi_short(motor_positions.begin(), motor_positions.end());
-
-  // 设置所有电机位置
-  SetAllJointMotorPosi(motor_posi_short);
-  return;
-}
-
-std::vector<double> AgibotHandO10::GetAllActiveJointAngles() {
-  // 获取所有电机位置
-  std::vector<int16_t> motor_posi = GetAllJointMotorPosi();
-
-  // 转换为int向量供运动学求解器使用
-  std::vector<int> motor_positions(motor_posi.begin(), motor_posi.end());
-
-  // 使用运动学求解器转换电机位置为关节角度
-  return kinematics_solver_ptr_->ActuatorInput2ActiveJointPos(motor_positions);
-}
-
-std::vector<double> AgibotHandO10::GetAllJointAngles() {
-  std::vector<double> active_joint_angles = GetAllActiveJointAngles();
-  return kinematics_solver_ptr_->GetAllJointPos(active_joint_angles);
-}
-
-  #if !DISABLE_FUNC
-void AgibotHandO10::SetJointMotorTorque(unsigned char joint_motor_index, int16_t torque) {
-  return;
-}
-
-int16_t AgibotHandO10::GetJointMotorTorque(unsigned char joint_motor_index) {
-  return 0;
-}
-
-void AgibotHandO10::SetAllJointMotorTorque(std::vector<int16_t> vec_torque) {
-  return;
-}
-
-std::vector<int16_t> AgibotHandO10::GetAllJointMotorTorque() {
-  return {};
-}
-  #endif
-
-void AgibotHandO10::SetJointMotorVelo(unsigned char joint_motor_index, int16_t velo) {
-  return;
-}
-
-int16_t AgibotHandO10::GetJointMotorVelo(unsigned char joint_motor_index) {
-  return 0;
-}
-
-void AgibotHandO10::SetAllJointMotorVelo(std::vector<int16_t> vec_velo) {
-  if (vec_velo.size() < 10) {
-    printf("velocity data number should not less than 10\n");
-    return;
-  }
-  uint8_t setalljointvelo_cmd[28] = {0};
-  setalljointvelo_cmd[0] = 0xEE;
-  setalljointvelo_cmd[1] = 0xAA;
-  setalljointvelo_cmd[2] = 0x1;
-  setalljointvelo_cmd[3] = 0x0;
-  setalljointvelo_cmd[4] = 0x15;  // 21 bytes
-  setalljointvelo_cmd[5] = 0x20;
-
-  for (int i = 0; i < 10; ++i) {
-    uint16_t pos = static_cast<uint16_t>(vec_velo[i]);
-    setalljointvelo_cmd[6 + 2 * i] = pos & 0xFF;    // low byte
-    setalljointvelo_cmd[6 + 2 * i + 1] = pos >> 8;  // high byte
-  }
-
-  uint16_t crc_val = Crc16(setalljointvelo_cmd, 26);
-  setalljointvelo_cmd[26] = crc_val % 256;
-  setalljointvelo_cmd[27] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(setalljointvelo_cmd, sizeof(setalljointvelo_cmd));
-  return;
-}
-
-std::vector<int16_t> AgibotHandO10::GetAllJointMotorVelo() {
-  uint8_t getalljointvelo_cmd[8] = {0};
-  getalljointvelo_cmd[0] = 0xEE;
-  getalljointvelo_cmd[1] = 0xAA;
-  getalljointvelo_cmd[2] = 0x1;
-  getalljointvelo_cmd[3] = 0x0;
-  getalljointvelo_cmd[4] = 0x1;  // 21 bytes
-  getalljointvelo_cmd[5] = 0xB;
-  uint16_t crc_val = Crc16(getalljointvelo_cmd, 6);
-  getalljointvelo_cmd[6] = crc_val % 256;
-  getalljointvelo_cmd[7] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(getalljointvelo_cmd, sizeof(getalljointvelo_cmd));
-  uint8_t check_time = CHECK_TIME;
-  while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
-    if (handrs485_interface_->getalljointmotorvelo_feedback_state_) {
-      handrs485_interface_->getalljointmotorvelo_feedback_state_ = 0;
-      return handrs485_interface_->getalljointmotorvelo_result_;
-    }
-  }
-  printf("get all joint motor velocity failed, joint_motor_index: \n");
-  return handrs485_interface_->getalljointmotorvelo_result_;
-}
-
-std::vector<uint8_t> AgibotHandO10::GetTouchSensorData(EFinger eFinger) {
-  // 0x11 finger and hand, not finished: parse the right data
-  uint8_t getsensordata_cmd[9] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x1, 0x55, 0x55};
-  getsensordata_cmd[4] = 2;
-  getsensordata_cmd[5] = 0x11;
-  getsensordata_cmd[6] = (uint8_t)eFinger;
-  uint16_t crc_val = Crc16(getsensordata_cmd, 7);
-  getsensordata_cmd[7] = crc_val % 256;
-  getsensordata_cmd[8] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(getsensordata_cmd, sizeof(getsensordata_cmd));
-  uint8_t check_time = CHECK_TIME;
-  while (check_time--) {
-    usleep(100000);
-    if (handrs485_interface_->getsensordata_feedback_state_) {
-      std::vector<uint8_t> result;
-      const size_t FINGER_DATA_LENGTH = 16;
-
-      if (eFinger == EFinger::eDorsum || eFinger == EFinger::ePalm) {
-        result = handrs485_interface_->getsensordata_result_;
-      } else {
-        const auto& full_data = handrs485_interface_->getsensordata_result_;
-        result.assign(full_data.begin(), full_data.begin() + FINGER_DATA_LENGTH);
-      }
-
-      return result;
-      handrs485_interface_->getsensordata_feedback_state_ = 0;
-    }
-  }
-  printf("get joint sensor data failed, joint_motor_index: %d\n", (uint8_t)eFinger);
-  return {};
-}
-
-void AgibotHandO10::SetControlMode(unsigned char joint_motor_index, EControlMode mode) {
-  uint8_t setcontrol_cmd[10] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x15, 0x1, 0x33, 0x55, 0x55};
-  setcontrol_cmd[6] = joint_motor_index;
-  setcontrol_cmd[7] = (uint8_t)mode;
-  uint16_t crc_val = Crc16(setcontrol_cmd, 8);
-  setcontrol_cmd[8] = crc_val % 256;
-  setcontrol_cmd[9] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(setcontrol_cmd, sizeof(setcontrol_cmd));
-  return;  // 0x15 need test
-}
-
-EControlMode AgibotHandO10::GetControlMode(unsigned char joint_motor_index) {
-  return EControlMode::eUnknown;
-}
-
-void AgibotHandO10::SetAllControlMode(std::vector<unsigned char> vec_ctrl_mode) {
-  return;
-}
-
-std::vector<unsigned char> AgibotHandO10::GetAllControlMode() {
-  return {};
-}
-
-void AgibotHandO10::SetCurrentThreshold(unsigned char joint_motor_index, int16_t current_threshold) {
-  return;
-}
-
-int16_t AgibotHandO10::GetCurrentThreshold(unsigned char joint_motor_index) {
-  return {};
-}
-
-void AgibotHandO10::SetAllCurrentThreshold(std::vector<int16_t> vec_current_threshold) {
-  return;
-}
-
-std::vector<int16_t> AgibotHandO10::GetAllCurrentThreshold() {
-  return {};
-}
-
-void AgibotHandO10::MixCtrlJointMotor(std::vector<MixCtrl> vec_mix_ctrl) {
-  return;
-}
-
-JointMotorErrorReport AgibotHandO10::GetErrorReport(unsigned char joint_motor_index) {
-  JointMotorErrorReport ret_error = {0};
-  uint8_t geterrorport_cmd[8] = {0};
-  geterrorport_cmd[0] = 0xEE;
-  geterrorport_cmd[1] = 0xAA;
-  geterrorport_cmd[2] = 0x1;
-  geterrorport_cmd[3] = 0x0;
-  geterrorport_cmd[4] = 0x1;
-  geterrorport_cmd[5] = 0xD;
-  uint16_t crc_val = Crc16(geterrorport_cmd, 6);
-  geterrorport_cmd[6] = crc_val % 256;
-  geterrorport_cmd[7] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(geterrorport_cmd, sizeof(geterrorport_cmd));
-  uint8_t check_time = CHECK_TIME;
-  while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
-    if (handrs485_interface_->getallerrorreport_feedback_state_) {
-      uint16_t check_res = handrs485_interface_->getallerrorreport_result_.res_[0] + handrs485_interface_->getallerrorreport_result_.res_[1] * 256;
-      if (check_res > 0 && check_res < 11) {
-        ret_error.stalled_ = check_res;
-      } else if (check_res > 20 && check_res < 31) {
-        ret_error.overheat_ = check_res;
-      } else if (check_res > 40 && check_res < 51) {
-        ret_error.over_current_ = check_res - 40;
-      } else if (check_res > 60 && check_res < 71) {
-        ret_error.motor_except_ = check_res - 60;
-      } else if (check_res == 101) {
-        ret_error.commu_except_ = check_res;
-      }
-      // return handrs485_interface_->getallerrorreport_result_;
-      handrs485_interface_->getallerrorreport_feedback_state_ = 0;
-      return ret_error;
-    }
-  }
-  printf("get error report failed, joint_motor_index: %d\n", joint_motor_index);
-  return ret_error;
-  ;
-  // need test
-}
-
-std::vector<JointMotorErrorReport> AgibotHandO10::GetAllErrorReport() {
-  std::vector<JointMotorErrorReport> all_errorreport;
-  uint8_t geterrorport_cmd[8] = {0};
-  geterrorport_cmd[0] = 0xEE;
-  geterrorport_cmd[1] = 0xAA;
-  geterrorport_cmd[2] = 0x1;
-  geterrorport_cmd[3] = 0x0;
-  geterrorport_cmd[4] = 0x1;
-  geterrorport_cmd[5] = 0xD;
-  uint16_t crc_val = Crc16(geterrorport_cmd, 6);
-  geterrorport_cmd[6] = crc_val % 256;
-  geterrorport_cmd[7] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(geterrorport_cmd, sizeof(geterrorport_cmd));
-  uint8_t check_time = CHECK_TIME;
-  while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
-    if (handrs485_interface_->getallerrorreport_feedback_state_) {
-      uint16_t check_res = handrs485_interface_->getallerrorreport_result_.res_[0] + handrs485_interface_->getallerrorreport_result_.res_[1] * 256;
-      if (check_res > 0 && check_res < 11) {
-        all_errorreport[check_res - 10].stalled_ = check_res;
-      } else if (check_res > 20 && check_res < 31) {
-        all_errorreport[check_res - 20].overheat_ = check_res;
-      } else if (check_res > 40 && check_res < 51) {
-        all_errorreport[check_res - 40].over_current_ = check_res - 40;
-      } else if (check_res > 60 && check_res < 71) {
-        all_errorreport[check_res - 60].motor_except_ = check_res - 60;
-      }
-      // return handrs485_interface_->getallerrorreport_result_;
-      handrs485_interface_->getallerrorreport_feedback_state_ = 0;
-      return all_errorreport;
-    }
-  }
-  printf("get error report failed\n");
-  return all_errorreport;  // need test
-}
-
-void AgibotHandO10::SetErrorReportPeriod(unsigned char joint_motor_index, uint16_t period) {
-  return;
-}
-
-void AgibotHandO10::SetAllErrorReportPeriod(std::vector<uint16_t> vec_period) {
-  return;
-}
-
-uint16_t AgibotHandO10::GetTemperatureReport(unsigned char joint_motor_index) {
-  uint8_t gettempreport_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
-  gettempreport_cmd[4] = 1;
-  gettempreport_cmd[5] = 0xC;
-  uint16_t crc_val = Crc16(gettempreport_cmd, 6);
-  gettempreport_cmd[6] = crc_val % 256;
-  gettempreport_cmd[7] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(gettempreport_cmd, sizeof(gettempreport_cmd));
-  uint8_t check_time = CHECK_TIME;
-  while (check_time--) {
-    usleep(100000);
-    if (handrs485_interface_->getalltempreport_feedback_state_) {
-      handrs485_interface_->getalltempreport_feedback_state_ = 0;
-      return handrs485_interface_->getalltempreport_result_[joint_motor_index];
-    }
-  }
-  printf("get motor temprature failed, joint_motor_index: %d\n", joint_motor_index);
-  return 0;  // 0xC
-}
-
-std::vector<uint16_t> AgibotHandO10::GetAllTemperatureReport() {
-  std::vector<uint16_t> alltempresult;
-  uint8_t getalltempreport_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
-  getalltempreport_cmd[4] = 1;
-  getalltempreport_cmd[5] = 0xC;
-  uint16_t crc_val = Crc16(getalltempreport_cmd, 6);
-  getalltempreport_cmd[6] = crc_val % 256;
-  getalltempreport_cmd[7] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(getalltempreport_cmd, sizeof(getalltempreport_cmd));
-  uint8_t check_time = CHECK_TIME;
-  while (check_time--) {
-    usleep(100000);
-    if (handrs485_interface_->getalltempreport_feedback_state_) {
-      for (int i = 0; i < 8; i++) {
-        alltempresult[i] = handrs485_interface_->getalltempreport_result_[i];
-      }
-      handrs485_interface_->getalltempreport_feedback_state_ = 0;
-      return alltempresult;
-    }
-  }
-  printf("get all motor temprature failed\n");
-  return alltempresult;  // 0xC
-}
-
-void AgibotHandO10::SetTemperReportPeriod(unsigned char joint_motor_index, uint16_t period) {
-  return;
-}
-
-void AgibotHandO10::SetAllTemperReportPeriod(std::vector<uint16_t> vec_period) {
-  return;
-}
-
-int16_t AgibotHandO10::GetCurrentReport(unsigned char joint_motor_index) {
-  uint16_t current_res = 0;
-  uint8_t getcurrent_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
-  getcurrent_cmd[4] = 1;
-  getcurrent_cmd[5] = 0xA;
-  uint16_t crc_val = Crc16(getcurrent_cmd, 6);
-  getcurrent_cmd[6] = crc_val % 256;
-  getcurrent_cmd[7] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(getcurrent_cmd, sizeof(getcurrent_cmd));
-  uint8_t check_time = CHECK_TIME;
-  while (check_time--) {
-    usleep(100000);
-    if (handrs485_interface_->getallcurrentreport_feedback_state_) {
-      handrs485_interface_->getallcurrentreport_feedback_state_ = 0;
-      return handrs485_interface_->getallcurrentreport_result_[joint_motor_index];
-    }
-  }
-  printf("get motor current failed, joint_motor_index: %d\n", joint_motor_index);
-  return handrs485_interface_->getallcurrentreport_result_[joint_motor_index];  // 0xA
-}
-
-std::vector<uint16_t> AgibotHandO10::GetAllCurrentReport() {
-  std::vector<uint16_t> allcurrentresult;
-  uint8_t getallcurrent_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
-  getallcurrent_cmd[4] = 1;
-  getallcurrent_cmd[5] = 0xA;
-  uint16_t crc_val = Crc16(getallcurrent_cmd, 6);
-  getallcurrent_cmd[6] = crc_val % 256;
-  getallcurrent_cmd[7] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(getallcurrent_cmd, sizeof(getallcurrent_cmd));
-  uint8_t check_time = CHECK_TIME;
-  while (check_time--) {
-    usleep(100000);
-    if (handrs485_interface_->getallcurrentreport_feedback_state_) {
-      for (int i = 0; i < 8; i++) {
-        allcurrentresult[i] = handrs485_interface_->getallcurrentreport_result_[i];
-      }
-      handrs485_interface_->getallcurrentreport_feedback_state_ = 0;
-      return allcurrentresult;
-    }
-  }
-  printf("get all motor current failed.\n");
-  return allcurrentresult;  // 0xA
-}
-
-void AgibotHandO10::SetCurrentReportPeriod(unsigned char joint_motor_index, uint16_t period) {
-  return;
-}
-
-void AgibotHandO10::SetAllCurrentReportPeriod(std::vector<uint16_t> vec_period) {
-  return;
-}
-
-void AgibotHandO10::ProcessMsg(CanfdFrame frame) {
-  return;
-}
-
-VendorInfo AgibotHandO10::GetVendorInfo() {
-  uint8_t getvendorinfo_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
-  getvendorinfo_cmd[4] = 1;
-  getvendorinfo_cmd[5] = 0xCD;
-  uint16_t crc_val = Crc16(getvendorinfo_cmd, 6);
-  getvendorinfo_cmd[6] = crc_val % 256;
-  getvendorinfo_cmd[7] = (crc_val >> 8) & 0xFF;
-  handrs485_interface_->WriteDevice(getvendorinfo_cmd, sizeof(getvendorinfo_cmd));
-  uint8_t check_time = CHECK_TIME;
-  while (check_time--) {
-    usleep(100000);
-    if (handrs485_interface_->getvendorinfo_feedback_state_) {
-      handrs485_interface_->getvendorinfo_feedback_state_ = 0;
-      return handrs485_interface_->getvendorinfo_result_;
-    }
-  }
-  printf("get vendor info failed.\n");
-  return handrs485_interface_->getvendorinfo_result_;  // 0xCD
-}
-
-DeviceInfo AgibotHandO10::GetDeviceInfo() {
-  return {};
-}
-
-void AgibotHandO10::SetDeviceId(unsigned char device_id) {
-  return;
-}
-
-void AgibotHandO10::UpdateFirmware(std::string file_name) {
-  return;
-}
-
-void AgibotHandO10::SendPackage() {
-  return;
-}
-
-void AgibotHandO10::GetUpgradeResult() {
-  return;
-}
-
-bool AgibotHandO10::JudgeMsgMatch(unsigned int req_id, unsigned int rep_id) {
-  return false;
-}
-
-unsigned int AgibotHandO10::GetMatchedRepId(unsigned int req_id) {
-  return 0;
-}
-
-void AgibotHandO10::ShowDataDetails(bool show) const {
-  return;
-}
-#else
-AgibotHandO10::AgibotHandO10(unsigned char device_id, EHandType hand_type)
-    : device_id_(device_id) {
-  is_left_hand_ = hand_type == EHandType::eLeft;
-
-  #ifdef ZLG_USBCANFD_SDK
+AgibotHandCanO10::AgibotHandCanO10() {
+#ifdef ZLG_USBCANFD_SDK
   canfd_device_ = std::make_unique<ZlgUsbcanfdSDK>();
-  #endif
+#endif
 
-  #ifdef SOCKET_CAN
+#ifdef SOCKET_CAN
   canfd_device_ = std::make_unique<CanBusDeviceSocketCan>();
-  #endif
-  canfd_device_->SetCallback(std::bind(&AgibotHandO10::ProcessMsg, this, std::placeholders::_1));
-  canfd_device_->SetCalcuMatchRepId(std::bind(&AgibotHandO10::GetMatchedRepId, this, std::placeholders::_1));
-  canfd_device_->SetMsgMatchJudge(std::bind(&AgibotHandO10::JudgeMsgMatch, this, std::placeholders::_1, std::placeholders::_2));
-
-  kinematics_solver_ptr_ = std::make_unique<OmnihandCtrl>(is_left_hand_);
+#endif
+  canfd_device_->SetCallback(std::bind(&AgibotHandCanO10::ProcessMsg, this, std::placeholders::_1));
+  canfd_device_->SetCalcuMatchRepId(std::bind(&AgibotHandCanO10::GetMatchedRepId, this, std::placeholders::_1));
+  canfd_device_->SetMsgMatchJudge(std::bind(&AgibotHandCanO10::JudgeMsgMatch, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-AgibotHandO10::~AgibotHandO10() {
-}
-
-void AgibotHandO10::SetJointMotorPosi(unsigned char joint_motor_index, int16_t posi) {
+void AgibotHandCanO10::SetJointMotorPosi(unsigned char joint_motor_index, int16_t posi) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -607,7 +59,7 @@ void AgibotHandO10::SetJointMotorPosi(unsigned char joint_motor_index, int16_t p
   }
 }
 
-int16_t AgibotHandO10::GetJointMotorPosi(unsigned char joint_motor_index) {
+int16_t AgibotHandCanO10::GetJointMotorPosi(unsigned char joint_motor_index) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -636,7 +88,7 @@ int16_t AgibotHandO10::GetJointMotorPosi(unsigned char joint_motor_index) {
   }
 }
 
-void AgibotHandO10::SetAllJointMotorPosi(std::vector<int16_t> vec_posi) {
+void AgibotHandCanO10::SetAllJointMotorPosi(std::vector<int16_t> vec_posi) {
   if (vec_posi.size() != DEGREE_OF_FREEDOM) {
     std::cerr << "[Error]: 无效参数，需与主动自由度数量 " << std::dec << DEGREE_OF_FREEDOM << " 相匹配." << std::endl;
     return;
@@ -663,7 +115,7 @@ void AgibotHandO10::SetAllJointMotorPosi(std::vector<int16_t> vec_posi) {
   }
 }
 
-std::vector<int16_t> AgibotHandO10::GetAllJointMotorPosi() {
+std::vector<int16_t> AgibotHandCanO10::GetAllJointMotorPosi() {
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
   unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
@@ -683,8 +135,8 @@ std::vector<int16_t> AgibotHandO10::GetAllJointMotorPosi() {
     return {};
   }
 }
-  #if !DISABLE_FUNC
-void AgibotHandO10::SetActiveJointAngle(unsigned char joint_motor_index, double angle) {
+#if !DISABLE_FUNC
+void AgibotHandCanO10::SetActiveJointAngle(unsigned char joint_motor_index, double angle) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     // 获取当前所有关节角度
     std::vector<double> current_angles = GetAllActiveJointAngles();
@@ -704,7 +156,7 @@ void AgibotHandO10::SetActiveJointAngle(unsigned char joint_motor_index, double 
   }
 }
 
-double AgibotHandO10::GetActiveJointAngle(unsigned char joint_motor_index) {
+double AgibotHandCanO10::GetActiveJointAngle(unsigned char joint_motor_index) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     // 获取当前电机位置
     int16_t motor_posi = GetJointMotorPosi(joint_motor_index);
@@ -724,9 +176,9 @@ double AgibotHandO10::GetActiveJointAngle(unsigned char joint_motor_index) {
     return 0.0;
   }
 }
-  #endif
+#endif
 
-void AgibotHandO10::SetAllActiveJointAngles(std::vector<double> vec_angle) {
+void AgibotHandCanO10::SetAllActiveJointAngles(std::vector<double> vec_angle) {
   if (vec_angle.size() != DEGREE_OF_FREEDOM) {
     std::cerr << "[Error]: 无效参数，需与主动自由度数量 " << std::dec << DEGREE_OF_FREEDOM << " 相匹配." << std::endl;
     return;
@@ -742,7 +194,7 @@ void AgibotHandO10::SetAllActiveJointAngles(std::vector<double> vec_angle) {
   SetAllJointMotorPosi(motor_posi_short);
 }
 
-std::vector<double> AgibotHandO10::GetAllActiveJointAngles() {
+std::vector<double> AgibotHandCanO10::GetAllActiveJointAngles() {
   // 获取所有电机位置
   std::vector<int16_t> motor_posi = GetAllJointMotorPosi();
 
@@ -753,13 +205,13 @@ std::vector<double> AgibotHandO10::GetAllActiveJointAngles() {
   return kinematics_solver_ptr_->ActuatorInput2ActiveJointPos(motor_positions);
 }
 
-std::vector<double> AgibotHandO10::GetAllJointAngles() {
+std::vector<double> AgibotHandCanO10::GetAllJointAngles() {
   std::vector<double> active_joint_angles = GetAllActiveJointAngles();
   return kinematics_solver_ptr_->GetAllJointPos(active_joint_angles);
 }
 
-  #if !DISABLE_FUNC
-void AgibotHandO10::SetJointMotorTorque(unsigned char joint_motor_index, int16_t torque) {
+#if !DISABLE_FUNC
+void AgibotHandCanO10::SetJointMotorTorque(unsigned char joint_motor_index, int16_t torque) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -783,7 +235,7 @@ void AgibotHandO10::SetJointMotorTorque(unsigned char joint_motor_index, int16_t
   }
 }
 
-int16_t AgibotHandO10::GetJointMotorTorque(unsigned char joint_motor_index) {
+int16_t AgibotHandCanO10::GetJointMotorTorque(unsigned char joint_motor_index) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -812,7 +264,7 @@ int16_t AgibotHandO10::GetJointMotorTorque(unsigned char joint_motor_index) {
   }
 }
 
-void AgibotHandO10::SetAllJointMotorTorque(std::vector<int16_t> vec_torque) {
+void AgibotHandCanO10::SetAllJointMotorTorque(std::vector<int16_t> vec_torque) {
   if (vec_torque.size() != DEGREE_OF_FREEDOM) {
     std::cerr << "[Error]: 无效参数，需与主动自由度数量 " << std::dec << DEGREE_OF_FREEDOM << " 相匹配." << std::endl;
     return;
@@ -836,7 +288,7 @@ void AgibotHandO10::SetAllJointMotorTorque(std::vector<int16_t> vec_torque) {
   }
 }
 
-std::vector<int16_t> AgibotHandO10::GetAllJointMotorTorque() {
+std::vector<int16_t> AgibotHandCanO10::GetAllJointMotorTorque() {
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
   unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
@@ -856,9 +308,9 @@ std::vector<int16_t> AgibotHandO10::GetAllJointMotorTorque() {
     return {};
   }
 }
-  #endif
+#endif
 
-void AgibotHandO10::SetJointMotorVelo(unsigned char joint_motor_index, int16_t velo) {
+void AgibotHandCanO10::SetJointMotorVelo(unsigned char joint_motor_index, int16_t velo) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -882,7 +334,7 @@ void AgibotHandO10::SetJointMotorVelo(unsigned char joint_motor_index, int16_t v
   }
 }
 
-int16_t AgibotHandO10::GetJointMotorVelo(unsigned char joint_motor_index) {
+int16_t AgibotHandCanO10::GetJointMotorVelo(unsigned char joint_motor_index) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -911,7 +363,7 @@ int16_t AgibotHandO10::GetJointMotorVelo(unsigned char joint_motor_index) {
   }
 }
 
-void AgibotHandO10::SetAllJointMotorVelo(std::vector<int16_t> vec_velo) {
+void AgibotHandCanO10::SetAllJointMotorVelo(std::vector<int16_t> vec_velo) {
   if (vec_velo.size() != DEGREE_OF_FREEDOM) {
     std::cerr << "[Error]: 无效参数，需与主动自由度数量 " << std::dec << DEGREE_OF_FREEDOM << " 相匹配." << std::endl;
     return;
@@ -935,7 +387,7 @@ void AgibotHandO10::SetAllJointMotorVelo(std::vector<int16_t> vec_velo) {
   }
 }
 
-std::vector<int16_t> AgibotHandO10::GetAllJointMotorVelo() {
+std::vector<int16_t> AgibotHandCanO10::GetAllJointMotorVelo() {
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
   unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
@@ -956,7 +408,7 @@ std::vector<int16_t> AgibotHandO10::GetAllJointMotorVelo() {
   }
 }
 
-std::vector<uint8_t> AgibotHandO10::GetTouchSensorData(EFinger eFinger) {
+std::vector<uint8_t> AgibotHandCanO10::GetTouchSensorData(EFinger eFinger) {
   int touchSensorDataLen = 16;
   if (eFinger == EFinger::eDorsum || eFinger == EFinger::ePalm) {
     touchSensorDataLen = 25;
@@ -983,7 +435,7 @@ std::vector<uint8_t> AgibotHandO10::GetTouchSensorData(EFinger eFinger) {
   return touchSensorData;
 }
 
-void AgibotHandO10::SetControlMode(unsigned char joint_motor_index, EControlMode mode) {
+void AgibotHandCanO10::SetControlMode(unsigned char joint_motor_index, EControlMode mode) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -1008,7 +460,7 @@ void AgibotHandO10::SetControlMode(unsigned char joint_motor_index, EControlMode
   }
 }
 
-EControlMode AgibotHandO10::GetControlMode(unsigned char joint_motor_index) {
+EControlMode AgibotHandCanO10::GetControlMode(unsigned char joint_motor_index) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -1033,7 +485,7 @@ EControlMode AgibotHandO10::GetControlMode(unsigned char joint_motor_index) {
   }
 }
 
-void AgibotHandO10::SetAllControlMode(std::vector<unsigned char> vec_ctrl_mode) {
+void AgibotHandCanO10::SetAllControlMode(std::vector<unsigned char> vec_ctrl_mode) {
   if (vec_ctrl_mode.size() != DEGREE_OF_FREEDOM) {
     std::cerr << "[Error]: 无效参数，需与主动自由度数量 " << std::dec << DEGREE_OF_FREEDOM << " 相匹配." << std::endl;
     return;
@@ -1057,7 +509,7 @@ void AgibotHandO10::SetAllControlMode(std::vector<unsigned char> vec_ctrl_mode) 
   }
 }
 
-std::vector<unsigned char> AgibotHandO10::GetAllControlMode() {
+std::vector<unsigned char> AgibotHandCanO10::GetAllControlMode() {
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
   unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
@@ -1077,7 +529,7 @@ std::vector<unsigned char> AgibotHandO10::GetAllControlMode() {
   }
 }
 
-void AgibotHandO10::SetCurrentThreshold(unsigned char joint_motor_index, int16_t current_threshold) {
+void AgibotHandCanO10::SetCurrentThreshold(unsigned char joint_motor_index, int16_t current_threshold) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -1101,7 +553,7 @@ void AgibotHandO10::SetCurrentThreshold(unsigned char joint_motor_index, int16_t
   }
 }
 
-int16_t AgibotHandO10::GetCurrentThreshold(unsigned char joint_motor_index) {
+int16_t AgibotHandCanO10::GetCurrentThreshold(unsigned char joint_motor_index) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -1130,7 +582,7 @@ int16_t AgibotHandO10::GetCurrentThreshold(unsigned char joint_motor_index) {
   }
 }
 
-void AgibotHandO10::SetAllCurrentThreshold(std::vector<int16_t> vec_current_threshold) {
+void AgibotHandCanO10::SetAllCurrentThreshold(std::vector<int16_t> vec_current_threshold) {
   if (vec_current_threshold.size() != DEGREE_OF_FREEDOM) {
     std::cerr << "[Error]: 无效参数，需与主动自由度数量 " << std::dec << DEGREE_OF_FREEDOM << " 相匹配." << std::endl;
     return;
@@ -1154,7 +606,7 @@ void AgibotHandO10::SetAllCurrentThreshold(std::vector<int16_t> vec_current_thre
   }
 }
 
-std::vector<int16_t> AgibotHandO10::GetAllCurrentThreshold() {
+std::vector<int16_t> AgibotHandCanO10::GetAllCurrentThreshold() {
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
   unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
@@ -1174,7 +626,7 @@ std::vector<int16_t> AgibotHandO10::GetAllCurrentThreshold() {
   }
 }
 
-void AgibotHandO10::MixCtrlJointMotor(std::vector<MixCtrl> vec_mix_ctrl) {
+void AgibotHandCanO10::MixCtrlJointMotor(std::vector<MixCtrl> vec_mix_ctrl) {
   if (vec_mix_ctrl.size() > 0) {
     auto ctrlMode = EControlMode(vec_mix_ctrl[0].ctrl_mode_);
 
@@ -1238,7 +690,7 @@ void AgibotHandO10::MixCtrlJointMotor(std::vector<MixCtrl> vec_mix_ctrl) {
   }
 }
 
-JointMotorErrorReport AgibotHandO10::GetErrorReport(unsigned char joint_motor_index) {
+JointMotorErrorReport AgibotHandCanO10::GetErrorReport(unsigned char joint_motor_index) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -1266,7 +718,7 @@ JointMotorErrorReport AgibotHandO10::GetErrorReport(unsigned char joint_motor_in
   }
 }
 
-std::vector<JointMotorErrorReport> AgibotHandO10::GetAllErrorReport() {
+std::vector<JointMotorErrorReport> AgibotHandCanO10::GetAllErrorReport() {
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
   unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
@@ -1286,7 +738,7 @@ std::vector<JointMotorErrorReport> AgibotHandO10::GetAllErrorReport() {
   }
 }
 
-void AgibotHandO10::SetErrorReportPeriod(unsigned char joint_motor_index, uint16_t period) {
+void AgibotHandCanO10::SetErrorReportPeriod(unsigned char joint_motor_index, uint16_t period) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -1310,7 +762,7 @@ void AgibotHandO10::SetErrorReportPeriod(unsigned char joint_motor_index, uint16
   }
 }
 
-void AgibotHandO10::SetAllErrorReportPeriod(std::vector<uint16_t> vec_period) {
+void AgibotHandCanO10::SetAllErrorReportPeriod(std::vector<uint16_t> vec_period) {
   if (vec_period.size() != DEGREE_OF_FREEDOM) {
     std::cerr << "[Error]: 无效参数，需与主动自由度数量 " << std::dec << DEGREE_OF_FREEDOM << " 相匹配." << std::endl;
     return;
@@ -1334,7 +786,7 @@ void AgibotHandO10::SetAllErrorReportPeriod(std::vector<uint16_t> vec_period) {
   }
 }
 
-uint16_t AgibotHandO10::GetTemperatureReport(unsigned char joint_motor_index) {
+uint16_t AgibotHandCanO10::GetTemperatureReport(unsigned char joint_motor_index) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     std::lock_guard<std::mutex> lockGuard(mutex_temper_report_);
     if (vec_temper_report_.size() == DEGREE_OF_FREEDOM) {
@@ -1348,12 +800,12 @@ uint16_t AgibotHandO10::GetTemperatureReport(unsigned char joint_motor_index) {
   }
 }
 
-std::vector<uint16_t> AgibotHandO10::GetAllTemperatureReport() {
+std::vector<uint16_t> AgibotHandCanO10::GetAllTemperatureReport() {
   std::lock_guard<std::mutex> lockGuard(mutex_temper_report_);
   return vec_temper_report_;
 }
 
-void AgibotHandO10::SetTemperReportPeriod(unsigned char joint_motor_index, uint16_t period) {
+void AgibotHandCanO10::SetTemperReportPeriod(unsigned char joint_motor_index, uint16_t period) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -1377,7 +829,7 @@ void AgibotHandO10::SetTemperReportPeriod(unsigned char joint_motor_index, uint1
   }
 }
 
-void AgibotHandO10::SetAllTemperReportPeriod(std::vector<uint16_t> vec_period) {
+void AgibotHandCanO10::SetAllTemperReportPeriod(std::vector<uint16_t> vec_period) {
   if (vec_period.size() != DEGREE_OF_FREEDOM) {
     std::cerr << "[Error]: 无效参数，需与主动自由度数量 " << std::dec << DEGREE_OF_FREEDOM << " 相匹配." << std::endl;
     return;
@@ -1404,7 +856,7 @@ void AgibotHandO10::SetAllTemperReportPeriod(std::vector<uint16_t> vec_period) {
   }
 }
 
-int16_t AgibotHandO10::GetCurrentReport(unsigned char joint_motor_index) {
+int16_t AgibotHandCanO10::GetCurrentReport(unsigned char joint_motor_index) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     std::lock_guard<std::mutex> lockGuard(mutex_current_report_);
     if (vec_current_report_.size() == DEGREE_OF_FREEDOM) {
@@ -1418,12 +870,12 @@ int16_t AgibotHandO10::GetCurrentReport(unsigned char joint_motor_index) {
   }
 }
 
-std::vector<uint16_t> AgibotHandO10::GetAllCurrentReport() {
+std::vector<uint16_t> AgibotHandCanO10::GetAllCurrentReport() {
   std::lock_guard<std::mutex> lockGuard(mutex_current_report_);
   return vec_current_report_;
 }
 
-void AgibotHandO10::SetCurrentReportPeriod(unsigned char joint_motor_index, uint16_t period) {
+void AgibotHandCanO10::SetCurrentReportPeriod(unsigned char joint_motor_index, uint16_t period) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
     unCanId.st_can_Id_.device_id_ = device_id_;
@@ -1447,7 +899,7 @@ void AgibotHandO10::SetCurrentReportPeriod(unsigned char joint_motor_index, uint
   }
 }
 
-void AgibotHandO10::SetAllCurrentReportPeriod(std::vector<uint16_t> vec_period) {
+void AgibotHandCanO10::SetAllCurrentReportPeriod(std::vector<uint16_t> vec_period) {
   if (vec_period.size() != DEGREE_OF_FREEDOM) {
     std::cerr << "[Error]: 无效参数，需与主动自由度数量 " << std::dec << DEGREE_OF_FREEDOM << " 相匹配." << std::endl;
     return;
@@ -1474,7 +926,7 @@ void AgibotHandO10::SetAllCurrentReportPeriod(std::vector<uint16_t> vec_period) 
   }
 }
 
-void AgibotHandO10::ProcessMsg(CanfdFrame frame) {
+void AgibotHandCanO10::ProcessMsg(CanfdFrame frame) {
   if ((frame.can_id_ & 0xFFFF0000) == 0x00210000) {
     // unsigned char* head = frame.data_;
     // std::vector<uint16_t> vec_temper_report{};
@@ -1592,7 +1044,7 @@ void AgibotHandO10::ProcessMsg(CanfdFrame frame) {
   }
 }
 
-VendorInfo AgibotHandO10::GetVendorInfo() {
+VendorInfo AgibotHandCanO10::GetVendorInfo() {
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
   unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
@@ -1627,7 +1079,7 @@ VendorInfo AgibotHandO10::GetVendorInfo() {
   }
 }
 
-DeviceInfo AgibotHandO10::GetDeviceInfo() {
+DeviceInfo AgibotHandCanO10::GetDeviceInfo() {
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
   unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
@@ -1653,7 +1105,7 @@ DeviceInfo AgibotHandO10::GetDeviceInfo() {
   }
 }
 
-void AgibotHandO10::SetDeviceId(unsigned char device_id) {
+void AgibotHandCanO10::SetDeviceId(unsigned char device_id) {
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
   unCanId.st_can_Id_.rw_flag_ = CANID_WRITE_FLAG;
@@ -1677,7 +1129,7 @@ void AgibotHandO10::SetDeviceId(unsigned char device_id) {
   }
 }
 
-void AgibotHandO10::UpdateFirmware(std::string file_name) {
+void AgibotHandCanO10::UpdateFirmware(std::string file_name) {
   std::ifstream file(file_name, std::ios::binary);
   if (!file.is_open()) {
     std::cerr << "[Error] Failed to read " << file_name << std::endl;
@@ -1687,8 +1139,8 @@ void AgibotHandO10::UpdateFirmware(std::string file_name) {
   std::streamoff fileSize = file.tellg();
 
   file.seekg(0, std::ios::beg);
-  char data[fileSize]{};
-  file.read(data, fileSize);
+  std::vector<char> data(fileSize);
+  file.read(data.data(), fileSize);
 
   int packageNum = fileSize % 2048 == 0 ? fileSize / 2048 : fileSize / 2048 + 1;
   // 每个包均为2K，不足的0xFF补齐，一包32帧canfd_frame，每次发一包（连续无应答发32帧），收到一包应答后再发下一包，
@@ -1697,9 +1149,9 @@ void AgibotHandO10::UpdateFirmware(std::string file_name) {
     std::array<char, 2048> packageData;
     packageData.fill(0xFF);
     if (pIndex == packageNum - 1) {
-      std::copy(data + head, data + fileSize, packageData.begin());
+      std::copy(data.data() + head, data.data() + fileSize, packageData.begin());
     } else {
-      std::copy_n(data + head, 2048, packageData.begin());
+      std::copy_n(data.data() + head, 2048, packageData.begin());
     }
 
     head += 2048;
@@ -1724,7 +1176,7 @@ void AgibotHandO10::UpdateFirmware(std::string file_name) {
   }
 }
 
-void AgibotHandO10::SendPackage() {
+void AgibotHandCanO10::SendPackage() {
   std::array<char, 2048> packageData = que_packages_.front();
 
   CanfdFrame packageReq{};
@@ -1749,7 +1201,7 @@ void AgibotHandO10::SendPackage() {
   }
 }
 
-void AgibotHandO10::GetUpgradeResult() {
+void AgibotHandCanO10::GetUpgradeResult() {
   CanfdFrame resultReq{};
   resultReq.can_id_ = 0x15F10101;
   resultReq.len_ = CANFD_MAX_DATA_LENGTH;
@@ -1764,7 +1216,7 @@ void AgibotHandO10::GetUpgradeResult() {
   }
 }
 
-bool AgibotHandO10::JudgeMsgMatch(unsigned int req_id, unsigned int rep_id) {
+bool AgibotHandCanO10::JudgeMsgMatch(unsigned int req_id, unsigned int rep_id) {
   if ((req_id & 0x1FFFFF7F) == (rep_id & 0x1FFFFF7F)) {
     return true;
   } else if ((req_id & 0x1FFF7F7F ^ 0x10F10000) == (rep_id & 0x1FFF7F7F ^ 0x00F20000)) {
@@ -1774,7 +1226,7 @@ bool AgibotHandO10::JudgeMsgMatch(unsigned int req_id, unsigned int rep_id) {
   }
 }
 
-unsigned int AgibotHandO10::GetMatchedRepId(unsigned int req_id) {
+unsigned int AgibotHandCanO10::GetMatchedRepId(unsigned int req_id) {
   if ((req_id & 0x00FF0000) == 0x00F10000) {
     return req_id & 0x0F00FFFF | 0x00F20000;
   } else {
@@ -1782,7 +1234,6 @@ unsigned int AgibotHandO10::GetMatchedRepId(unsigned int req_id) {
   }
 }
 
-void AgibotHandO10::ShowDataDetails(bool show) const {
+void AgibotHandCanO10::ShowDataDetails(bool show) const {
   canfd_device_->ShowDataDetails(show);
 }
-#endif

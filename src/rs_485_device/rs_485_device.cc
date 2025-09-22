@@ -20,7 +20,8 @@
 
 UartRs485Interface::UartRs485Interface()
     : Rs485_device_ptr_(UART_PORT, UART_BAUD,
-                        serial::Timeout::simpleTimeout(2)) {}
+                        serial::Timeout::simpleTimeout(2)) {
+}
 
 UartRs485Interface::~UartRs485Interface() {
   if (serial_rec_pthread_.joinable())

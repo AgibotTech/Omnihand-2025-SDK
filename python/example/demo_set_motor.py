@@ -1,11 +1,11 @@
 # Copyright (c) 2025, Agibot Co., Ltd.
 # OmniHand 2025 SDK is licensed under Mulan PSL v2.
 
-from agibot_hand import AgibotHandO10, EFinger, EControlMode
+from agibot_hand import AgibotHandBase, EFinger, EControlMode
 import time
 
 def main():
-    hand = AgibotHandO10()
+    hand = AgibotHandBase.create_hand()
 
     hand.set_joint_position(2, 200)
     time.sleep(1)

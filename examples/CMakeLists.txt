@@ -11,7 +11,6 @@ set(PYTHON_PKG_DIR ${CMAKE_BINARY_DIR}/agibot_hand_pkg)
 target_include_directories(
   ${CUR_TARGET_NAME}
   PRIVATE ${CMAKE_SOURCE_DIR}/src
-          ${CMAKE_SOURCE_DIR}/src/can_bus_device
           ${USER_PATH})
 
 target_link_libraries(

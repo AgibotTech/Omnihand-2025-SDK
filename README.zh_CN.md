@@ -46,13 +46,12 @@ DBUILD_PYTHON_BINDING 选项用于构建 Python 绑定模块，DBUILD_CPP_EXAMPL
 
 ```bash
 # 从GitHub下载对应版本的python whl包
-# 例如：agibot_hand_py-0.8.0-cp310-cp310-linux_x86_64.whl
-pip install agibot_hand_py-0.8.0-cp310-cp310-linux_x86_64.whl
+pip install ./omnihand_2025_py-0.8.0-cp310-cp310-linux_x86_64.whl
 ```
 
 ## 灵巧手电机索引
 
-OmniHand Pro 2025 共 12 个自由度，索引从 1 到 12， 各索引对应的控制电机如下图所示：
+OmniHand Pro 2025 共 10 个自由度，索引从 1 到 12， 各索引对应的控制电机如下图所示：
 
 ![](document/pic/hand_joints.jpg)
 

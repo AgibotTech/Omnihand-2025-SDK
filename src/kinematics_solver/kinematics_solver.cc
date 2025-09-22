@@ -130,8 +130,11 @@ std::vector<int> OmnihandCtrl::ActiveJointPos2ActuatorInput(
   // check active_joint_pos size
 
   assert(active_joint_pos.size() == ActiveJointCount);
-  CheckJointPos(active_joint_pos);
+  if (!CheckJointPos(active_joint_pos)) {
+    std::cout << "joint position over limit" << std::endl;
+  }
   std::vector<double> hand_pos = active_joint_pos;
+  ClampJointPos(hand_pos);
   if (!hand_type_) {
     hand_pos[ActiveJointThumbMCP] = CalculatePower(
         hand_pos[ActiveJointThumbMCP], right_thumb_mcp2motor_poly_);
@@ -150,7 +153,8 @@ std::vector<int> OmnihandCtrl::ActiveJointPos2ActuatorInput(
 
   std::vector<int> actuator_input;
   for (size_t i = 0; i < ActiveJointCount; i++) {
-    // std::cout<<"motor: "<<hand_pos[i]<<" "<<motor_min_[i]<<" "<<actuator_min_[i]<<std::endl;
+    // std::cout<<"motor: "<<hand_pos[i]<<" "<<motor_min_[i]<<"
+    // "<<actuator_min_[i]<<std::endl;
     actuator_input.push_back(int((hand_pos[i] - motor_min_[i]) *
                                  (actuator_max_[i] - actuator_min_[i]) /
                                  (motor_max_[i] - motor_min_[i])) +

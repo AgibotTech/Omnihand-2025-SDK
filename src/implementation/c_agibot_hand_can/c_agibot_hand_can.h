@@ -6,17 +6,21 @@
 #include <queue>
 #include "c_agibot_hand_base.h"
 #include "can_bus_device/c_can_bus_device.h"
-#include "proto.h"
-
 #include "export_symbols.h"
+#include "proto.h"
+#include "yaml-cpp/yaml.h"
 
 #define DEFAULT_DEVICE_ID 0x01
-
 #define DISABLE_FUNC 1
 
 class AGIBOT_EXPORT AgibotHandCanO10 : public AgibotHandBase {
  public:
-  AgibotHandCanO10();
+  struct Options {
+    std::string can_driver = "zlg";
+  };
+
+ public:
+  explicit AgibotHandCanO10(const YAML::Node&);
 
   ~AgibotHandCanO10() override = default;
 

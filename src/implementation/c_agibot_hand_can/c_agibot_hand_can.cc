@@ -7,13 +7,8 @@
 #include <fstream>
 #include <iostream>
 
-#ifdef ZLG_USBCANFD_SDK
-  #include "can_bus_device/zlg_usb_canfd/c_zlg_usbcanfd_sdk.h"
-#endif
-
-#ifdef SOCKET_CAN
-  #include "can_bus_device/socket_can/c_can_bus_device_socket_can.h"
-#endif
+#include "can_bus_device/socket_can/c_can_bus_device_socket_can.h"
+#include "can_bus_device/zlg_usb_canfd/c_zlg_usbcanfd_sdk.h"
 
 #define CANID_WRITE_FLAG 0x01
 #define CANID_READ_FLAG 0x00
@@ -22,14 +17,35 @@
 #define DEGREE_OF_FREEDOM 10
 #define CHECK_TIME 5
 
-AgibotHandCanO10::AgibotHandCanO10() {
-#ifdef ZLG_USBCANFD_SDK
-  canfd_device_ = std::make_unique<ZlgUsbcanfdSDK>();
-#endif
+namespace YAML {
+template <>
+struct convert<AgibotHandCanO10::Options> {
+  static bool decode(const Node& node, AgibotHandCanO10::Options& options) {
+    if (!node.IsMap()) return false;
+    if (node["can_driver"]) {
+      options.can_driver = node["can_driver"].as<std::string>();
+    }
+    return true;
+  }
+};
+}  // namespace YAML
 
-#ifdef SOCKET_CAN
-  canfd_device_ = std::make_unique<CanBusDeviceSocketCan>();
-#endif
+AgibotHandCanO10::AgibotHandCanO10(const YAML::Node& options_node) {
+  Options options;
+  if (options_node && !options_node.IsNull()) {
+    options = options_node.as<Options>();
+  }
+
+  if (options.can_driver == "zlg") {
+    canfd_device_ = std::make_unique<ZlgUsbcanfdSDK>();
+  } else if (options.can_driver == "socket") {
+    canfd_device_ = std::make_unique<CanBusDeviceSocketCan>();
+  } else {
+    throw std::invalid_argument(
+        "Unsupported CAN driver type: " + options.can_driver +
+        ". Only 'zlg' and 'socket' are supported.");
+  }
+
   canfd_device_->SetCallback(std::bind(&AgibotHandCanO10::ProcessMsg, this, std::placeholders::_1));
   canfd_device_->SetCalcuMatchRepId(std::bind(&AgibotHandCanO10::GetMatchedRepId, this, std::placeholders::_1));
   canfd_device_->SetMsgMatchJudge(std::bind(&AgibotHandCanO10::JudgeMsgMatch, this, std::placeholders::_1, std::placeholders::_2));

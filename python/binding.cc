@@ -87,15 +87,15 @@ PYBIND11_MODULE(agibot_hand_core, m) {
   py::class_<AgibotHandBase>(m, "AgibotHandBase")
       .def_static(
           "create_hand",
-          [](bool use_can, unsigned char device_id, int hand_type) {
+          [](unsigned char device_id, int hand_type, std::string_view cfg_path) {
             return AgibotHandBase::createHand(
-                use_can,
                 device_id,
-                static_cast<EHandType>(hand_type));
+                static_cast<EHandType>(hand_type),
+                cfg_path);
           },
-          py::arg("use_can") = true,
           py::arg("device_id") = DEFAULT_DEVICE_ID,
-          py::arg("hand_type") = 0)
+          py::arg("hand_type") = 0,
+          py::arg("cfg_path") = "")
       .def("set_device_id", &AgibotHandBase::SetDeviceId)
       .def("get_vendor_info", &AgibotHandBase::GetVendorInfo)
       .def("get_device_info", &AgibotHandBase::GetDeviceInfo)

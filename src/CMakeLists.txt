@@ -1,20 +1,10 @@
 # Copyright (c) 2025, Agibot Co., Ltd.
 # OmniHand 2025 SDK is licensed under Mulan PSL v2
 
-set(CanfdDevice 1) # 1:ZLG, 2:socketCAN
-
 file(GLOB BASE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/kinematics_solver/*.cc)
 
 file(GLOB IMPLEMENTATION_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/implementation/c_agibot_hand_can/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/implementation/c_agibot_hand_rs/*.cc)
-
-if(CanfdDevice EQUAL 1)
-  file(GLOB CAN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/zlg_usb_canfd/*.cc)
-  add_definitions(-DZLG_USBCANFD_SDK)
-elseif(CanfdDevice EQUAL 2)
-  file(GLOB CAN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/socket_can/*.cc)
-  add_definitions(-DSOCKET_CAN)
-endif()
-
+file(GLOB CAN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/zlg_usb_canfd/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/socket_can/*.cc)
 file(GLOB RS485_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/rs_485_device/*.cc)
 
 add_library(omniHand25Can SHARED ${BASE_SOURCES} ${IMPLEMENTATION_SOURCES} ${CAN_SOURCES} ${RS485_SOURCES})
@@ -32,7 +22,7 @@ target_link_libraries(
   PRIVATE serial
           yaml-cpp::yaml-cpp)
 
-if(CanfdDevice EQUAL 1)
+
   if(NOT USER_PATH)
     set(USER_PATH ${PROJECT_SOURCE_DIR}/thirdParty/usbcanfd_libusb_x64_1.0.10_250328)
   endif()
@@ -41,7 +31,7 @@ if(CanfdDevice EQUAL 1)
   target_include_directories(omniHand25Can PUBLIC ${THIRD_PARTY_PATH})
   target_link_directories(omniHand25Can PUBLIC ${THIRD_PARTY_PATH})
   target_link_libraries(omniHand25Can PUBLIC usbcanfd)
-endif()
+
 
 install(TARGETS omniHand25Can DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
@@ -55,7 +45,7 @@ install(FILES implementation/c_agibot_hand_can/c_agibot_hand_can.h DESTINATION $
 
 install(FILES implementation/c_agibot_hand_rs/c_agibot_hand_rs.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/implementation/c_agibot_hand_rs)
 
-if(CanfdDevice EQUAL 1)
+
   install(FILES ${PROJECT_SOURCE_DIR}/thirdParty/usbcanfd_libusb_x64_1.0.10_250328/libusbcanfd.so
                 ${PROJECT_SOURCE_DIR}/thirdParty/usbcanfd_libusb_x64_1.0.10_250328/libusbcanfd.so.1.0.10 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-endif()
+

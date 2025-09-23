@@ -16,6 +16,7 @@
 #include "export_symbols.h"
 #include "kinematics_solver/kinematics_solver.h"
 #include "proto.h"
+#include "yaml-cpp/yaml.h"
 
 #define DEFAULT_DEVICE_ID 0x01
 #define DISABLE_FUNC 1
@@ -25,8 +26,9 @@
  */
 class AGIBOT_EXPORT AgibotHandBase {
  public:
-  struct Options {
-    std::string device;
+  struct HardwareConf {
+    std::string device = "can";
+    YAML::Node options;
   };
 
  public:
@@ -34,7 +36,6 @@ class AGIBOT_EXPORT AgibotHandBase {
    * @brief 工厂方法，创建具体的灵巧手实例
    */
   static std::unique_ptr<AgibotHandBase> createHand(
-      bool use_can,
       unsigned char device_id,
       EHandType hand_type,
       std::string_view cfg_path = "");

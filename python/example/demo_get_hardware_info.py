@@ -5,7 +5,7 @@ from agibot_hand import AgibotHandBase, EFinger, EControlMode,EHandType
 import time
 
 def main():
-    hand = AgibotHandBase.create_hand(use_can=False)
+    hand = AgibotHandBase.create_hand()
     vendor_info = hand.get_vendor_info()
     print("Vendor Info:")
     print( vendor_info)

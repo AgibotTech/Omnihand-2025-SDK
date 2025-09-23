@@ -4,10 +4,10 @@
 #pragma once
 
 #include "c_agibot_hand_base.h"
+#include "export_symbols.h"
 #include "proto.h"
 #include "rs_485_device/rs_485_device.h"
-
-#include "export_symbols.h"
+#include "yaml-cpp/yaml.h"
 
 #define DEFAULT_DEVICE_ID 0x01
 
@@ -17,7 +17,12 @@ constexpr uint8_t HEADER[] = {0xEE, 0xAA, 0x1, 0x0};
 
 class AGIBOT_EXPORT AgibotHandRsO10 : public AgibotHandBase {
  public:
-  AgibotHandRsO10();
+  struct Options {
+    std::string port;
+  };
+
+ public:
+  explicit AgibotHandRsO10(const YAML::Node& options_node);
 
   ~AgibotHandRsO10() override = default;
 

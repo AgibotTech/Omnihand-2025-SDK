@@ -13,7 +13,25 @@
 #define DEGREE_OF_FREEDOM 10
 #define CHECK_TIME 5
 
-AgibotHandRsO10::AgibotHandRsO10() {
+namespace YAML {
+template <>
+struct convert<AgibotHandRsO10::Options> {
+  static bool decode(const Node& node, AgibotHandRsO10::Options& options) {
+    if (!node.IsMap()) return false;
+    if (node["port"]) {
+      options.port = node["port"].as<std::string>();
+    }
+    return true;
+  }
+};
+}  // namespace YAML
+
+AgibotHandRsO10::AgibotHandRsO10(const YAML::Node& options_node) {
+  Options options;
+  if (options_node && !options_node.IsNull()) {
+    options = options_node.as<Options>();
+  }
+
   handrs485_interface_ =
       std::make_unique<UartRs485Interface>();
   // handrs485_interface_->InitDevice();

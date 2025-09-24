@@ -84,7 +84,7 @@ void UartRs485Interface::RecBuffParse(void) {
 
           case CMD_GET_ALL_TEMP_REPORT:
             printf("get all temprature report response data ready! \n");
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < 10; i++) {
               getalltempreport_result_[i] = rec_buffer_[index + 6 + i];
             }
             getalltempreport_feedback_state_ = 1;

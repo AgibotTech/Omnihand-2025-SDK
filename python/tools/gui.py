@@ -1,9 +1,9 @@
 import tkinter as tk
-from agibot_hand import AgibotHandBase
+from agibot_hand import AgibotHandO10
 
 class OmniHandGUI:
     def __init__(self):
-        self.hand = AgibotHandBase.create_hand()
+        self.hand = AgibotHandO10.create_hand(cfg_path="../example/conf/hardware_conf.yaml")
         self.setup_ui()
         self.init_hand()
         

@@ -7,7 +7,7 @@ import time
 def main():
     hand = AgibotHandO10.create_hand(cfg_path="./conf/hardware_conf.yaml")
 
-    hand.set_joint_position(5, 200)
+    hand.set_joint_position(2, 200)
     time.sleep(1)
 
     id2_joint_posi = hand.get_joint_position(2)

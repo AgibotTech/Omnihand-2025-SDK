@@ -165,4 +165,5 @@ class UartRs485Interface {
   std::thread serial_rec_pthread_;
   uint8_t rec_buffer_[REC_BUF_LEN] = {0};
   uint16_t buf_write_pos_ = 0;
+  std::atomic<bool> running_{true};
 };

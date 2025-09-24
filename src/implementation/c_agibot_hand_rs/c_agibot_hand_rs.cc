@@ -34,7 +34,7 @@ AgibotHandRsO10::AgibotHandRsO10(const YAML::Node& options_node) {
 
   handrs485_interface_ =
       std::make_unique<UartRs485Interface>();
-  // handrs485_interface_->InitDevice();
+  handrs485_interface_->InitDevice();
   // uint8_t check_cmd[] = {0xEE, 0xAA, 0x01, 0x00, 0x01, 0xCD, 0x55, 0x55};
   // handrs485_interface_->WriteDevice(check_cmd, sizeof(check_cmd)); //for debug the uart-485 connection
 }

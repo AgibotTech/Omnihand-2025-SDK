@@ -24,7 +24,7 @@
 /**
  * @brief 灵巧手基类
  */
-class AGIBOT_EXPORT AgibotHandBase {
+class AGIBOT_EXPORT AgibotHandO10 {
  public:
   struct HardwareConf {
     std::string device = "can";
@@ -35,7 +35,7 @@ class AGIBOT_EXPORT AgibotHandBase {
   /**
    * @brief 工厂方法，创建具体的灵巧手实例
    */
-  static std::unique_ptr<AgibotHandBase> createHand(
+  static std::unique_ptr<AgibotHandO10> createHand(
       unsigned char device_id,
       EHandType hand_type,
       std::string_view cfg_path = "");
@@ -45,8 +45,8 @@ class AGIBOT_EXPORT AgibotHandBase {
    * @param hand_type 手型(左手/右手)
    */
 
-  AgibotHandBase() = default;
-  virtual ~AgibotHandBase() = default;
+  AgibotHandO10() = default;
+  virtual ~AgibotHandO10() = default;
 
   // 基本信息接口
   virtual VendorInfo GetVendorInfo() = 0;

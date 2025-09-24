@@ -13,7 +13,7 @@
 #define DEFAULT_DEVICE_ID 0x01
 #define DISABLE_FUNC 1
 
-class AGIBOT_EXPORT AgibotHandCanO10 : public AgibotHandBase {
+class AGIBOT_EXPORT AgibotHandCanO10 : public AgibotHandO10 {
  public:
   struct Options {
     std::string can_driver = "zlg";

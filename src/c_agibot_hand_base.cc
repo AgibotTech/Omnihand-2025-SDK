@@ -7,8 +7,8 @@
 
 namespace YAML {
 template <>
-struct convert<AgibotHandBase::HardwareConf> {
-  static bool decode(const Node& node, AgibotHandBase::HardwareConf& hardware_conf) {
+struct convert<AgibotHandO10::HardwareConf> {
+  static bool decode(const Node& node, AgibotHandO10::HardwareConf& hardware_conf) {
     if (!node.IsMap()) return false;
     if (node["type"]) {
       hardware_conf.device = node["type"].as<std::string>();
@@ -23,11 +23,11 @@ struct convert<AgibotHandBase::HardwareConf> {
 };
 }  // namespace YAML
 
-std::unique_ptr<AgibotHandBase> AgibotHandBase::createHand(
+std::unique_ptr<AgibotHandO10> AgibotHandO10::createHand(
     unsigned char device_id,
     EHandType hand_type,
     std::string_view cfg_path) {
-  std::unique_ptr<AgibotHandBase> hand;
+  std::unique_ptr<AgibotHandO10> hand;
 
   HardwareConf hardware_conf;
   if (!cfg_path.empty()) {

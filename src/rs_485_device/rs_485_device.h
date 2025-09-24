@@ -159,7 +159,7 @@ class UartRs485Interface {
 
    * @return
    */
-  struct VendorInfo getvendorinfo_result_ = {0};
+  struct VendorInfo getvendorinfo_result_;
 
  private:
   std::thread serial_rec_pthread_;

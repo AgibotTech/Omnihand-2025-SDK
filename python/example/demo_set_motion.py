@@ -1,7 +1,7 @@
 # Copyright (c) 2025, Agibot Co., Ltd.
 # OmniHand 2025 SDK is licensed under Mulan PSL v2.
 
-from agibot_hand import AgibotHandBase, EFinger, EControlMode, EHandType
+from agibot_hand import AgibotHandO10, EFinger, EControlMode, EHandType
 import time
 from enum import Enum
 
@@ -27,7 +27,7 @@ class Gesture(Enum):
     EXIT = 99
 
 def print_menu():
-    print("\n=== OmniHand 手势控制菜单 ===")
+    print("\n=== OmniHand 手势控制菜单(预置指令仅适合左手) ===")
     print("0. 重置位置")
     print("1. 手掌展开")
     print("2. 握拳方式1")
@@ -73,7 +73,7 @@ def get_gesture_positions(gesture):
     return gesture_positions.get(gesture, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
 def main():
-    hand = AgibotHandBase.create_hand(hand_type=EHandType.RIGHT)
+    hand = AgibotHandO10.create_hand(cfg_path="./conf/hardware_conf.yaml", hand_type=EHandType.RIGHT)
     
     while True:
         print_menu()

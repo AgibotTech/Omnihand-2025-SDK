@@ -9,7 +9,7 @@
 
 void positionControlDemo() {
   // 使用工厂方法创建实例
-  auto hand = AgibotHandBase::createHand(
+  auto hand = AgibotHandO10::createHand(
       0x01,               // device_id = 1
       EHandType::eRight,  // 左手,
       "./conf/hardware_conf.yaml");

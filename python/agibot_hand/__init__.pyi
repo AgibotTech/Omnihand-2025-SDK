@@ -82,11 +82,11 @@ class MixCtrl:
 
     def __init__(self) -> None: ...
 
-class AgibotHandBase:  
+class AgibotHandO10:  
     @staticmethod
     def create_hand(device_id: int = 1, 
                    hand_type: EHandType = EHandType.LEFT,
-                   cfg_path: str="") -> 'AgibotHandBase': ...
+                   cfg_path: str="") -> 'AgibotHandO10': ...
     
     def __init__(self) -> None: ...
     

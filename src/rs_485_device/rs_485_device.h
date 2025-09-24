@@ -108,7 +108,7 @@ class UartRs485Interface {
    * @brief   getsensordata_result_
    * @return
    */
-  std::vector<uint8_t> getsensordata_result_;
+  std::vector<uint8_t> getsensordata_result_{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   /**
    * @brief   getallerrorreport_feedback_state_

@@ -254,21 +254,24 @@ std::vector<uint8_t> AgibotHandRsO10::GetTouchSensorData(EFinger eFinger) {
   while (check_time--) {
     usleep(100000);
     if (handrs485_interface_->getsensordata_feedback_state_) {
-      std::vector<uint8_t> result;
       const size_t FINGER_DATA_LENGTH = 16;
-
+      const size_t PALM_DATA_LENGTH = 25;
+      std::vector<uint8_t> result;
       if (eFinger == EFinger::eDorsum || eFinger == EFinger::ePalm) {
-        result = handrs485_interface_->getsensordata_result_;
+        result.resize(PALM_DATA_LENGTH);
+        memcpy(result.data(), handrs485_interface_->getsensordata_result_.data(),
+               PALM_DATA_LENGTH * sizeof(uint8_t));
       } else {
-        const auto& full_data = handrs485_interface_->getsensordata_result_;
-        result.assign(full_data.begin(), full_data.begin() + FINGER_DATA_LENGTH);
+        result.resize(FINGER_DATA_LENGTH);
+        memcpy(result.data(), handrs485_interface_->getsensordata_result_.data(),
+               FINGER_DATA_LENGTH * sizeof(uint8_t));
       }
 
-      return result;
       handrs485_interface_->getsensordata_feedback_state_ = 0;
+      return result;
     }
   }
-  printf("get joint sensor data failed, joint_motor_index: %d\n", (uint8_t)eFinger);
+  printf("get joint sensor data failed, finger type: %d\n", static_cast<uint8_t>(eFinger));
   return {};
 }
 
@@ -412,7 +415,7 @@ uint16_t AgibotHandRsO10::GetTemperatureReport(unsigned char joint_motor_index) 
     usleep(100000);
     if (handrs485_interface_->getalltempreport_feedback_state_) {
       handrs485_interface_->getalltempreport_feedback_state_ = 0;
-      return handrs485_interface_->getalltempreport_result_[joint_motor_index];
+      return handrs485_interface_->getalltempreport_result_[joint_motor_index - 1];
     }
   }
   printf("get motor temprature failed, joint_motor_index: %d\n", joint_motor_index);
@@ -420,7 +423,7 @@ uint16_t AgibotHandRsO10::GetTemperatureReport(unsigned char joint_motor_index) 
 }
 
 std::vector<uint16_t> AgibotHandRsO10::GetAllTemperatureReport() {
-  std::vector<uint16_t> alltempresult;
+  std::vector<uint16_t> alltempresult(DEGREE_OF_FREEDOM, 0);
   uint8_t getalltempreport_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
   getalltempreport_cmd[4] = 1;
   getalltempreport_cmd[5] = 0xC;
@@ -432,9 +435,8 @@ std::vector<uint16_t> AgibotHandRsO10::GetAllTemperatureReport() {
   while (check_time--) {
     usleep(100000);
     if (handrs485_interface_->getalltempreport_feedback_state_) {
-      for (int i = 0; i < 8; i++) {
-        alltempresult[i] = handrs485_interface_->getalltempreport_result_[i];
-      }
+      memcpy(alltempresult.data(), handrs485_interface_->getalltempreport_result_, DEGREE_OF_FREEDOM * sizeof(uint16_t));
+
       handrs485_interface_->getalltempreport_feedback_state_ = 0;
       return alltempresult;
     }
@@ -465,15 +467,15 @@ int16_t AgibotHandRsO10::GetCurrentReport(unsigned char joint_motor_index) {
     usleep(100000);
     if (handrs485_interface_->getallcurrentreport_feedback_state_) {
       handrs485_interface_->getallcurrentreport_feedback_state_ = 0;
-      return handrs485_interface_->getallcurrentreport_result_[joint_motor_index];
+      return handrs485_interface_->getallcurrentreport_result_[joint_motor_index - 1];
     }
   }
   printf("get motor current failed, joint_motor_index: %d\n", joint_motor_index);
-  return handrs485_interface_->getallcurrentreport_result_[joint_motor_index];  // 0xA
+  return handrs485_interface_->getallcurrentreport_result_[joint_motor_index - 1];  // 0xA
 }
 
 std::vector<uint16_t> AgibotHandRsO10::GetAllCurrentReport() {
-  std::vector<uint16_t> allcurrentresult;
+  std::vector<uint16_t> allcurrentresult(DEGREE_OF_FREEDOM, 0);
   uint8_t getallcurrent_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
   getallcurrent_cmd[4] = 1;
   getallcurrent_cmd[5] = 0xA;
@@ -485,9 +487,7 @@ std::vector<uint16_t> AgibotHandRsO10::GetAllCurrentReport() {
   while (check_time--) {
     usleep(100000);
     if (handrs485_interface_->getallcurrentreport_feedback_state_) {
-      for (int i = 0; i < 8; i++) {
-        allcurrentresult[i] = handrs485_interface_->getallcurrentreport_result_[i];
-      }
+      memcpy(allcurrentresult.data(), handrs485_interface_->getallcurrentreport_result_, DEGREE_OF_FREEDOM * sizeof(uint16_t));
       handrs485_interface_->getallcurrentreport_feedback_state_ = 0;
       return allcurrentresult;
     }

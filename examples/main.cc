@@ -35,8 +35,53 @@ void positionControlDemo() {
     }
     std::cout << std::endl;
 
+    // temperature （9 10 索引温一直是0 请查清楚）
+    auto tm = hand.GetTemperatureReport(8);
+    std::cout << "8 temp: " << tm << std::endl;
+
+    auto tms = hand.GetAllTemperatureReport();
+    int idx = 1;
+    for (auto c : tms) {
+      std::cout << "temp " << idx++ << " : " << c << std::endl;
+    }
+
+    // current
+    auto ct = hand.GetCurrentReport(8);
+    std::cout << "8 current: " << ct << std::endl;
+
+    auto cts = hand.GetAllCurrentReport();
+    idx = 1;
+    for (auto c : cts) {
+      std::cout << "current " << idx++ << " : " << c << std::endl;
+    }
+
+    // error report (这个案例输出什么都没有，是空)
+    JointMotorErrorReport ep = hand.GetErrorReport(8);
+    std::cout << "8 error report : " << ep.motor_except_ << std::endl;
+
+    auto eps = hand.GetAllErrorReport();
+    idx = 1;
+    for (auto c : eps) {
+      std::cout << "error report " << idx++ << " : " << c.commu_except_ << std::endl;
+    }
+
+    // sensor
+    std::vector<uint8_t> a = hand.GetTouchSensorData(EFinger::eThumb);
+    int sum = 0;
+    for (auto& c : a) {
+      sum += c;
+    }
+    std::cout << a.size() << "拇指传感器数据: " << sum << std::endl;
+
+    std::vector<uint8_t> b = hand.GetTouchSensorData(EFinger::ePalm);
+    sum = 0;
+    for (auto& c : b) {
+      sum += c;
+    }
+    std::cout << b.size() << "掌心传感器数据: " << sum << std::endl;
+
   } catch (const std::exception& e) {
-    std::cerr << "位置控制错误: " << e.what() << std::endl;
+    std::cerr << "错误: " << e.what() << std::endl;
   }
 }
 

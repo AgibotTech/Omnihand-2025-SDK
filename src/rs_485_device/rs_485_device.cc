@@ -72,7 +72,7 @@ void UartRs485Interface::RecBuffParse(void) {
             memcpy(getsensordata_result_.data(), rec_buffer_ + index + 7, 25);
 
             getsensordata_feedback_state_ = 1;
-            printf("8888");
+
             break;
 
           case CMD_GET_ALL_ERROR_REPORT:

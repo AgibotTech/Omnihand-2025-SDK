@@ -60,6 +60,18 @@ class UartRs485Interface {
   void RecBuffParse(void);
 
   /**
+   * @brief 设置是否显示发送接收数据细节
+   * @param show
+   */
+  void ShowDataDetails(bool show) {
+    show_data_details_.store(show);
+  }
+
+ private:
+  void PrintFrame(const uint8_t* data, uint16_t size, bool is_send);
+
+ public:
+  /**
    * @brief Rs485_device_ptr_
    * @return
    */
@@ -166,4 +178,9 @@ class UartRs485Interface {
   uint8_t rec_buffer_[REC_BUF_LEN] = {0};
   uint16_t buf_write_pos_ = 0;
   std::atomic<bool> running_{true};
+
+  /**
+   * @brief 是否显示发送接收数据细节
+   */
+  std::atomic<bool> show_data_details_{false};
 };

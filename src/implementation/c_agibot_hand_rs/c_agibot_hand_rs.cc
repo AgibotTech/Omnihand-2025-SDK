@@ -40,6 +40,10 @@ AgibotHandRsO10::AgibotHandRsO10(const YAML::Node& options_node) {
 }
 
 void AgibotHandRsO10::SetJointMotorPosi(unsigned char joint_motor_index, int16_t posi) {
+  if (joint_motor_index > 10 || joint_motor_index < 1) {
+    printf("the joint motor index input error, should be 1 -10, \n");
+    return;
+  }
   uint8_t setjoint_cmd[11] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x6, 0x1, 0x33, 0x2, 0x55, 0x55};
   setjoint_cmd[6] = joint_motor_index;
   setjoint_cmd[7] = posi % 256;
@@ -52,6 +56,10 @@ void AgibotHandRsO10::SetJointMotorPosi(unsigned char joint_motor_index, int16_t
 }
 
 int16_t AgibotHandRsO10::GetJointMotorPosi(unsigned char joint_motor_index) {
+  if (joint_motor_index > 10 || joint_motor_index < 1) {
+    printf("the joint index input error, should be 1 -10, \n");
+    return 0;
+  }
   uint8_t getjoint_cmd[9] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x1, 0x55, 0x55};
   getjoint_cmd[4] = 2;
   getjoint_cmd[5] = 7;
@@ -276,6 +284,10 @@ std::vector<uint8_t> AgibotHandRsO10::GetTouchSensorData(EFinger eFinger) {
 }
 
 void AgibotHandRsO10::SetControlMode(unsigned char joint_motor_index, EControlMode mode) {
+  if (joint_motor_index > 10 || joint_motor_index < 1) {
+    printf("the joint motor index input error, should be 1 -10, \n");
+    return;
+  }
   uint8_t setcontrol_cmd[10] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x15, 0x1, 0x33, 0x55, 0x55};
   setcontrol_cmd[6] = joint_motor_index;
   setcontrol_cmd[7] = (uint8_t)mode;
@@ -319,6 +331,10 @@ void AgibotHandRsO10::MixCtrlJointMotor(std::vector<MixCtrl> vec_mix_ctrl) {
 }
 
 JointMotorErrorReport AgibotHandRsO10::GetErrorReport(unsigned char joint_motor_index) {
+  if (joint_motor_index > 10 || joint_motor_index < 1) {
+    printf("the joint motor index input error, should be 1 -10, \n");
+    return {};
+  }
   JointMotorErrorReport ret_error = {0};
   uint8_t geterrorport_cmd[8] = {0};
   geterrorport_cmd[0] = 0xEE;
@@ -403,6 +419,10 @@ void AgibotHandRsO10::SetAllErrorReportPeriod(std::vector<uint16_t> vec_period) 
 }
 #endif
 uint16_t AgibotHandRsO10::GetTemperatureReport(unsigned char joint_motor_index) {
+  if (joint_motor_index > 10 || joint_motor_index < 1) {
+    printf("the joint motor index input error, should be 1 -10, \n");
+    return 0;
+  }
   uint8_t gettempreport_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
   gettempreport_cmd[4] = 1;
   gettempreport_cmd[5] = 0xC;
@@ -454,6 +474,10 @@ void AgibotHandRsO10::SetAllTemperReportPeriod(std::vector<uint16_t> vec_period)
 }
 #endif
 int16_t AgibotHandRsO10::GetCurrentReport(unsigned char joint_motor_index) {
+  if (joint_motor_index > 10 || joint_motor_index < 1) {
+    printf("the joint motor index input error, should be 1 -10, \n");
+    return 0;
+  }
   uint16_t current_res = 0;
   uint8_t getcurrent_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
   getcurrent_cmd[4] = 1;
@@ -533,5 +557,6 @@ void AgibotHandRsO10::SetDeviceId(unsigned char device_id) {
 }
 
 void AgibotHandRsO10::ShowDataDetails(bool show) const {
+  handrs485_interface_->ShowDataDetails(show);
   return;
 }

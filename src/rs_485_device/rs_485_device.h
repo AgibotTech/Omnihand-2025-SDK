@@ -108,7 +108,7 @@ class UartRs485Interface {
    * @brief   getsensordata_result_
    * @return
    */
-  std::vector<uint8_t> getsensordata_result_;
+  std::vector<uint8_t> getsensordata_result_{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   /**
    * @brief   getallerrorreport_feedback_state_
@@ -159,10 +159,11 @@ class UartRs485Interface {
 
    * @return
    */
-  struct VendorInfo getvendorinfo_result_ = {0};
+  struct VendorInfo getvendorinfo_result_;
 
  private:
   std::thread serial_rec_pthread_;
   uint8_t rec_buffer_[REC_BUF_LEN] = {0};
   uint16_t buf_write_pos_ = 0;
+  std::atomic<bool> running_{true};
 };

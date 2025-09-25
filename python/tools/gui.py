@@ -3,7 +3,7 @@ from agibot_hand import AgibotHandO10
 
 class OmniHandGUI:
     def __init__(self):
-        self.hand = AgibotHandO10()
+        self.hand = AgibotHandO10.create_hand(cfg_path="../example/conf/hardware_conf.yaml")
         self.setup_ui()
         self.init_hand()
         

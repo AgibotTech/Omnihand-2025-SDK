@@ -20,9 +20,11 @@
 
 UartRs485Interface::UartRs485Interface()
     : Rs485_device_ptr_(UART_PORT, UART_BAUD,
-                        serial::Timeout::simpleTimeout(2)) {}
+                        serial::Timeout::simpleTimeout(2)) {
+}
 
 UartRs485Interface::~UartRs485Interface() {
+  running_ = false;
   if (serial_rec_pthread_.joinable())
     serial_rec_pthread_.join();
 }
@@ -140,8 +142,8 @@ void UartRs485Interface::ThreadReadRec(void) {
   memset(read_buf, 0, sizeof(read_buf));
   memset(rec_buffer_, 0, sizeof(rec_buffer_));
   uint16_t bytes_get = 0;
-  while (1) {
-    while (bytes_get == 0) {
+  while (running_) {
+    while (running_ && bytes_get == 0) {
       bytes_get = Rs485_device_ptr_.read(read_buf, sizeof(read_buf));
       usleep(20000);  // read 20ms a time
     }

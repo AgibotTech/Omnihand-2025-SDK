@@ -8,8 +8,7 @@
  * @date 25-7-28
  **/
 
-#ifndef C_ZLG_USBCANFD_SDK_H
-#define C_ZLG_USBCANFD_SDK_H
+#pragma once
 
 #include "../c_can_bus_device.h"
 
@@ -30,5 +29,3 @@ class ZlgUsbcanfdSDK : public CanBusDeviceBase {
 
   int SendFrame(unsigned int id, unsigned char* data, unsigned char length) override;
 };
-
-#endif  // C_ZLG_USBCANFD_SDK_H

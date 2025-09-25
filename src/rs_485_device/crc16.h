@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
@@ -27,7 +29,7 @@ static const uint16_t Crc16Tab[256] = {
     0x2e93, 0x3eb2, 0x0ed1, 0x1ef0};
 /* Private function prototypes -----------------------------------------------*/
 /* Private user code ---------------------------------------------------------*/
-uint16_t Crc16(const uint8_t* buf, uint32_t len) {
+inline uint16_t Crc16(const uint8_t* buf, uint32_t len) {
   uint16_t crc = 0;
   while (0 < len--) {
     crc = (crc << 8) ^ Crc16Tab[((crc >> 8) ^ *buf++) & 0x00FF];

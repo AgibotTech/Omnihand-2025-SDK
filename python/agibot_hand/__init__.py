@@ -2,7 +2,7 @@
 # OmniHand 2025 SDK is licensed under Mulan PSL v2.
 
 from .agibot_hand_core import (
-    AgibotHandO10,
+    AgibotHandO10,  
     JointMotorErrorReport,
     MixCtrl,
     VendorInfo,   
@@ -18,8 +18,8 @@ class EFinger(IntEnum):
     MIDDLE = 0x03
     RING = 0x04
     LITTLE = 0x05
-    PALM = 0x06,    
-    DORSUM = 0x07,  
+    PALM = 0x06    
+    DORSUM = 0x07  
     UNKNOWN = 0xff
 
 class EControlMode(IntEnum):
@@ -37,7 +37,7 @@ class EHandType(IntEnum):
     UNKNOWN = 10
 
 __all__ = [
-    'AgibotHandO10',
+    'AgibotHandO10', 
     'EFinger',
     'EHandType',
     'EControlMode',

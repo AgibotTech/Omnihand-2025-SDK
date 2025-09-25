@@ -1,0 +1,4 @@
+device:
+  type: "can"
+  options:
+    can_driver: "zlg"

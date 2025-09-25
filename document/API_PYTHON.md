@@ -247,6 +247,7 @@ def get_vendor_info(self) -> str:
 
     Returns:
         str: 厂家信息长字符串，包含产品型号、序列号、硬件版本、软件版本等信息
+
     """
 
 def get_device_info(self) -> str:
@@ -254,6 +255,9 @@ def get_device_info(self) -> str:
 
     Returns:
         str: 设备信息长字符串，包含设备的运行状态信息
+
+    Note:
+        串口暂不支持该接口
     """
 
 def set_device_id(self, device_id: int) -> None:
@@ -261,6 +265,9 @@ def set_device_id(self, device_id: int) -> None:
 
     Args:
         device_id: 设备ID
+
+    Note:
+        串口暂不支持该接口
     """
 ```
 
@@ -337,6 +344,9 @@ def set_joint_velocity(self, joint_motor_index: int, velocity: int) -> None:
     Args:
         joint_motor_index: 关节电机索引 (1-10)
         velocity: 目标速度值
+
+    Note:
+        串口暂不支持该接口
     """
 
 def get_joint_velocity(self, joint_motor_index: int) -> int:
@@ -347,6 +357,9 @@ def get_joint_velocity(self, joint_motor_index: int) -> int:
 
     Returns:
         int: 当前速度值
+
+    Note:
+        串口暂不支持该接口
     """
 
 def set_all_joint_velocities(self, velocities: List[int]) -> None:
@@ -404,6 +417,9 @@ def get_control_mode(self, joint_motor_index: int) -> ControlMode:
 
     Returns:
         ControlMode: 当前控制模式
+
+    Note:
+        串口暂不支持该接口
     """
 
 def set_all_control_modes(self, modes: List[int]) -> None:
@@ -411,6 +427,9 @@ def set_all_control_modes(self, modes: List[int]) -> None:
 
     Args:
         modes: 控制模式列表，长度必须为10
+
+    Note:
+        串口暂不支持该接口
     """
 
 def get_all_control_modes(self) -> List[int]:
@@ -418,6 +437,9 @@ def get_all_control_modes(self) -> List[int]:
 
     Returns:
         List[int]: 控制模式列表，长度为10
+
+    Note:
+        串口暂不支持该接口
     """
 ```
 
@@ -430,6 +452,9 @@ def set_current_threshold(self, joint_motor_index: int, current_threshold: int) 
     Args:
         joint_motor_index: 关节电机索引 (1-10)
         current_threshold: 电流阈值
+
+    Note:
+        串口暂不支持该接口
     """
 
 def get_current_threshold(self, joint_motor_index: int) -> int:
@@ -440,6 +465,9 @@ def get_current_threshold(self, joint_motor_index: int) -> int:
 
     Returns:
         int: 当前电流阈值
+
+    Note:
+        串口暂不支持该接口
     """
 
 def set_all_current_thresholds(self, current_thresholds: List[int]) -> None:
@@ -447,6 +475,9 @@ def set_all_current_thresholds(self, current_thresholds: List[int]) -> None:
 
     Args:
         current_thresholds: 电流阈值列表，长度必须为10
+
+    Note:
+        串口暂不支持该接口
     """
 
 def get_all_current_thresholds(self) -> List[int]:
@@ -454,6 +485,9 @@ def get_all_current_thresholds(self) -> List[int]:
 
     Returns:
         List[int]: 电流阈值列表，长度为10
+
+    Note:
+        串口暂不支持该接口
     """
 ```
 
@@ -465,6 +499,9 @@ def mix_ctrl_joint_motor(self, mix_ctrls: List[MixCtrl]) -> None:
 
     Args:
         mix_ctrls: 混合控制参数列表
+
+    Note:
+        串口暂不支持该接口
     """
 ```
 

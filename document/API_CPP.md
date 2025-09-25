@@ -185,12 +185,14 @@ std::string GetVendorInfo();
 /**
  * @brief 获取设备信息
  * @return 设备信息长字符串，包含设备的运行状态信息
+ * @note 串口暂不支持该接口
  */
 std::string GetDeviceInfo();
 
 /**
  * @brief 设置设备ID
  * @param device_id 设备ID
+ * @note 串口暂不支持该接口
  */
 void SetDeviceId(unsigned char device_id);
 ```
@@ -255,6 +257,7 @@ std::vector<double> GetAllJointAngles() const;
  * @brief 设置单个关节电机速度
  * @param joint_motor_index 关节电机索引 (1-10)
  * @param velo 目标速度值
+ * @note 串口暂不支持该接口
  */
 void SetJointMotorVelo(unsigned char joint_motor_index, short velo);
 
@@ -262,6 +265,7 @@ void SetJointMotorVelo(unsigned char joint_motor_index, short velo);
  * @brief 获取单个关节电机速度
  * @param joint_motor_index 关节电机索引 (1-10)
  * @return 当前速度值
+ * @note 串口暂不支持该接口
  */
 short GetJointMotorVelo(unsigned char joint_motor_index);
 
@@ -303,18 +307,21 @@ void SetControlMode(unsigned char joint_motor_index, EControlMode mode);
  * @brief 获取单个关节电机控制模式
  * @param joint_motor_index 关节电机索引 (1-10)
  * @return 当前控制模式
+ * @note 串口暂不支持该接口
  */
 EControlMode GetControlMode(unsigned char joint_motor_index);
 
 /**
  * @brief 批量设置所有关节电机控制模式
  * @param vec_ctrl_mode 控制模式向量，长度必须为10
+ * @note 串口暂不支持该接口
  */
 void SetAllControlMode(std::vector<unsigned char> vec_ctrl_mode);
 
 /**
  * @brief 批量获取所有关节电机控制模式
  * @return 控制模式向量，长度为10
+ * @note 串口暂不支持该接口
  */
 std::vector<unsigned char> GetAllControlMode();
 ```
@@ -326,6 +333,7 @@ std::vector<unsigned char> GetAllControlMode();
  * @brief 设置单个关节电机电流阈值
  * @param joint_motor_index 关节电机索引 (1-10)
  * @param current_threshold 电流阈值
+ * @note 串口暂不支持该接口
  */
 void SetCurrentThreshold(unsigned char joint_motor_index, short current_threshold);
 
@@ -333,18 +341,21 @@ void SetCurrentThreshold(unsigned char joint_motor_index, short current_threshol
  * @brief 获取单个关节电机电流阈值
  * @param joint_motor_index 关节电机索引 (1-10)
  * @return 当前电流阈值
+ * @note 串口暂不支持该接口
  */
 short GetCurrentThreshold(unsigned char joint_motor_index);
 
 /**
  * @brief 批量设置所有关节电机电流阈值
  * @param vec_current_threshold 电流阈值向量，长度必须为10
+ * @note 串口暂不支持该接口
  */
 void SetAllCurrentThreshold(std::vector<short> vec_current_threshold);
 
 /**
  * @brief 批量获取所有关节电机电流阈值
  * @return 电流阈值向量，长度为10
+ * @note 串口暂不支持该接口
  */
 std::vector<short> GetAllCurrentThreshold();
 ```
@@ -355,6 +366,7 @@ std::vector<short> GetAllCurrentThreshold();
 /**
  * @brief 混合控制关节电机
  * @param vec_mix_ctrl 混合控制参数向量
+ * @note 串口暂不支持该接口
  */
 void MixCtrlJointMotor(std::vector<MixCtrl> vec_mix_ctrl);
 ```

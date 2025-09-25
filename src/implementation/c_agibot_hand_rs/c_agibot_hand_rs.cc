@@ -393,7 +393,7 @@ std::vector<JointMotorErrorReport> AgibotHandRsO10::GetAllErrorReport() {
   printf("get error report failed\n");
   return all_errorreport;  // need test
 }
-
+#if !DISABLE_FUNC
 void AgibotHandRsO10::SetErrorReportPeriod(unsigned char joint_motor_index, uint16_t period) {
   return;
 }
@@ -401,7 +401,7 @@ void AgibotHandRsO10::SetErrorReportPeriod(unsigned char joint_motor_index, uint
 void AgibotHandRsO10::SetAllErrorReportPeriod(std::vector<uint16_t> vec_period) {
   return;
 }
-
+#endif
 uint16_t AgibotHandRsO10::GetTemperatureReport(unsigned char joint_motor_index) {
   uint8_t gettempreport_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
   gettempreport_cmd[4] = 1;
@@ -444,7 +444,7 @@ std::vector<uint16_t> AgibotHandRsO10::GetAllTemperatureReport() {
   printf("get all motor temprature failed\n");
   return alltempresult;  // 0xC
 }
-
+#if !DISABLE_FUNC
 void AgibotHandRsO10::SetTemperReportPeriod(unsigned char joint_motor_index, uint16_t period) {
   return;
 }
@@ -452,7 +452,7 @@ void AgibotHandRsO10::SetTemperReportPeriod(unsigned char joint_motor_index, uin
 void AgibotHandRsO10::SetAllTemperReportPeriod(std::vector<uint16_t> vec_period) {
   return;
 }
-
+#endif
 int16_t AgibotHandRsO10::GetCurrentReport(unsigned char joint_motor_index) {
   uint16_t current_res = 0;
   uint8_t getcurrent_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
@@ -495,7 +495,7 @@ std::vector<uint16_t> AgibotHandRsO10::GetAllCurrentReport() {
   printf("get all motor current failed.\n");
   return allcurrentresult;  // 0xA
 }
-
+#if !DISABLE_FUNC
 void AgibotHandRsO10::SetCurrentReportPeriod(unsigned char joint_motor_index, uint16_t period) {
   return;
 }
@@ -503,7 +503,7 @@ void AgibotHandRsO10::SetCurrentReportPeriod(unsigned char joint_motor_index, ui
 void AgibotHandRsO10::SetAllCurrentReportPeriod(std::vector<uint16_t> vec_period) {
   return;
 }
-
+#endif
 VendorInfo AgibotHandRsO10::GetVendorInfo() {
   uint8_t getvendorinfo_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
   getvendorinfo_cmd[4] = 1;

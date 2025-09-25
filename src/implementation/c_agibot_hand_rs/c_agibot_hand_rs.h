@@ -94,27 +94,27 @@ class AGIBOT_EXPORT AgibotHandRsO10 : public AgibotHandO10 {
   JointMotorErrorReport GetErrorReport(unsigned char joint_motor_index) override;
 
   std::vector<JointMotorErrorReport> GetAllErrorReport() override;
-
+#if !DISABLE_FUNC
   void SetErrorReportPeriod(unsigned char joint_motor_index, uint16_t period) override;
 
   void SetAllErrorReportPeriod(std::vector<uint16_t> vec_period) override;
-
+#endif
   uint16_t GetTemperatureReport(unsigned char joint_motor_index) override;
 
   std::vector<uint16_t> GetAllTemperatureReport() override;
-
+#if !DISABLE_FUNC
   void SetTemperReportPeriod(unsigned char joint_motor_index, uint16_t period) override;
 
   void SetAllTemperReportPeriod(std::vector<uint16_t> vec_period) override;
-
+#endif
   int16_t GetCurrentReport(unsigned char joint_motor_index) override;
 
   std::vector<uint16_t> GetAllCurrentReport() override;
-
+#if !DISABLE_FUNC
   void SetCurrentReportPeriod(unsigned char joint_motor_index, uint16_t period) override;
 
   void SetAllCurrentReportPeriod(std::vector<uint16_t> vec_period) override;
-
+#endif
   void ShowDataDetails(bool show) const override;
 
  protected:

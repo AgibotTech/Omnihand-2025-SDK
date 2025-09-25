@@ -375,18 +375,6 @@ JointMotorErrorReport GetErrorReport(unsigned char joint_motor_index);
  */
 std::vector<JointMotorErrorReport> GetAllErrorReport();
 
-/**
- * @brief 设置单个关节电机错误上报周期
- * @param joint_motor_index 关节电机索引 (1-10)
- * @param period 上报周期（单位：ms）
- */
-void SetErrorReportPeriod(unsigned char joint_motor_index, unsigned short period);
-
-/**
- * @brief 批量设置所有关节电机错误上报周期
- * @param vec_period 上报周期向量，长度必须为10
- */
-void SetAllErrorReportPeriod(std::vector<unsigned short> vec_period);
 ```
 
 ### 温度监控
@@ -407,18 +395,6 @@ unsigned short GetTemperatureReport(unsigned char joint_motor_index);
  */
 std::vector<unsigned short> GetAllTemperatureReport();
 
-/**
- * @brief 设置单个关节电机温度上报周期
- * @param joint_motor_index 关节电机索引 (1-10)
- * @param period 上报周期（单位：ms）
- */
-void SetTemperReportPeriod(unsigned char joint_motor_index, unsigned short period);
-
-/**
- * @brief 批量设置所有关节电机温度上报周期
- * @param vec_period 上报周期向量，长度必须为10
- */
-void SetAllTemperReportPeriod(std::vector<unsigned short> vec_period);
 ```
 
 ### 电流监控
@@ -439,18 +415,6 @@ short GetCurrentReport(unsigned char joint_motor_index);
  */
 std::vector<unsigned short> GetAllCurrentReport();
 
-/**
- * @brief 设置单个关节电机电流上报周期
- * @param joint_motor_index 关节电机索引 (1-10)
- * @param period 上报周期（单位：ms）
- */
-void SetCurrentReportPeriod(unsigned char joint_motor_index, unsigned short period);
-
-/**
- * @brief 批量设置所有关节电机电流上报周期
- * @param vec_period 上报周期向量，长度必须为10
- */
-void SetAllCurrentReportPeriod(std::vector<unsigned short> vec_period);
 ```
 
 ### 调试功能

@@ -6,25 +6,29 @@
 
 ```python
 # 可用值
-EFinger.THUMB    # 拇指
-EFinger.INDEX    # 食指
-EFinger.MIDDLE   # 中指
-EFinger.RING     # 无名指
-EFinger.LITTLE   # 小指
-EFinger.PALM     # 手心
-EFinger.DORSUM   # 手背
+class EFinger(IntEnum):
+    THUMB = 1
+    INDEX = 2
+    MIDDLE = 3
+    RING = 4
+    LITTLE = 5,
+    PALM = 6,
+    DORSUM = 7,
+    UNKNOWN = 255
 ```
 
 ### EControlMode (控制模式枚举)
 
 ```python
-EControlMode.POSITION                    # 位置控制
-EControlMode.VELOCITY                    # 速度控制
-EControlMode.TORQUE                      # 力矩控制
-EControlMode.POSITION_TORQUE             # 位置-力矩混合控制
-EControlMode.VELOCITY_TORQUE             # 速度-力矩混合控制
-EControlMode.POSITION_VELOCITY_TORQUE    # 位置-速度-力矩混合控制
-EControlMode.UNKNOWN                     # 未知模式
+class EControlMode(IntEnum):
+    POSITION = 0         # 位置模式
+    SERVO = 1           # 伺服模式
+    VELOCITY = 2        # 速度模式
+    TORQUE = 3          # 力控模式
+    POSITION_TORQUE = 4 # 位置力控模式（暂不支持）
+    VELOCITY_TORQUE = 5 # 速度力控模式（暂不支持）
+    POSITION_VELOCITY_TORQUE = 6 # 位置速度力控模式（暂不支持）
+    UNKNOWN = 10
 ```
 
 ## 数据结构
@@ -312,12 +316,45 @@ def get_all_joint_positions(self) -> List[int]:
 
 ### 关节角控制
 
+#### 关节角输出/输入顺序（右手）
+
+| 序号 | 关节名称           | 最小角度(rad)        | 最大角度(rad)       | 最小角度(°) | 最大角度(°) | 速度限制(rad/s) |
+| ---- | ------------------ | -------------------- | ------------------- | ----------- | ----------- | --------------- |
+| 1    | R_thumb_roll_joint | -0.17453292519943295 | 0.8726646259971648  | -10         | 50          | 0.164           |
+| 2    | R_thumb_abad_joint | -1.7453292519943295  | 0                   | -100        | 0           | 0.164           |
+| 3    | R_thumb_mcp_joint  | 0                    | 0.8552113334772214  | 0           | 49          | 0.308           |
+| 4    | R_index_abad_joint | -0.20943951023931953 | 0                   | -12         | 0           | 0.164           |
+| 5    | R_index_pip_joint  | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 6    | R_middle_pip_joint | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 7    | R_ring_abad_joint  | 0                    | 0.17453292519943295 | 0           | 10          | 0.164           |
+| 8    | R_ring_pip_joint   | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 9    | R_pinky_abad_joint | 0                    | 0.17453292519943295 | 0           | 10          | 0.164           |
+| 10   | R_pinky_pip_joint  | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+
+#### 关节角输出/输入顺序（左手）
+
+| 序号 | 关节名称           | 最小角度(rad)        | 最大角度(rad)       | 最小角度(°) | 最大角度(°) | 速度限制(rad/s) |
+| ---- | ------------------ | -------------------- | ------------------- | ----------- | ----------- | --------------- |
+| 1    | L_thumb_roll_joint | -0.8726646259971648  | 0.17453292519943295 | -50         | 10          | 0.164           |
+| 2    | L_thumb_abad_joint | 0                    | 1.7453292519943295  | 0           | 100         | 0.164           |
+| 3    | L_thumb_mcp_joint  | -0.8552113334772214  | 0                   | -49         | 0           | 0.308           |
+| 4    | L_index_abad_joint | 0                    | 0.20943951023931953 | 0           | 12          | 0.164           |
+| 5    | L_index_pip_joint  | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 6    | L_middle_pip_joint | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 7    | L_ring_abad_joint  | -0.17453292519943295 | 0                   | -10         | 0           | 0.164           |
+| 8    | L_ring_pip_joint   | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 9    | L_pinky_abad_joint | -0.17453292519943295 | 0                   | -10         | 0           | 0.164           |
+| 10   | L_pinky_pip_joint  | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+
 ```python
 def set_all_active_joint_angles(self, vec_angle: List[float]) -> None: ...
     """设置所有主动关节角（单位：弧度）
 
     Args:
         vec_angle，所有主动关节目标关节角列表，长度必须为10
+
+    Note:
+        具体输出顺序和限位请参考 assets 模型文件
     """
 
 def get_all_active_joint_angles(self) -> List[float]: ...
@@ -325,6 +362,9 @@ def get_all_active_joint_angles(self) -> List[float]: ...
 
     Returns:
         List[float]: 所有主动关节当前关节角列表，长度为10
+
+    Note:
+        具体输出顺序和限位请参考 assets 模型文件
     """
 
 def get_all_joint_angles(self) -> List[float]: ...
@@ -332,6 +372,9 @@ def get_all_joint_angles(self) -> List[float]: ...
 
     Returns:
         List[float]: 所有主动和被动关节当前关节角列表，长度为10
+
+    Note:
+        具体输出顺序和限位请参考 assets 模型文件
     """
 ```
 

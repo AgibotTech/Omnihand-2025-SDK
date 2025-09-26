@@ -72,6 +72,7 @@ python3 ./demo_set_motor.py
 
 ```bash
 .
+├── assets                      # 模型文件
 ├── build.sh                    # 编译构建脚本
 ├── cmake                       # CMake模块目录
 ├── CMakeLists.txt              # 主CMake配置文件

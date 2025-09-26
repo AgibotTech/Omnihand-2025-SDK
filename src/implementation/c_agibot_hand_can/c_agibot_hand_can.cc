@@ -538,9 +538,10 @@ std::vector<unsigned char> AgibotHandCanO10::GetAllControlMode() {
   CanfdFrame ctlModeReq{};
   ctlModeReq.can_id_ = unCanId.ui_can_id_;
   ctlModeReq.len_ = CANFD_MAX_DATA_LENGTH;
+
   try {
     CanfdFrame ctlModeRep = canfd_device_->SendRequestSynch(ctlModeReq);
-    return std::vector<unsigned char>(ctlModeRep.data_, ctlModeRep.data_ + ctlModeRep.len_);
+    return std::vector<unsigned char>(ctlModeRep.data_, ctlModeRep.data_ + DEGREE_OF_FREEDOM);
   } catch (std::exception& ex) {
     std::cerr << ex.what() << std::endl;
     return {};

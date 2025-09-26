@@ -1,7 +1,5 @@
 English | [中文](README.zh_CN.md)
 
-[中文](README_CN.md) | English
-
 # OmniHand 2025 SDK
 
 ## Overview
@@ -71,7 +69,7 @@ python3 ./demo_set_motor.py
 
 ## Directory Structure
 
-```bash
+````bash
 .
 ├── assets                      # Model files
 ├── build.sh                    # Build script
@@ -83,36 +81,54 @@ python3 ./demo_set_motor.py
 ├── src
 │   ├── c_agibot_hand_base.cc
 │   ├── c_agibot_hand_base.h
-│   ├── can_bus_device
-│   │   ├── socket_can
-│   │   └── zlg_usb_canfd
-│   ├── CMakeLists.txt
-│   ├── export_symbols.h
-│   ├── implementation
-│   │   ├── c_agibot_hand_can
-│   │   └── c_agibot_hand_rs
-│   ├── kinematics_solver
-│   ├── proto.h
-│   └── rs_485_device
-└── thirdParty                 # Third-party dependency libraries
-```
+│   ├── can_bus_device```shell
+ll /dev/ttyUSB*
+
+sudo chmod a+rw /dev/ttyUSB0
+````
+
+│ │ ├── socket_can
+│ │ └── zlg_usb_canfd
+│ ├── CMakeLists.txt
+│ ├── export_symbols.h
+│ ├── implementation
+│ │ ├── c_agibot_hand_can
+│ │ └── c_agibot_hand_rs
+│ ├── kinematics_solver
+│ ├── proto.h
+│ └── rs_485_device
+└── thirdParty # Third-party dependency libraries
+
+````
 
 ## API Documentation
 
 For detailed API usage instructions, please refer to the following links:
 
-- [OmniHand 2025 SDK C++ API Documentation](document/API_CPP.md)
-- [OmniHand 2025 SDK Python API Documentation](document/API_PYTHON.md)
+- [OmniHand 2025 SDK C++ API Documentation](document/en/API_CPP.md)
+- [OmniHand 2025 SDK Python API Documentation](document/en/API_PYTHON.md)
 
 ## FAQ
 
-### Q1: Unable to communicate with the hand when starting the program?
+### Q1: Using can driver, unable to communicate with the hand when starting the program?
 
 **A:** First, ensure the driver is correctly installed. See [ZLG Driver Installation Guide](https://manual.zlg.cn/web/#/42/1710) for details. Make sure the hand's power is connected and the USB is connected to the computer, then execute:
 
 ```shell
 lsusb
 sudo chmod 666 /dev/bus/usb/xxx/yyy
+````
+
+### Q2: Using serial port driver, unable to communicate with the hand when starting the program?
+
+**A:** You need to grant read and write permissions to the corresponding serial port. Execute the following commands:
+Apply
+Note: The first command lists all USB serial ports, and the second command grants read and write permissions to the specified port (e.g. /dev/ttyUSB0). Make sure to use the correct port number if it's different on your system.
+
+```shell
+ll /dev/ttyUSB*
+
+sudo chmod a+rw /dev/ttyUSB0
 ```
 
 ### Q2: Python packaging errors during source compilation?

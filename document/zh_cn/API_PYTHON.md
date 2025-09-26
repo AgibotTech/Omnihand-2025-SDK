@@ -241,6 +241,27 @@ class AgibotHandO10:
         pass
 ```
 
+传入的配置文件字段参考如下：
+
+- can 硬件驱动示例
+
+```yaml
+device:
+  type: "can" #硬件驱动设备类型，目前支持 "can" 和 "rs485"
+  options:
+    can_driver: "zlg" #具体的 can 驱动库，目前支持 "zlg" 和 "socketcan"
+```
+
+- rs485 硬件驱动示例
+
+```yaml
+device:
+  type: "rs485" #硬件驱动设备类型，目前支持 "can" 和 "rs485"
+  options:
+    uart_port = "/dev/ttyUSB0"   # 串口设备路径
+    uart_baudrate = 460800       # 波特率
+```
+
 ## 详细 API 说明
 
 ### 设备信息相关
@@ -440,6 +461,10 @@ def get_tactile_sensor_data(self, finger: Finger) -> List[int]:
         List[int]: 对应手指的触觉传感器数据列表，如果是手指传感器则长度为16， 如果是手掌/手心长度为25
     """
 ```
+
+手指 16 个传感器排列如下如：
+
+![](../pic/tactile_sensor_array.jpg)
 
 ### 控制模式
 

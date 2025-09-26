@@ -18,8 +18,11 @@ template <>
 struct convert<AgibotHandRsO10::Options> {
   static bool decode(const Node& node, AgibotHandRsO10::Options& options) {
     if (!node.IsMap()) return false;
-    if (node["port"]) {
-      options.port = node["port"].as<std::string>();
+    if (node["uart_port"]) {
+      options.uart_port = node["uart_port"].as<std::string>();
+    }
+    if (node["uart_baudrate"]) {
+      options.uart_baudrate = node["uart_baudrate"].as<int32_t>();
     }
     return true;
   }
@@ -33,7 +36,7 @@ AgibotHandRsO10::AgibotHandRsO10(const YAML::Node& options_node) {
   }
 
   handrs485_interface_ =
-      std::make_unique<UartRs485Interface>();
+      std::make_unique<UartRs485Interface>(options.uart_port, options.uart_baudrate);
   handrs485_interface_->InitDevice();
   // uint8_t check_cmd[] = {0xEE, 0xAA, 0x01, 0x00, 0x01, 0xCD, 0x55, 0x55};
   // handrs485_interface_->WriteDevice(check_cmd, sizeof(check_cmd)); //for debug the uart-485 connection

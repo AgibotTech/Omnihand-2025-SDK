@@ -4,9 +4,6 @@
 #include <iomanip>
 #include <iostream>
 
-#define UART_PORT "/dev/ttyUSB0"
-#define UART_BAUD 460800
-
 #define READ_BYTES_LIMIT 256
 #define DOUBLE_CHECK 128
 
@@ -20,8 +17,8 @@
 #define CMD_GET_ALL_CURRENT_REPORT 0x0A
 #define CMD_GET_VENDOR_INFO 0xCD
 
-UartRs485Interface::UartRs485Interface()
-    : Rs485_device_ptr_(UART_PORT, UART_BAUD,
+UartRs485Interface::UartRs485Interface(std::string_view uart_port, uint32_t baud_rate)
+    : Rs485_device_ptr_(uart_port.data(), baud_rate,
                         serial::Timeout::simpleTimeout(2)) {
 }
 

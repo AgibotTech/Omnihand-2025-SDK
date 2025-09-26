@@ -18,7 +18,8 @@ constexpr uint8_t HEADER[] = {0xEE, 0xAA, 0x1, 0x0};
 class AGIBOT_EXPORT AgibotHandRsO10 : public AgibotHandO10 {
  public:
   struct Options {
-    std::string port;
+    std::string uart_port = "/dev/ttyUSB0";
+    int32_t uart_baudrate = 460800;
   };
 
  public:

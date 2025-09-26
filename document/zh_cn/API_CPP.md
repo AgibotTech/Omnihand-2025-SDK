@@ -164,6 +164,27 @@ static std::shared_ptr<AgibotHandO10> CreateHand(
     const std::string& cfg_path = "");
 ```
 
+传入的配置文件字段参考如下：
+
+- can 硬件驱动示例
+
+```yaml
+device:
+  type: "can" #硬件驱动设备类型，目前支持 "can" 和 "rs485"
+  options:
+    can_driver: "zlg" #具体的 can 驱动库，目前支持 "zlg" 和 "socketcan"
+```
+
+- rs485 硬件驱动示例
+
+```yaml
+device:
+  type: "rs485" #硬件驱动设备类型，目前支持 "can" 和 "rs485"
+  options:
+    uart_port = "/dev/ttyUSB0"   # 串口设备路径
+    uart_baudrate = 460800       # 波特率
+```
+
 ### 构造函数
 
 ```cpp
@@ -326,6 +347,10 @@ std::vector<short> GetAllJointMotorVelo();
  */
 std::vector<uint8_t> GetTactileSensorData(EFinger eFinger);
 ```
+
+手指 16 个传感器排列如下如：
+
+![](../pic/tactile_sensor_array.jpg)
 
 ### 控制模式
 

@@ -71,7 +71,7 @@ class AGIBOT_EXPORT AgibotHandRsO10 : public AgibotHandO10 {
 
   std::vector<int16_t> GetAllJointMotorVelo() override;
 
-  std::vector<uint8_t> GetTouchSensorData(EFinger eFinger) override;
+  std::vector<uint8_t> GetTactileSensorData(EFinger eFinger) override;
 
   void SetControlMode(unsigned char joint_motor_index, EControlMode mode) override;
 

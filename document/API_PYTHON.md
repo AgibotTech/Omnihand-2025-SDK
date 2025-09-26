@@ -163,7 +163,7 @@ class AgibotHandO10:
         pass
 
     # 传感器数据
-    def get_touch_sensor_data(self, finger: Finger) -> List[int]:
+    def get_tactile_sensor_data(self, finger: Finger) -> List[int]:
         """获取指定手指的触觉传感器数据阵列（一维向量）"""
         pass
 
@@ -423,7 +423,7 @@ def get_all_joint_velocities(self) -> List[int]:
 ### 传感器数据
 
 ```python
-def get_touch_sensor_data(self, finger: Finger) -> List[int]:
+def get_tactile_sensor_data(self, finger: Finger) -> List[int]:
     """获取指定手指的触觉传感器数据
 
     Args:

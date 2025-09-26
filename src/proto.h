@@ -89,7 +89,7 @@ enum class AGIBOT_EXPORT EMsgType : unsigned char {
   eVendorInfo = 0x01,
   eDeviceInfo = 0x02,
   eCurrentThreshold = 0x03,
-  eTouchSensor = 0x05,
+  eTactileSensor = 0x05,
   eCtrlMode = 0x10,
   eTorqueCtrl = 0x11,
   eVeloCtrl = 0x12,

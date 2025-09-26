@@ -39,7 +39,7 @@ enum class EMsgType : unsigned char {
     eVendorInfo = 0x01,           // 厂家信息
     eDeviceInfo = 0x02,           // 设备信息
     eCurrentThreshold = 0x03,     // 电流阈值
-    eTouchSensor = 0x05,          // 触觉传感器
+    eTactileSensor = 0x05,          // 触觉传感器
     eCtrlMode = 0x10,             // 控制模式
     eTorqueCtrl = 0x11,           // 力矩控制
     eVeloCtrl = 0x10,             // 速度控制
@@ -324,7 +324,7 @@ std::vector<short> GetAllJointMotorVelo();
  * @param eFinger 手指枚举值
  * @return 对应手指的触觉传感器数据列表，如果是手指传感器则长度为16， 如果是手掌/手心长度为25
  */
-std::vector<uint8_t> GetTouchSensorData(EFinger eFinger);
+std::vector<uint8_t> GetTactileSensorData(EFinger eFinger);
 ```
 
 ### 控制模式

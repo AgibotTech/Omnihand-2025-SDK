@@ -426,31 +426,31 @@ std::vector<int16_t> AgibotHandCanO10::GetAllJointMotorVelo() {
   }
 }
 
-std::vector<uint8_t> AgibotHandCanO10::GetTouchSensorData(EFinger eFinger) {
-  int touchSensorDataLen = 16;
+std::vector<uint8_t> AgibotHandCanO10::GetTactileSensorData(EFinger eFinger) {
+  int tactileSensorDataLen = 16;
   if (eFinger == EFinger::eDorsum || eFinger == EFinger::ePalm) {
-    touchSensorDataLen = 25;
+    tactileSensorDataLen = 25;
   }
-  std::vector<uint8_t> touchSensorData(touchSensorDataLen, 0);
+  std::vector<uint8_t> tactileSensorData(tactileSensorDataLen, 0);
 
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
   unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
   unCanId.st_can_Id_.product_id_ = CANID_PRODUCT_ID;
-  unCanId.st_can_Id_.msg_type_ = static_cast<unsigned char>(EMsgType::eTouchSensor);
+  unCanId.st_can_Id_.msg_type_ = static_cast<unsigned char>(EMsgType::eTactileSensor);
   unCanId.st_can_Id_.msg_id_ = static_cast<unsigned char>(eFinger);
 
-  CanfdFrame touchSensorDataReq{};
-  touchSensorDataReq.can_id_ = unCanId.ui_can_id_;
-  touchSensorDataReq.len_ = CANFD_MAX_DATA_LENGTH;
+  CanfdFrame tactileSensorDataReq{};
+  tactileSensorDataReq.can_id_ = unCanId.ui_can_id_;
+  tactileSensorDataReq.len_ = CANFD_MAX_DATA_LENGTH;
   try {
-    CanfdFrame touchSensorDataRep = canfd_device_->SendRequestSynch(touchSensorDataReq);
-    memcpy(touchSensorData.data(), touchSensorDataRep.data_, touchSensorData.size());
+    CanfdFrame tactileSensorDataRep = canfd_device_->SendRequestSynch(tactileSensorDataReq);
+    memcpy(tactileSensorData.data(), tactileSensorDataRep.data_, tactileSensorData.size());
   } catch (std::exception& ex) {
     std::cerr << ex.what() << std::endl;
   }
 
-  return touchSensorData;
+  return tactileSensorData;
 }
 
 void AgibotHandCanO10::SetControlMode(unsigned char joint_motor_index, EControlMode mode) {

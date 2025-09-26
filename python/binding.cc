@@ -120,8 +120,8 @@ PYBIND11_MODULE(agibot_hand_core, m) {
       .def("set_all_joint_torques", &AgibotHandO10::SetAllJointMotorTorque)
       .def("get_all_joint_torques", &AgibotHandO10::GetAllJointMotorTorque)
 #endif
-      .def("get_touch_sensor_data", [](AgibotHandO10 &self, int finger_index) {
-        return self.GetTouchSensorData(static_cast<EFinger>(finger_index));
+      .def("get_tactile_sensor_data", [](AgibotHandO10 &self, int finger_index) {
+        return self.GetTactileSensorData(static_cast<EFinger>(finger_index));
       })
       .def("set_control_mode", [](AgibotHandO10 &self, int joint_motor_index, int mode) {
         self.SetControlMode(joint_motor_index, static_cast<EControlMode>(mode));

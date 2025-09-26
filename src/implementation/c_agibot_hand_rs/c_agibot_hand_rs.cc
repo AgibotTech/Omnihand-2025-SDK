@@ -248,7 +248,7 @@ std::vector<int16_t> AgibotHandRsO10::GetAllJointMotorVelo() {
   return handrs485_interface_->getalljointmotorvelo_result_;
 }
 
-std::vector<uint8_t> AgibotHandRsO10::GetTouchSensorData(EFinger eFinger) {
+std::vector<uint8_t> AgibotHandRsO10::GetTactileSensorData(EFinger eFinger) {
   // 0x11 finger and hand, not finished: parse the right data
   uint8_t getsensordata_cmd[9] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x1, 0x55, 0x55};
   getsensordata_cmd[4] = 2;

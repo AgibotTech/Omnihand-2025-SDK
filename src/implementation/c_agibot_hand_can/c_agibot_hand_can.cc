@@ -427,6 +427,12 @@ std::vector<int16_t> AgibotHandCanO10::GetAllJointMotorVelo() {
 }
 
 std::vector<uint8_t> AgibotHandCanO10::GetTactileSensorData(EFinger eFinger) {
+  if (eFinger == EFinger::eUnknown ||
+      static_cast<unsigned char>(eFinger) < static_cast<unsigned char>(EFinger::eThumb) ||
+      static_cast<unsigned char>(eFinger) > static_cast<unsigned char>(EFinger::eDorsum)) {
+    throw std::invalid_argument("Invalid finger type");
+  }
+
   int tactileSensorDataLen = 16;
   if (eFinger == EFinger::eDorsum || eFinger == EFinger::ePalm) {
     tactileSensorDataLen = 25;

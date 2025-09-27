@@ -252,11 +252,16 @@ std::vector<int16_t> AgibotHandRsO10::GetAllJointMotorVelo() {
 }
 
 std::vector<uint8_t> AgibotHandRsO10::GetTactileSensorData(EFinger eFinger) {
-  // 0x11 finger and hand, not finished: parse the right data
+  if (eFinger == EFinger::eUnknown ||
+      static_cast<unsigned char>(eFinger) < static_cast<unsigned char>(EFinger::eThumb) ||
+      static_cast<unsigned char>(eFinger) > static_cast<unsigned char>(EFinger::eDorsum)) {
+    throw std::invalid_argument("Invalid finger type");
+  }
+
   uint8_t getsensordata_cmd[9] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x1, 0x55, 0x55};
   getsensordata_cmd[4] = 2;
   getsensordata_cmd[5] = 0x11;
-  getsensordata_cmd[6] = (uint8_t)eFinger;
+  getsensordata_cmd[6] = (uint8_t)eFinger - 1;
   uint16_t crc_val = Crc16(getsensordata_cmd, 7);
   getsensordata_cmd[7] = crc_val % 256;
   getsensordata_cmd[8] = (crc_val >> 8) & 0xFF;

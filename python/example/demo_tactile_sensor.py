@@ -7,7 +7,7 @@ import time
 def main():
     hand = AgibotHandO10.create_hand(cfg_path="./conf/hardware_conf.yaml")
 
-    thumb_tactile_data = hand.get_tactile_sensor_data(0)
+    thumb_tactile_data = hand.get_tactile_sensor_data(EFinger.THUMB)
     print("Thumb tactile data: {} g".format(sum(thumb_tactile_data)))
 
     index_tactile_data = hand.get_tactile_sensor_data(EFinger.INDEX)

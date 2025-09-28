@@ -231,7 +231,7 @@ void SetJointMotorPosi(unsigned char joint_motor_index, short posi);
 
 /**
  * @brief 获取单个关节电机位置
- * @param joint_motor_index 关节电机索引 (1-10)
+ * @param joint_motor_index 关节电机索引 (1-10), 失败返回 -1
  * @return 当前位置值
  */
 short GetJointMotorPosi(unsigned char joint_motor_index);
@@ -318,7 +318,7 @@ void SetJointMotorVelo(unsigned char joint_motor_index, short velo);
 
 /**
  * @brief 获取单个关节电机速度
- * @param joint_motor_index 关节电机索引 (1-10)
+ * @param joint_motor_index 关节电机索引 (1-10), 失败返回 -1
  * @return 当前速度值
  * @note 串口暂不支持该接口
  */
@@ -398,7 +398,7 @@ void SetCurrentThreshold(unsigned char joint_motor_index, short current_threshol
 
 /**
  * @brief 获取单个关节电机电流阈值
- * @param joint_motor_index 关节电机索引 (1-10)
+ * @param joint_motor_index 关节电机索引 (1-10), 失败返回 -1
  * @return 当前电流阈值
  * @note 串口暂不支持该接口
  */
@@ -454,7 +454,7 @@ std::vector<JointMotorErrorReport> GetAllErrorReport();
 /**
  * @brief 获取单个关节电机温度报告
  * @note 查询前需要先设置上报周期
- * @param joint_motor_index 关节电机索引 (1-10)
+ * @param joint_motor_index 关节电机索引 (1-10), 失败返回 -1
  * @return 当前温度值
  */
 unsigned short GetTemperatureReport(unsigned char joint_motor_index);
@@ -474,7 +474,7 @@ std::vector<unsigned short> GetAllTemperatureReport();
 /**
  * @brief 获取单个关节电机电流报告
  * @note 查询前需要先设置上报周期
- * @param joint_motor_index 关节电机索引 (1-10)
+ * @param joint_motor_index 关节电机索引 (1-10), 失败返回 -1
  * @return 当前电流值
  */
 short GetCurrentReport(unsigned char joint_motor_index);

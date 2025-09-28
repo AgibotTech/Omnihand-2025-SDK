@@ -314,7 +314,7 @@ def get_joint_position(self, joint_motor_index: int) -> int:
         joint_motor_index: 关节电机索引 (1-10)
 
     Returns:
-        int: 当前位置值
+        int: 当前位置值, 失败返回 -1
     """
 
 def set_all_joint_positions(self, positions: List[int]) -> None:
@@ -420,7 +420,7 @@ def get_joint_velocity(self, joint_motor_index: int) -> int:
         joint_motor_index: 关节电机索引 (1-10)
 
     Returns:
-        int: 当前速度值
+        int: 当前速度值, 失败返回 -1
 
     Note:
         串口暂不支持该接口
@@ -532,7 +532,7 @@ def get_current_threshold(self, joint_motor_index: int) -> int:
         joint_motor_index: 关节电机索引 (1-10)
 
     Returns:
-        int: 当前电流阈值
+        int: 当前电流阈值, 失败返回 -1
 
     Note:
         串口暂不支持该接口
@@ -607,7 +607,7 @@ def get_temperature_report(self, joint_motor_index: int) -> int:
         joint_motor_index: 关节电机索引 (1-10)
 
     Returns:
-        int: 当前温度值
+        int: 当前温度值, 失败返回 -1
     """
 
 def get_all_temperature_reports(self) -> List[int]:
@@ -634,7 +634,7 @@ def get_current_report(self, joint_motor_index: int) -> int:
         joint_motor_index: 关节电机索引 (1-10)
 
     Returns:
-        int: 当前电流值
+        int: 当前电流值, 失败返回 -1
     """
 
 def get_all_current_reports(self) -> List[int]:

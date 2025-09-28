@@ -334,7 +334,7 @@ def get_joint_position(self, joint_motor_index: int) -> int:
         joint_motor_index: The index of the joint motor (1-10).
 
     Returns:
-        int: The current position value.
+        int: The current position value. Returns -1 on failure.
     """
 
 def set_all_joint_positions(self, positions: List[int]) -> None:
@@ -440,7 +440,7 @@ def get_joint_velocity(self, joint_motor_index: int) -> int:
         joint_motor_index: The index of the joint motor (1-10).
 
     Returns:
-        int: The current velocity value.
+        int: The current velocity value. Returns -1 on failure.
 
     Note:
         This interface is not supported for serial port communication.
@@ -553,7 +553,7 @@ def get_current_threshold(self, joint_motor_index: int) -> int:
         joint_motor_index: The index of the joint motor (1-10).
 
     Returns:
-        int: The current threshold value.
+        int: The current threshold value. Returns -1 on failure.
 
     Note:
         This interface is not supported for serial port communication.
@@ -628,7 +628,7 @@ def get_temperature_report(self, joint_motor_index: int) -> int:
         joint_motor_index: The index of the joint motor (1-10).
 
     Returns:
-        int: The current temperature value.
+        int: The current temperature value. Returns -1 on failure.
     """
 
 def get_all_temperature_reports(self) -> List[int]:
@@ -655,7 +655,7 @@ def get_current_report(self, joint_motor_index: int) -> int:
         joint_motor_index: The index of the joint motor (1-10).
 
     Returns:
-        int: The current value.
+        int: The current value. Returns -1 on failure.
     """
 
 def get_all_current_reports(self) -> List[int]:

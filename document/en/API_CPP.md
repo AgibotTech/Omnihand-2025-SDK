@@ -231,7 +231,7 @@ void SetJointMotorPosi(unsigned char joint_motor_index, short posi);
 /**
  * @brief Gets the position of a single joint motor.
  * @param joint_motor_index The index of the joint motor (1-10).
- * @return The current position value.
+ * @return The current position value. Returns -1 on failure.
  */
 short GetJointMotorPosi(unsigned char joint_motor_index);
 
@@ -318,7 +318,7 @@ void SetJointMotorVelo(unsigned char joint_motor_index, short velo);
 /**
  * @brief Gets the velocity of a single joint motor.
  * @param joint_motor_index The index of the joint motor (1-10).
- * @return The current velocity value.
+ * @return The current velocity value. Returns -1 on failure.
  * @note This interface is not supported for serial port communication.
  */
 short GetJointMotorVelo(unsigned char joint_motor_index);
@@ -398,7 +398,7 @@ void SetCurrentThreshold(unsigned char joint_motor_index, short current_threshol
 /**
  * @brief Gets the current threshold of a single joint motor.
  * @param joint_motor_index The index of the joint motor (1-10).
- * @return The current threshold value.
+ * @return The current threshold value. Returns -1 on failure.
  * @note This interface is not supported for serial port communication.
  */
 short GetCurrentThreshold(unsigned char joint_motor_index);
@@ -453,7 +453,7 @@ std::vector<JointMotorErrorReport> GetAllErrorReport();
  * @brief Gets the temperature report for a single joint motor.
  * @note The reporting period must be set before querying.
  * @param joint_motor_index The index of the joint motor (1-10).
- * @return The current temperature value.
+ * @return The current temperature value. Returns -1 on failure.
  */
 unsigned short GetTemperatureReport(unsigned char joint_motor_index);
 
@@ -472,7 +472,7 @@ std::vector<unsigned short> GetAllTemperatureReport();
  * @brief Gets the current report for a single joint motor.
  * @note The reporting period must be set before querying.
  * @param joint_motor_index The index of the joint motor (1-10).
- * @return The current value.
+ * @return The current value. Returns -1 on failure.
  */
 short GetCurrentReport(unsigned char joint_motor_index);
 

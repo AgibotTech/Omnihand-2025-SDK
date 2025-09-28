@@ -144,24 +144,5 @@ pip3 install build setuptools wheel
 
 Copyright (c) 2025 Agibot Co., Ltd. OmniHand 2025 SDK is licensed under Mulan PSL v2.
 
-## Acknowledgments
-
-We would like to thank all contributors and users of the OmniHand project. Your feedback and support have been invaluable in improving this SDK. Special thanks to:
-
-- The open-source community for their continuous support
-- Our development team for their dedication
-- Our users for their valuable feedback and suggestions
-- All third-party libraries and tools that made this project possible
-
-## Contact & Support
-
-For technical support or business inquiries:
-
-- Email: support@agibot.com
-- Website: www.agibot.com
-- GitHub Issues: [Report issues here](https://github.com/agibot/omnihand/issues)
-
----
-
 _Document Version: v0.8.0_  
 _Last Updated: September 2025_

@@ -69,24 +69,19 @@ python3 ./demo_set_motor.py
 
 ## Directory Structure
 
-````bash
+```bash
 .
-├── assets                      # Model files
-├── build.sh                    # Build script
-├── cmake                       # CMake modules directory
-├── CMakeLists.txt             # Main CMake configuration file
-├── document                    # Documentation directory
-├── examples                    # C++ example code
-├── python                      # Python binding module (Python interface generated from C++ source)
+├── assets # Model files
+├── build.sh # Build script
+├── cmake # CMake modules directory
+├── CMakeLists.txt # Main CMake configuration file
+├── document # Documentation directory
+├── examples # C++ example code
+├── python # Python binding module (Python interface generated from C++ source)
 ├── src
-│   ├── c_agibot_hand_base.cc
-│   ├── c_agibot_hand_base.h
-│   ├── can_bus_device```shell
-ll /dev/ttyUSB*
-
-sudo chmod a+rw /dev/ttyUSB0
-````
-
+│ ├── c_agibot_hand_base.cc
+│ ├── c_agibot_hand_base.h
+│ ├── can_bus_device
 │ │ ├── socket_can
 │ │ └── zlg_usb_canfd
 │ ├── CMakeLists.txt
@@ -99,7 +94,7 @@ sudo chmod a+rw /dev/ttyUSB0
 │ └── rs_485_device
 └── thirdParty # Third-party dependency libraries
 
-````
+```
 
 ## API Documentation
 
@@ -117,7 +112,7 @@ For detailed API usage instructions, please refer to the following links:
 ```shell
 lsusb
 sudo chmod 666 /dev/bus/usb/xxx/yyy
-````
+```
 
 ### Q2: Using serial port driver, unable to communicate with the hand when starting the program?
 

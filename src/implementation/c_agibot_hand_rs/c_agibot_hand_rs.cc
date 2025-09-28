@@ -12,7 +12,7 @@
 
 #define DEGREE_OF_FREEDOM 10
 #define CHECK_TIME 500
-
+#define SLEEP_TIME 1000
 namespace YAML {
 template <>
 struct convert<AgibotHandRsO10::Options> {
@@ -61,7 +61,7 @@ void AgibotHandRsO10::SetJointMotorPosi(unsigned char joint_motor_index, int16_t
 int16_t AgibotHandRsO10::GetJointMotorPosi(unsigned char joint_motor_index) {
   if (joint_motor_index > 10 || joint_motor_index < 1) {
     printf("the joint index input error, should be 1 -10, \n");
-    return 0;
+    return -1;
   }
   uint8_t getjoint_cmd[9] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x1, 0x55, 0x55};
   getjoint_cmd[4] = 2;
@@ -73,14 +73,14 @@ int16_t AgibotHandRsO10::GetJointMotorPosi(unsigned char joint_motor_index) {
   handrs485_interface_->WriteDevice(getjoint_cmd, sizeof(getjoint_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {
-    usleep(100000);
+    usleep(SLEEP_TIME);
     if (handrs485_interface_->getjointmotorposi_feedback_state_) {
       handrs485_interface_->getjointmotorposi_feedback_state_ = 0;
       return handrs485_interface_->getjointmotorposi_result_;
     }
   }
   printf("get joint motor posi failed, joint_motor_index: %d\n", joint_motor_index);
-  return 0;
+  return -1;
 }
 
 void AgibotHandRsO10::SetAllJointMotorPosi(std::vector<int16_t> vec_posi) {
@@ -123,7 +123,7 @@ std::vector<int16_t> AgibotHandRsO10::GetAllJointMotorPosi() {
   handrs485_interface_->WriteDevice(getalljoint_cmd, sizeof(getalljoint_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
+    usleep(SLEEP_TIME);   // 100ms
     if (handrs485_interface_->getalljointmotorposi_feedback_state_) {
       handrs485_interface_->getalljointmotorposi_feedback_state_ = 0;
       return handrs485_interface_->getalljointmotorposi_result_;
@@ -241,7 +241,7 @@ std::vector<int16_t> AgibotHandRsO10::GetAllJointMotorVelo() {
   handrs485_interface_->WriteDevice(getalljointvelo_cmd, sizeof(getalljointvelo_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
+    usleep(SLEEP_TIME);   // 100ms
     if (handrs485_interface_->getalljointmotorvelo_feedback_state_) {
       handrs485_interface_->getalljointmotorvelo_feedback_state_ = 0;
       return handrs485_interface_->getalljointmotorvelo_result_;
@@ -285,7 +285,7 @@ std::vector<uint8_t> AgibotHandRsO10::GetTactileSensorData(EFinger eFinger) {
       handrs485_interface_->getsensordata_feedback_state_ = 0;
       return result;
     }
-    usleep(1000);
+    usleep(SLEEP_TIME);
   }
   printf("get joint sensor data failed, finger type: %d\n", static_cast<uint8_t>(eFinger));
   return {};
@@ -357,7 +357,7 @@ JointMotorErrorReport AgibotHandRsO10::GetErrorReport(unsigned char joint_motor_
   handrs485_interface_->WriteDevice(geterrorport_cmd, sizeof(geterrorport_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
+    usleep(SLEEP_TIME);   // 100ms
     if (handrs485_interface_->getallerrorreport_feedback_state_) {
       uint16_t check_res = handrs485_interface_->getallerrorreport_result_.res_[0] + handrs485_interface_->getallerrorreport_result_.res_[1] * 256;
       if (check_res > 0 && check_res < 11) {
@@ -397,7 +397,7 @@ std::vector<JointMotorErrorReport> AgibotHandRsO10::GetAllErrorReport() {
   handrs485_interface_->WriteDevice(geterrorport_cmd, sizeof(geterrorport_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {  // check several times
-    usleep(100000);       // 100ms
+    usleep(SLEEP_TIME);   // 100ms
     if (handrs485_interface_->getallerrorreport_feedback_state_) {
       uint16_t check_res = handrs485_interface_->getallerrorreport_result_.res_[0] + handrs485_interface_->getallerrorreport_result_.res_[1] * 256;
       if (check_res > 0 && check_res < 11) {
@@ -429,7 +429,7 @@ void AgibotHandRsO10::SetAllErrorReportPeriod(std::vector<uint16_t> vec_period) 
 uint16_t AgibotHandRsO10::GetTemperatureReport(unsigned char joint_motor_index) {
   if (joint_motor_index > 10 || joint_motor_index < 1) {
     printf("the joint motor index input error, should be 1 -10, \n");
-    return 0;
+    return -1;
   }
   uint8_t gettempreport_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
   gettempreport_cmd[4] = 1;
@@ -440,14 +440,14 @@ uint16_t AgibotHandRsO10::GetTemperatureReport(unsigned char joint_motor_index) 
   handrs485_interface_->WriteDevice(gettempreport_cmd, sizeof(gettempreport_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {
-    usleep(100000);
+    usleep(SLEEP_TIME);
     if (handrs485_interface_->getalltempreport_feedback_state_) {
       handrs485_interface_->getalltempreport_feedback_state_ = 0;
       return handrs485_interface_->getalltempreport_result_[joint_motor_index - 1];
     }
   }
   printf("get motor temprature failed, joint_motor_index: %d\n", joint_motor_index);
-  return 0;  // 0xC
+  return -1;  // 0xC
 }
 
 std::vector<uint16_t> AgibotHandRsO10::GetAllTemperatureReport() {
@@ -461,7 +461,7 @@ std::vector<uint16_t> AgibotHandRsO10::GetAllTemperatureReport() {
   handrs485_interface_->WriteDevice(getalltempreport_cmd, sizeof(getalltempreport_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {
-    usleep(100000);
+    usleep(SLEEP_TIME);
     if (handrs485_interface_->getalltempreport_feedback_state_) {
       memcpy(alltempresult.data(), handrs485_interface_->getalltempreport_result_, DEGREE_OF_FREEDOM * sizeof(uint16_t));
 
@@ -484,7 +484,7 @@ void AgibotHandRsO10::SetAllTemperReportPeriod(std::vector<uint16_t> vec_period)
 int16_t AgibotHandRsO10::GetCurrentReport(unsigned char joint_motor_index) {
   if (joint_motor_index > 10 || joint_motor_index < 1) {
     printf("the joint motor index input error, should be 1 -10, \n");
-    return 0;
+    return -1;
   }
   uint16_t current_res = 0;
   uint8_t getcurrent_cmd[8] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x55, 0x55};
@@ -496,7 +496,7 @@ int16_t AgibotHandRsO10::GetCurrentReport(unsigned char joint_motor_index) {
   handrs485_interface_->WriteDevice(getcurrent_cmd, sizeof(getcurrent_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {
-    usleep(100000);
+    usleep(SLEEP_TIME);
     if (handrs485_interface_->getallcurrentreport_feedback_state_) {
       handrs485_interface_->getallcurrentreport_feedback_state_ = 0;
       return handrs485_interface_->getallcurrentreport_result_[joint_motor_index - 1];
@@ -517,7 +517,7 @@ std::vector<uint16_t> AgibotHandRsO10::GetAllCurrentReport() {
   handrs485_interface_->WriteDevice(getallcurrent_cmd, sizeof(getallcurrent_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {
-    usleep(100000);
+    usleep(SLEEP_TIME);
     if (handrs485_interface_->getallcurrentreport_feedback_state_) {
       memcpy(allcurrentresult.data(), handrs485_interface_->getallcurrentreport_result_, DEGREE_OF_FREEDOM * sizeof(uint16_t));
       handrs485_interface_->getallcurrentreport_feedback_state_ = 0;
@@ -546,7 +546,7 @@ VendorInfo AgibotHandRsO10::GetVendorInfo() {
   handrs485_interface_->WriteDevice(getvendorinfo_cmd, sizeof(getvendorinfo_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {
-    usleep(100000);
+    usleep(SLEEP_TIME);
     if (handrs485_interface_->getvendorinfo_feedback_state_) {
       handrs485_interface_->getvendorinfo_feedback_state_ = 0;
       return handrs485_interface_->getvendorinfo_result_;

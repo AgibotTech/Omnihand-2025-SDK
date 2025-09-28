@@ -102,7 +102,7 @@ int16_t AgibotHandCanO10::GetJointMotorPosi(unsigned char joint_motor_index) {
     return posi;
   } else {
     std::cerr << "[Error]: 无效关节电机ID参数" << std::dec << static_cast<unsigned int>(joint_motor_index) << " 正确范围：1～" << DEGREE_OF_FREEDOM << "." << std::endl;
-    return 0;
+    return -1;
   }
 }
 
@@ -377,7 +377,7 @@ int16_t AgibotHandCanO10::GetJointMotorVelo(unsigned char joint_motor_index) {
     return velo;
   } else {
     std::cerr << "[Error]: 无效关节电机ID参数" << std::dec << static_cast<unsigned int>(joint_motor_index) << " 正确范围：1～" << DEGREE_OF_FREEDOM << "." << std::endl;
-    return 0;
+    return -1;
   }
 }
 
@@ -603,7 +603,7 @@ int16_t AgibotHandCanO10::GetCurrentThreshold(unsigned char joint_motor_index) {
     return currentThreshold;
   } else {
     std::cerr << "[Error]: 无效关节电机ID参数" << std::dec << static_cast<unsigned int>(joint_motor_index) << " 正确范围：1～" << DEGREE_OF_FREEDOM << "." << std::endl;
-    return {};
+    return -1;
   }
 }
 
@@ -837,7 +837,7 @@ uint16_t AgibotHandCanO10::GetTemperatureReport(unsigned char joint_motor_index)
 
   } else {
     std::cerr << "[Error]: 无效关节电机ID参数" << std::dec << static_cast<unsigned int>(joint_motor_index) << " 正确范围：1～" << DEGREE_OF_FREEDOM << "." << std::endl;
-    return {};
+    return -1;
   }
 }
 
@@ -941,7 +941,7 @@ int16_t AgibotHandCanO10::GetCurrentReport(unsigned char joint_motor_index) {
 
   } else {
     std::cerr << "[Error]: 无效关节电机ID参数" << std::dec << static_cast<unsigned int>(joint_motor_index) << " 正确范围：1～" << DEGREE_OF_FREEDOM << "." << std::endl;
-    return {};
+    return -1;
   }
 }
 

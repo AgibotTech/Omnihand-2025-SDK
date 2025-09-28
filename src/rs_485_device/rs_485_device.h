@@ -14,7 +14,7 @@ class UartRs485Interface {
    * @brief
    */
 
-  UartRs485Interface();
+  UartRs485Interface(std::string_view uart_port, uint32_t baud_rate);
 
   /**
    * @brief

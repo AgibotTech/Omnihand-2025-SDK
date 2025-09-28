@@ -72,6 +72,7 @@ python3 ./demo_set_motor.py
 
 ```bash
 .
+├── assets                      # 模型文件
 ├── build.sh                    # 编译构建脚本
 ├── cmake                       # CMake模块目录
 ├── CMakeLists.txt              # 主CMake配置文件
@@ -99,12 +100,12 @@ python3 ./demo_set_motor.py
 
 详细 API 使用说明请参考以下链接：
 
-- [OmniHand 2025 SDK C++ API 文档](document/API_CPP.md)
+- [OmniHand 2025 SDK C++ API 文档](document/zh_cn/API_CPP.md)
 - [OmniHand 2025 SDK Python API 文档](document/API_PYTHON.md)
 
 ## 常见问题
 
-### Q1: 启动程序发现无法和手进行通信？
+### Q1: 使用 can 驱动，发现启动程序发现无法和手进行通信？
 
 **A:** 首先需要确保正确安装驱动，详情参见[ZLG 驱动安装说明](https://manual.zlg.cn/web/#/42/1710:~:text=%23sudo%20chmod%20666%20/dev/bus/usb/xxx/yyy)，确保手电源已连接，且 USB 端接入电脑后，执行以下指令：
 
@@ -114,7 +115,17 @@ lsusb
 sudo chmod 666 /dev/bus/usb/xxx/yyy
 ```
 
-### Q2: 源码编译在 python 打包环节报错？
+### Q2: 使用串口驱动，发现启动程序发现无法和手进行通信？
+
+**A:** 需要给对应串口端口开读写权限，执行以下指令：
+
+```shell
+ll /dev/ttyUSB*
+
+sudo chmod a+rw /dev/ttyUSB0
+```
+
+### Q3: 源码编译在 python 打包环节报错？
 
 **A:** 检查如下依赖是否安装：
 

@@ -11,15 +11,18 @@
 #define CANID_PRODUCT_ID 0x01
 
 #define DEGREE_OF_FREEDOM 10
-#define CHECK_TIME 5
+#define CHECK_TIME 500
 
 namespace YAML {
 template <>
 struct convert<AgibotHandRsO10::Options> {
   static bool decode(const Node& node, AgibotHandRsO10::Options& options) {
     if (!node.IsMap()) return false;
-    if (node["port"]) {
-      options.port = node["port"].as<std::string>();
+    if (node["uart_port"]) {
+      options.uart_port = node["uart_port"].as<std::string>();
+    }
+    if (node["uart_baudrate"]) {
+      options.uart_baudrate = node["uart_baudrate"].as<int32_t>();
     }
     return true;
   }
@@ -33,7 +36,7 @@ AgibotHandRsO10::AgibotHandRsO10(const YAML::Node& options_node) {
   }
 
   handrs485_interface_ =
-      std::make_unique<UartRs485Interface>();
+      std::make_unique<UartRs485Interface>(options.uart_port, options.uart_baudrate);
   handrs485_interface_->InitDevice();
   // uint8_t check_cmd[] = {0xEE, 0xAA, 0x01, 0x00, 0x01, 0xCD, 0x55, 0x55};
   // handrs485_interface_->WriteDevice(check_cmd, sizeof(check_cmd)); //for debug the uart-485 connection
@@ -248,19 +251,23 @@ std::vector<int16_t> AgibotHandRsO10::GetAllJointMotorVelo() {
   return handrs485_interface_->getalljointmotorvelo_result_;
 }
 
-std::vector<uint8_t> AgibotHandRsO10::GetTouchSensorData(EFinger eFinger) {
-  // 0x11 finger and hand, not finished: parse the right data
+std::vector<uint8_t> AgibotHandRsO10::GetTactileSensorData(EFinger eFinger) {
+  if (eFinger == EFinger::eUnknown ||
+      static_cast<unsigned char>(eFinger) < static_cast<unsigned char>(EFinger::eThumb) ||
+      static_cast<unsigned char>(eFinger) > static_cast<unsigned char>(EFinger::eDorsum)) {
+    throw std::invalid_argument("Invalid finger type");
+  }
+
   uint8_t getsensordata_cmd[9] = {0xEE, 0xAA, 0x01, 0x00, 0x04, 0x7, 0x1, 0x55, 0x55};
   getsensordata_cmd[4] = 2;
   getsensordata_cmd[5] = 0x11;
-  getsensordata_cmd[6] = (uint8_t)eFinger;
+  getsensordata_cmd[6] = (uint8_t)eFinger - 1;
   uint16_t crc_val = Crc16(getsensordata_cmd, 7);
   getsensordata_cmd[7] = crc_val % 256;
   getsensordata_cmd[8] = (crc_val >> 8) & 0xFF;
   handrs485_interface_->WriteDevice(getsensordata_cmd, sizeof(getsensordata_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {
-    usleep(100000);
     if (handrs485_interface_->getsensordata_feedback_state_) {
       const size_t FINGER_DATA_LENGTH = 16;
       const size_t PALM_DATA_LENGTH = 25;
@@ -278,6 +285,7 @@ std::vector<uint8_t> AgibotHandRsO10::GetTouchSensorData(EFinger eFinger) {
       handrs485_interface_->getsensordata_feedback_state_ = 0;
       return result;
     }
+    usleep(1000);
   }
   printf("get joint sensor data failed, finger type: %d\n", static_cast<uint8_t>(eFinger));
   return {};
@@ -558,5 +566,6 @@ void AgibotHandRsO10::SetDeviceId(unsigned char device_id) {
 
 void AgibotHandRsO10::ShowDataDetails(bool show) const {
   handrs485_interface_->ShowDataDetails(show);
+  kinematics_solver_ptr_->show_log(show);
   return;
 }

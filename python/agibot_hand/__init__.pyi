@@ -12,13 +12,15 @@ class EFinger(IntEnum):
     UNKNOWN = 255
 
 class EControlMode(IntEnum):
-    POSITION = 0
-    VELOCITY = 1
-    TORQUE = 2
-    POSITION_TORQUE = 3
-    VELOCITY_TORQUE = 4
-    POSITION_VELOCITY_TORQUE = 5
+    POSITION = 0         # 位置模式
+    SERVO = 1           # 伺服模式
+    VELOCITY = 2        # 速度模式
+    TORQUE = 3          # 力控模式
+    POSITION_TORQUE = 4 # 位置力控模式（暂不支持）
+    VELOCITY_TORQUE = 5 # 速度力控模式（暂不支持）
+    POSITION_VELOCITY_TORQUE = 6 # 位置速度力控模式（暂不支持）
     UNKNOWN = 10
+
 
 class EHandType(IntEnum):
     LEFT = 0
@@ -120,7 +122,7 @@ class AgibotHandO10:
     # def get_all_joint_torques(self) -> List[int]: ...
     
     # Sensor data
-    def get_touch_sensor_data(self, eFinger: EFinger) -> List[int]: ...
+    def get_tactile_sensor_data(self, eFinger: EFinger) -> List[int]: ...
     
     # Control mode
     def set_control_mode(self, joint_motor_index: int, mode: int) -> None: ...

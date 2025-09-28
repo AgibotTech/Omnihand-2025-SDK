@@ -76,7 +76,7 @@ class AGIBOT_EXPORT AgibotHandO10 {
   virtual std::vector<int16_t> GetAllJointMotorVelo() = 0;
 
   // 传感器接口
-  virtual std::vector<uint8_t> GetTouchSensorData(EFinger eFinger) = 0;
+  virtual std::vector<uint8_t> GetTactileSensorData(EFinger eFinger) = 0;
 
   // 控制模式
   virtual void SetControlMode(unsigned char joint_motor_index, EControlMode mode) = 0;

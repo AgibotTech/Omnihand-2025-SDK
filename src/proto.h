@@ -61,13 +61,14 @@ enum class AGIBOT_EXPORT EHandType : unsigned char {
 };
 
 enum class AGIBOT_EXPORT EControlMode : unsigned char {
-  ePosi = 0,
-  eVelo = 1,
-  eTorque = 2,
-  ePosiTorque = 3,
-  eVeloTorque = 4,
-  ePosiVeloTorque = 5,
-  eUnknown = 10
+  ePosi = 0,            // 位置模式
+  eServo = 1,           // 伺服模式
+  eVelo = 2,            // 速度模式
+  eTorque = 3,          // 力控模式
+  ePosiTorque = 4,      // 位置力控模式（暂不支持）
+  eVeloTorque = 5,      // 速度力控模式（暂不支持）
+  ePosiVeloTorque = 6,  // 位置速度力控模式（暂不支持）
+  eUnknown = 10         // 未知模式
 };
 
 struct AGIBOT_EXPORT JointMotorErrorReport {
@@ -88,7 +89,7 @@ enum class AGIBOT_EXPORT EMsgType : unsigned char {
   eVendorInfo = 0x01,
   eDeviceInfo = 0x02,
   eCurrentThreshold = 0x03,
-  eTouchSensor = 0x05,
+  eTactileSensor = 0x05,
   eCtrlMode = 0x10,
   eTorqueCtrl = 0x11,
   eVeloCtrl = 0x12,

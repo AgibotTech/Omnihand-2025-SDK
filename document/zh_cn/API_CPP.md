@@ -21,13 +21,14 @@ enum class EFinger : unsigned char {
 
 ```cpp
 enum class EControlMode : unsigned char {
-    ePosi = 0,                    // 位置控制
-    eVelo = 1,                    // 速度控制
-    eTorque = 2,                  // 力矩控制
-    ePosiTorque = 3,              // 位置-力矩混合控制
-    eVeloTorque = 4,              // 速度-力矩混合控制
-    ePosiVeloTorque = 5,          // 位置-速度-力矩混合控制
-    eUnknown = 10                 // 未知模式
+  ePosi = 0,            // 位置模式
+  eServo = 1,           // 伺服模式
+  eVelo = 2,            // 速度模式
+  eTorque = 3,          // 力控模式
+  ePosiTorque = 4,      // 位置力控模式（暂不支持）
+  eVeloTorque = 5,      // 速度力控模式（暂不支持）
+  ePosiVeloTorque = 6,  // 位置速度力控模式（暂不支持）
+  eUnknown = 10         // 未知模式
 };
 ```
 
@@ -38,7 +39,7 @@ enum class EMsgType : unsigned char {
     eVendorInfo = 0x01,           // 厂家信息
     eDeviceInfo = 0x02,           // 设备信息
     eCurrentThreshold = 0x03,     // 电流阈值
-    eTouchSensor = 0x05,          // 触觉传感器
+    eTactileSensor = 0x05,          // 触觉传感器
     eCtrlMode = 0x10,             // 控制模式
     eTorqueCtrl = 0x11,           // 力矩控制
     eVeloCtrl = 0x10,             // 速度控制
@@ -163,6 +164,27 @@ static std::shared_ptr<AgibotHandO10> CreateHand(
     const std::string& cfg_path = "");
 ```
 
+传入的配置文件字段参考如下：
+
+- can 硬件驱动示例
+
+```yaml
+device:
+  type: "can" #硬件驱动设备类型，目前支持 "can" 和 "rs485"
+  options:
+    can_driver: "zlg" #具体的 can 驱动库，目前支持 "zlg" 和 "socketcan"
+```
+
+- rs485 硬件驱动示例
+
+```yaml
+device:
+  type: "rs485" #硬件驱动设备类型，目前支持 "can" 和 "rs485"
+  options:
+    uart_port = "/dev/ttyUSB0"   # 串口设备路径
+    uart_baudrate = 460800       # 波特率
+```
+
 ### 构造函数
 
 ```cpp
@@ -185,12 +207,14 @@ std::string GetVendorInfo();
 /**
  * @brief 获取设备信息
  * @return 设备信息长字符串，包含设备的运行状态信息
+ * @note 串口暂不支持该接口
  */
 std::string GetDeviceInfo();
 
 /**
  * @brief 设置设备ID
  * @param device_id 设备ID
+ * @note 串口暂不支持该接口
  */
 void SetDeviceId(unsigned char device_id);
 ```
@@ -228,22 +252,55 @@ std::vector<short> GetAllJointMotorPosi();
 
 ### 关节角位置控制
 
+#### 关节角输出/输入顺序（右手）
+
+| 序号 | 关节名称           | 最小角度(rad)        | 最大角度(rad)       | 最小角度(°) | 最大角度(°) | 速度限制(rad/s) |
+| ---- | ------------------ | -------------------- | ------------------- | ----------- | ----------- | --------------- |
+| 1    | R_thumb_roll_joint | -0.17453292519943295 | 0.8726646259971648  | -10         | 50          | 0.164           |
+| 2    | R_thumb_abad_joint | -1.7453292519943295  | 0                   | -100        | 0           | 0.164           |
+| 3    | R_thumb_mcp_joint  | 0                    | 0.8552113334772214  | 0           | 49          | 0.308           |
+| 4    | R_index_abad_joint | -0.20943951023931953 | 0                   | -12         | 0           | 0.164           |
+| 5    | R_index_pip_joint  | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 6    | R_middle_pip_joint | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 7    | R_ring_abad_joint  | 0                    | 0.17453292519943295 | 0           | 10          | 0.164           |
+| 8    | R_ring_pip_joint   | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 9    | R_pinky_abad_joint | 0                    | 0.17453292519943295 | 0           | 10          | 0.164           |
+| 10   | R_pinky_pip_joint  | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+
+#### 关节角输出/输入顺序（左手）
+
+| 序号 | 关节名称           | 最小角度(rad)        | 最大角度(rad)       | 最小角度(°) | 最大角度(°) | 速度限制(rad/s) |
+| ---- | ------------------ | -------------------- | ------------------- | ----------- | ----------- | --------------- |
+| 1    | L_thumb_roll_joint | -0.8726646259971648  | 0.17453292519943295 | -50         | 10          | 0.164           |
+| 2    | L_thumb_abad_joint | 0                    | 1.7453292519943295  | 0           | 100         | 0.164           |
+| 3    | L_thumb_mcp_joint  | -0.8552113334772214  | 0                   | -49         | 0           | 0.308           |
+| 4    | L_index_abad_joint | 0                    | 0.20943951023931953 | 0           | 12          | 0.164           |
+| 5    | L_index_pip_joint  | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 6    | L_middle_pip_joint | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 7    | L_ring_abad_joint  | -0.17453292519943295 | 0                   | -10         | 0           | 0.164           |
+| 8    | L_ring_pip_joint   | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+| 9    | L_pinky_abad_joint | -0.17453292519943295 | 0                   | -10         | 0           | 0.164           |
+| 10   | L_pinky_pip_joint  | 0                    | 1.5707963267948966  | 0           | 90          | 0.308           |
+
 ```cpp
 /**
     * @brief 设置所有主动关节角度
     * @param angles 关节角度向量（单位：弧度），长度必须为10
+    * @note 具体输出顺序和限位请参考 assets 模型文件
     */
 void SetAllActiveJointAngles(const std::vector<double>& angles);
 
 /**
     * @brief 获取所有主动关节角度
     * @return 关节角度向量（单位：弧度），长度为10
+    * @note 具体输出顺序和限位请参考 assets 模型文件
     */
 std::vector<double> GetAllActiveJointAngles() const;
 
 /**
     * @brief 获取所有关节角度（包括主动和被动）
     * @return 关节角度向量（单位：弧度）
+    * @note 具体输出顺序和限位请参考 assets 模型文件
     */
 std::vector<double> GetAllJointAngles() const;
 ```
@@ -255,6 +312,7 @@ std::vector<double> GetAllJointAngles() const;
  * @brief 设置单个关节电机速度
  * @param joint_motor_index 关节电机索引 (1-10)
  * @param velo 目标速度值
+ * @note 串口暂不支持该接口
  */
 void SetJointMotorVelo(unsigned char joint_motor_index, short velo);
 
@@ -262,6 +320,7 @@ void SetJointMotorVelo(unsigned char joint_motor_index, short velo);
  * @brief 获取单个关节电机速度
  * @param joint_motor_index 关节电机索引 (1-10)
  * @return 当前速度值
+ * @note 串口暂不支持该接口
  */
 short GetJointMotorVelo(unsigned char joint_motor_index);
 
@@ -286,8 +345,12 @@ std::vector<short> GetAllJointMotorVelo();
  * @param eFinger 手指枚举值
  * @return 对应手指的触觉传感器数据列表，如果是手指传感器则长度为16， 如果是手掌/手心长度为25
  */
-std::vector<uint8_t> GetTouchSensorData(EFinger eFinger);
+std::vector<uint8_t> GetTactileSensorData(EFinger eFinger);
 ```
+
+手指 16 个传感器排列如下如：
+
+![](../pic/tactile_sensor_array.jpg)
 
 ### 控制模式
 
@@ -303,18 +366,21 @@ void SetControlMode(unsigned char joint_motor_index, EControlMode mode);
  * @brief 获取单个关节电机控制模式
  * @param joint_motor_index 关节电机索引 (1-10)
  * @return 当前控制模式
+ * @note 串口暂不支持该接口
  */
 EControlMode GetControlMode(unsigned char joint_motor_index);
 
 /**
  * @brief 批量设置所有关节电机控制模式
  * @param vec_ctrl_mode 控制模式向量，长度必须为10
+ * @note 串口暂不支持该接口
  */
 void SetAllControlMode(std::vector<unsigned char> vec_ctrl_mode);
 
 /**
  * @brief 批量获取所有关节电机控制模式
  * @return 控制模式向量，长度为10
+ * @note 串口暂不支持该接口
  */
 std::vector<unsigned char> GetAllControlMode();
 ```
@@ -326,6 +392,7 @@ std::vector<unsigned char> GetAllControlMode();
  * @brief 设置单个关节电机电流阈值
  * @param joint_motor_index 关节电机索引 (1-10)
  * @param current_threshold 电流阈值
+ * @note 串口暂不支持该接口
  */
 void SetCurrentThreshold(unsigned char joint_motor_index, short current_threshold);
 
@@ -333,18 +400,21 @@ void SetCurrentThreshold(unsigned char joint_motor_index, short current_threshol
  * @brief 获取单个关节电机电流阈值
  * @param joint_motor_index 关节电机索引 (1-10)
  * @return 当前电流阈值
+ * @note 串口暂不支持该接口
  */
 short GetCurrentThreshold(unsigned char joint_motor_index);
 
 /**
  * @brief 批量设置所有关节电机电流阈值
  * @param vec_current_threshold 电流阈值向量，长度必须为10
+ * @note 串口暂不支持该接口
  */
 void SetAllCurrentThreshold(std::vector<short> vec_current_threshold);
 
 /**
  * @brief 批量获取所有关节电机电流阈值
  * @return 电流阈值向量，长度为10
+ * @note 串口暂不支持该接口
  */
 std::vector<short> GetAllCurrentThreshold();
 ```
@@ -355,6 +425,7 @@ std::vector<short> GetAllCurrentThreshold();
 /**
  * @brief 混合控制关节电机
  * @param vec_mix_ctrl 混合控制参数向量
+ * @note 串口暂不支持该接口
  */
 void MixCtrlJointMotor(std::vector<MixCtrl> vec_mix_ctrl);
 ```

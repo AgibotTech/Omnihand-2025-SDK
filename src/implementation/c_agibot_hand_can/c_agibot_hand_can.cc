@@ -426,31 +426,37 @@ std::vector<int16_t> AgibotHandCanO10::GetAllJointMotorVelo() {
   }
 }
 
-std::vector<uint8_t> AgibotHandCanO10::GetTouchSensorData(EFinger eFinger) {
-  int touchSensorDataLen = 16;
-  if (eFinger == EFinger::eDorsum || eFinger == EFinger::ePalm) {
-    touchSensorDataLen = 25;
+std::vector<uint8_t> AgibotHandCanO10::GetTactileSensorData(EFinger eFinger) {
+  if (eFinger == EFinger::eUnknown ||
+      static_cast<unsigned char>(eFinger) < static_cast<unsigned char>(EFinger::eThumb) ||
+      static_cast<unsigned char>(eFinger) > static_cast<unsigned char>(EFinger::eDorsum)) {
+    throw std::invalid_argument("Invalid finger type");
   }
-  std::vector<uint8_t> touchSensorData(touchSensorDataLen, 0);
+
+  int tactileSensorDataLen = 16;
+  if (eFinger == EFinger::eDorsum || eFinger == EFinger::ePalm) {
+    tactileSensorDataLen = 25;
+  }
+  std::vector<uint8_t> tactileSensorData(tactileSensorDataLen, 0);
 
   UnCanId unCanId{};
   unCanId.st_can_Id_.device_id_ = device_id_;
   unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
   unCanId.st_can_Id_.product_id_ = CANID_PRODUCT_ID;
-  unCanId.st_can_Id_.msg_type_ = static_cast<unsigned char>(EMsgType::eTouchSensor);
+  unCanId.st_can_Id_.msg_type_ = static_cast<unsigned char>(EMsgType::eTactileSensor);
   unCanId.st_can_Id_.msg_id_ = static_cast<unsigned char>(eFinger);
 
-  CanfdFrame touchSensorDataReq{};
-  touchSensorDataReq.can_id_ = unCanId.ui_can_id_;
-  touchSensorDataReq.len_ = CANFD_MAX_DATA_LENGTH;
+  CanfdFrame tactileSensorDataReq{};
+  tactileSensorDataReq.can_id_ = unCanId.ui_can_id_;
+  tactileSensorDataReq.len_ = CANFD_MAX_DATA_LENGTH;
   try {
-    CanfdFrame touchSensorDataRep = canfd_device_->SendRequestSynch(touchSensorDataReq);
-    memcpy(touchSensorData.data(), touchSensorDataRep.data_, touchSensorData.size());
+    CanfdFrame tactileSensorDataRep = canfd_device_->SendRequestSynch(tactileSensorDataReq);
+    memcpy(tactileSensorData.data(), tactileSensorDataRep.data_, tactileSensorData.size());
   } catch (std::exception& ex) {
     std::cerr << ex.what() << std::endl;
   }
 
-  return touchSensorData;
+  return tactileSensorData;
 }
 
 void AgibotHandCanO10::SetControlMode(unsigned char joint_motor_index, EControlMode mode) {
@@ -538,9 +544,10 @@ std::vector<unsigned char> AgibotHandCanO10::GetAllControlMode() {
   CanfdFrame ctlModeReq{};
   ctlModeReq.can_id_ = unCanId.ui_can_id_;
   ctlModeReq.len_ = CANFD_MAX_DATA_LENGTH;
+
   try {
     CanfdFrame ctlModeRep = canfd_device_->SendRequestSynch(ctlModeReq);
-    return std::vector<unsigned char>(ctlModeRep.data_, ctlModeRep.data_ + ctlModeRep.len_);
+    return std::vector<unsigned char>(ctlModeRep.data_, ctlModeRep.data_ + DEGREE_OF_FREEDOM);
   } catch (std::exception& ex) {
     std::cerr << ex.what() << std::endl;
     return {};
@@ -1324,4 +1331,5 @@ unsigned int AgibotHandCanO10::GetMatchedRepId(unsigned int req_id) {
 
 void AgibotHandCanO10::ShowDataDetails(bool show) const {
   canfd_device_->ShowDataDetails(show);
+  kinematics_solver_ptr_->show_log(show);
 }

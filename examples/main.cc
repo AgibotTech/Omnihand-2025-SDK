@@ -45,14 +45,14 @@ void positionControlDemo() {
     }
 
     // sensor
-    std::vector<uint8_t> a = hand->GetTouchSensorData(EFinger::eThumb);
+    std::vector<uint8_t> a = hand->GetTactileSensorData(EFinger::eThumb);
     int sum = 0;
     for (auto& c : a) {
       sum += c;
     }
     std::cout << a.size() << "拇指传感器数据: " << sum << std::endl;
 
-    std::vector<uint8_t> b = hand->GetTouchSensorData(EFinger::ePalm);
+    std::vector<uint8_t> b = hand->GetTactileSensorData(EFinger::ePalm);
     sum = 0;
     for (auto& c : b) {
       sum += c;

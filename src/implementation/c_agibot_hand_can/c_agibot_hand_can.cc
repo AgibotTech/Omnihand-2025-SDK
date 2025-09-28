@@ -46,7 +46,9 @@ AgibotHandCanO10::AgibotHandCanO10(const YAML::Node& options_node) {
         ". Only 'zlg' and 'socket' are supported.");
   }
 
+#if !DISABLE_FUNC
   canfd_device_->SetCallback(std::bind(&AgibotHandCanO10::ProcessMsg, this, std::placeholders::_1));
+#endif
   canfd_device_->SetCalcuMatchRepId(std::bind(&AgibotHandCanO10::GetMatchedRepId, this, std::placeholders::_1));
   canfd_device_->SetMsgMatchJudge(std::bind(&AgibotHandCanO10::JudgeMsgMatch, this, std::placeholders::_1, std::placeholders::_2));
 }
@@ -753,7 +755,7 @@ std::vector<JointMotorErrorReport> AgibotHandCanO10::GetAllErrorReport() {
     return {};
   }
 }
-
+#if !DISABLE_FUNC
 void AgibotHandCanO10::SetErrorReportPeriod(unsigned char joint_motor_index, uint16_t period) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
@@ -801,15 +803,31 @@ void AgibotHandCanO10::SetAllErrorReportPeriod(std::vector<uint16_t> vec_period)
     std::cerr << ex.what() << std::endl;
   }
 }
-
+#endif
 uint16_t AgibotHandCanO10::GetTemperatureReport(unsigned char joint_motor_index) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
-    std::lock_guard<std::mutex> lockGuard(mutex_temper_report_);
-    if (vec_temper_report_.size() == DEGREE_OF_FREEDOM) {
-      return vec_temper_report_[joint_motor_index];
-    } else {
-      return {};
+    UnCanId unCanId{};
+    unCanId.st_can_Id_.device_id_ = device_id_;
+    unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
+    unCanId.st_can_Id_.product_id_ = CANID_PRODUCT_ID;
+    unCanId.st_can_Id_.msg_type_ = static_cast<unsigned char>(EMsgType::eTemperatureReport);
+    unCanId.st_can_Id_.msg_id_ = joint_motor_index;
+
+    int16_t temp{};
+
+    CanfdFrame tempReqFrame{};
+    tempReqFrame.can_id_ = unCanId.ui_can_id_;
+    tempReqFrame.len_ = CANFD_MAX_DATA_LENGTH;
+
+    try {
+      CanfdFrame tempRepFrame = canfd_device_->SendRequestSynch(tempReqFrame);
+      memcpy(&temp, tempRepFrame.data_, sizeof(temp));
+    } catch (std::exception& ex) {
+      std::cerr << ex.what() << std::endl;
     }
+
+    return temp;
+
   } else {
     std::cerr << "[Error]: 无效关节电机ID参数" << std::dec << static_cast<unsigned int>(joint_motor_index) << " 正确范围：1～" << DEGREE_OF_FREEDOM << "." << std::endl;
     return {};
@@ -817,10 +835,27 @@ uint16_t AgibotHandCanO10::GetTemperatureReport(unsigned char joint_motor_index)
 }
 
 std::vector<uint16_t> AgibotHandCanO10::GetAllTemperatureReport() {
-  std::lock_guard<std::mutex> lockGuard(mutex_temper_report_);
-  return vec_temper_report_;
+  UnCanId unCanId{};
+  unCanId.st_can_Id_.device_id_ = device_id_;
+  unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
+  unCanId.st_can_Id_.product_id_ = CANID_PRODUCT_ID;
+  unCanId.st_can_Id_.msg_type_ = static_cast<unsigned char>(EMsgType::eTemperatureReport);
+  unCanId.st_can_Id_.msg_id_ = 0x00;
+
+  CanfdFrame tempReqFrame{};
+  tempReqFrame.can_id_ = unCanId.ui_can_id_;
+  tempReqFrame.len_ = CANFD_MAX_DATA_LENGTH;
+
+  try {
+    CanfdFrame tempRepFrame = canfd_device_->SendRequestSynch(tempReqFrame);
+    return std::vector<uint16_t>{reinterpret_cast<uint16_t*>(tempRepFrame.data_), reinterpret_cast<uint16_t*>(tempRepFrame.data_ + tempRepFrame.len_)};
+  } catch (std::exception& ex) {
+    std::cerr << ex.what() << std::endl;
+    return {};
+  }
 }
 
+#if !DISABLE_FUNC
 void AgibotHandCanO10::SetTemperReportPeriod(unsigned char joint_motor_index, uint16_t period) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
@@ -871,15 +906,32 @@ void AgibotHandCanO10::SetAllTemperReportPeriod(std::vector<uint16_t> vec_period
     std::cerr << ex.what() << std::endl;
   }
 }
+#endif
 
 int16_t AgibotHandCanO10::GetCurrentReport(unsigned char joint_motor_index) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
-    std::lock_guard<std::mutex> lockGuard(mutex_current_report_);
-    if (vec_current_report_.size() == DEGREE_OF_FREEDOM) {
-      return vec_current_report_[joint_motor_index];
-    } else {
-      return {};
+    UnCanId unCanId{};
+    unCanId.st_can_Id_.device_id_ = device_id_;
+    unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
+    unCanId.st_can_Id_.product_id_ = CANID_PRODUCT_ID;
+    unCanId.st_can_Id_.msg_type_ = static_cast<unsigned char>(EMsgType::eCurrentReport);
+    unCanId.st_can_Id_.msg_id_ = joint_motor_index;
+
+    int16_t current{};
+
+    CanfdFrame currentReqFrame{};
+    currentReqFrame.can_id_ = unCanId.ui_can_id_;
+    currentReqFrame.len_ = CANFD_MAX_DATA_LENGTH;
+
+    try {
+      CanfdFrame currentRepFrame = canfd_device_->SendRequestSynch(currentReqFrame);
+      memcpy(&current, currentRepFrame.data_, sizeof(current));
+    } catch (std::exception& ex) {
+      std::cerr << ex.what() << std::endl;
     }
+
+    return current;
+
   } else {
     std::cerr << "[Error]: 无效关节电机ID参数" << std::dec << static_cast<unsigned int>(joint_motor_index) << " 正确范围：1～" << DEGREE_OF_FREEDOM << "." << std::endl;
     return {};
@@ -887,10 +939,27 @@ int16_t AgibotHandCanO10::GetCurrentReport(unsigned char joint_motor_index) {
 }
 
 std::vector<uint16_t> AgibotHandCanO10::GetAllCurrentReport() {
-  std::lock_guard<std::mutex> lockGuard(mutex_current_report_);
-  return vec_current_report_;
+  UnCanId unCanId{};
+  unCanId.st_can_Id_.device_id_ = device_id_;
+  unCanId.st_can_Id_.rw_flag_ = CANID_READ_FLAG;
+  unCanId.st_can_Id_.product_id_ = CANID_PRODUCT_ID;
+  unCanId.st_can_Id_.msg_type_ = static_cast<unsigned char>(EMsgType::eCurrentReport);
+  unCanId.st_can_Id_.msg_id_ = 0x00;
+
+  CanfdFrame currentReqFrame{};
+  currentReqFrame.can_id_ = unCanId.ui_can_id_;
+  currentReqFrame.len_ = CANFD_MAX_DATA_LENGTH;
+
+  try {
+    CanfdFrame currentRepFrame = canfd_device_->SendRequestSynch(currentReqFrame);
+    return std::vector<uint16_t>{reinterpret_cast<uint16_t*>(currentRepFrame.data_), reinterpret_cast<uint16_t*>(currentRepFrame.data_ + currentRepFrame.len_)};
+  } catch (std::exception& ex) {
+    std::cerr << ex.what() << std::endl;
+    return {};
+  }
 }
 
+#if !DISABLE_FUNC
 void AgibotHandCanO10::SetCurrentReportPeriod(unsigned char joint_motor_index, uint16_t period) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {
     UnCanId unCanId{};
@@ -941,8 +1010,9 @@ void AgibotHandCanO10::SetAllCurrentReportPeriod(std::vector<uint16_t> vec_perio
     std::cerr << ex.what() << std::endl;
   }
 }
-
+#endif
 void AgibotHandCanO10::ProcessMsg(CanfdFrame frame) {
+#if !DISABLE_FUNC
   if ((frame.can_id_ & 0xFFFF0000) == 0x00210000) {
     // unsigned char* head = frame.data_;
     // std::vector<uint16_t> vec_temper_report{};
@@ -957,6 +1027,7 @@ void AgibotHandCanO10::ProcessMsg(CanfdFrame frame) {
                                             reinterpret_cast<uint16_t*>(frame.data_ + frame.len_)};
     {
       std::lock_guard<std::mutex> lockGuard(mutex_temper_report_);
+      printf("==> \n");
       vec_temper_report_ = vec_temper_report;
     }
   } else if ((frame.can_id_ & 0xFFFF0000) == 0x00220000) {
@@ -1058,6 +1129,7 @@ void AgibotHandCanO10::ProcessMsg(CanfdFrame frame) {
     // 收到了OTA结构应答
     // TODO 提示用户OTA升级完成
   }
+#endif
 }
 
 VendorInfo AgibotHandCanO10::GetVendorInfo() {

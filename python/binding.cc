@@ -138,15 +138,21 @@ PYBIND11_MODULE(agibot_hand_core, m) {
       .def("mix_ctrl_joint_motor", &AgibotHandO10::MixCtrlJointMotor)
       .def("get_error_report", &AgibotHandO10::GetErrorReport)
       .def("get_all_error_reports", &AgibotHandO10::GetAllErrorReport)
+#if !DISABLE_FUNC
       .def("set_error_report_period", &AgibotHandO10::SetErrorReportPeriod)
       .def("set_all_error_report_periods", &AgibotHandO10::SetAllErrorReportPeriod)
+#endif
       .def("get_temperature_report", &AgibotHandO10::GetTemperatureReport)
       .def("get_all_temperature_reports", &AgibotHandO10::GetAllTemperatureReport)
+#if !DISABLE_FUNC
       .def("set_temperature_report_period", &AgibotHandO10::SetTemperReportPeriod)
       .def("set_all_temperature_report_periods", &AgibotHandO10::SetAllTemperReportPeriod)
+#endif
       .def("get_current_report", &AgibotHandO10::GetCurrentReport)
       .def("get_all_current_reports", &AgibotHandO10::GetAllCurrentReport)
+#if !DISABLE_FUNC
       .def("set_current_report_period", &AgibotHandO10::SetCurrentReportPeriod)
       .def("set_all_current_report_periods", &AgibotHandO10::SetAllCurrentReportPeriod)
+#endif
       .def("show_data_details", &AgibotHandO10::ShowDataDetails);
 }

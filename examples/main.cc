@@ -15,8 +15,6 @@ void positionControlDemo() {
         "./conf/hardware_conf.yaml");
 
     // temperature （9 10 索引温一直是0 请查清楚）
-    hand->SetAllTemperReportPeriod({500, 500, 500, 500, 500, 500, 500, 500, 500, 500});
-    sleep(1);
     auto tm = hand->GetTemperatureReport(8);
     std::cout << "8 temp: " << tm << std::endl;
 
@@ -27,8 +25,6 @@ void positionControlDemo() {
     }
 
     // current
-    hand->SetAllCurrentReportPeriod({500, 500, 500, 500, 500, 500, 500, 500, 500, 500});
-    sleep(1);
     auto ct = hand->GetCurrentReport(8);
     std::cout << "8 current: " << ct << std::endl;
 
@@ -39,8 +35,6 @@ void positionControlDemo() {
     }
 
     // error report (这个案例输出什么都没有，是空)
-    hand->SetAllErrorReportPeriod({500, 500, 500, 500, 500, 500, 500, 500, 500, 500});
-    sleep(1);
     JointMotorErrorReport ep = hand->GetErrorReport(8);
     std::cout << "8 error report : " << ep.overheat_ << std::endl;
 

@@ -93,26 +93,27 @@ class AGIBOT_EXPORT AgibotHandCanO10 : public AgibotHandO10 {
 
   std::vector<JointMotorErrorReport> GetAllErrorReport() override;
 
+#if !DISABLE_FUNC
   void SetErrorReportPeriod(unsigned char joint_motor_index, uint16_t period) override;
 
   void SetAllErrorReportPeriod(std::vector<uint16_t> vec_period) override;
-
+#endif
   uint16_t GetTemperatureReport(unsigned char joint_motor_index) override;
 
   std::vector<uint16_t> GetAllTemperatureReport() override;
-
+#if !DISABLE_FUNC
   void SetTemperReportPeriod(unsigned char joint_motor_index, uint16_t period) override;
 
   void SetAllTemperReportPeriod(std::vector<uint16_t> vec_period) override;
-
+#endif
   int16_t GetCurrentReport(unsigned char joint_motor_index) override;
 
   std::vector<uint16_t> GetAllCurrentReport() override;
-
+#if !DISABLE_FUNC
   void SetCurrentReportPeriod(unsigned char joint_motor_index, uint16_t period) override;
 
   void SetAllCurrentReportPeriod(std::vector<uint16_t> vec_period) override;
-
+#endif
   void ShowDataDetails(bool show) const override;
 
  private:
@@ -130,11 +131,12 @@ class AGIBOT_EXPORT AgibotHandCanO10 : public AgibotHandO10 {
 
   std::unique_ptr<CanBusDeviceBase> canfd_device_;
 
+#if !DISABLE_FUNC
   std::mutex mutex_temper_report_;
   std::vector<uint16_t> vec_temper_report_;
 
   std::mutex mutex_current_report_;
   std::vector<uint16_t> vec_current_report_;
-
+#endif
   std::queue<std::array<char, 2048> > que_packages_;
 };

@@ -1,7 +1,9 @@
 #include "rs_485_device/rs_485_device.h"
 #include <cstring>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
+
 #define UART_PORT "/dev/ttyUSB0"
 #define UART_BAUD 460800
 
@@ -29,6 +31,28 @@ UartRs485Interface::~UartRs485Interface() {
     serial_rec_pthread_.join();
 }
 
+// 打印数据帧
+void UartRs485Interface::PrintFrame(const uint8_t *data, uint16_t size, bool is_send) {
+  if (!show_data_details_.load()) return;
+
+  auto now = std::chrono::system_clock::now();
+  auto now_time_t = std::chrono::system_clock::to_time_t(now);
+  auto now_us = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % 1000000;
+  struct tm tm_buf;
+  localtime_r(&now_time_t, &tm_buf);
+  std::cout << "["
+            << std::put_time(&tm_buf, "%Y-%m-%d %H:%M:%S")
+            << "." << std::dec << std::setfill('0') << std::setw(6) << now_us.count()
+            << "] " << (is_send ? "SND: " : "RCV: ");
+
+  // 打印数据帧内容
+  for (int i = 0; i < size; i++) {
+    std::cout << std::hex << std::setw(2) << std::setfill('0')
+              << static_cast<int>(data[i]) << " ";
+  }
+  std::cout << std::endl;
+}
+
 void UartRs485Interface::RecBuffParse(void) {
   // printf("RecBuffParse: now data len is %d\n", buf_write_pos_); //for debug
   uint16_t detect_frame_len = 0;
@@ -47,12 +71,12 @@ void UartRs485Interface::RecBuffParse(void) {
           //   printf("version request response data ready !\n");
           //   break;
           case CMD_GET_JOINT_MOTOR_POSI:
-            printf("get joint motor position response data ready !\n");
+            // printf("get joint motor position response data ready !\n");
             getjointmotorposi_result_ = rec_buffer_[index + 7] + rec_buffer_[index + 8] * 256;
             getjointmotorposi_feedback_state_ = 1;
             break;
           case CMD_GET_ALL_JOINT_MOTOR_POSI:
-            printf("get all joint motor position response data ready !\n");
+            // printf("get all joint motor position response data ready !\n");
             for (int i = 0; i < 10; i++) {
               getalljointmotorposi_result_.at(i) = rec_buffer_[index + 6 + 2 * i] + rec_buffer_[index + 6 + 2 * i + 1] * 256;
             }
@@ -60,7 +84,7 @@ void UartRs485Interface::RecBuffParse(void) {
             break;
 
           case CMD_GET_ALL_JOINT_MOTOR_VELO:
-            printf("get all joint motor velocity response data ready !\n");
+            // printf("get all joint motor velocity response data ready !\n");
             for (int i = 0; i < 10; i++) {
               getalljointmotorvelo_result_.at(i) = rec_buffer_[index + 6 + 2 * i] + rec_buffer_[index + 6 + 2 * i + 1] * 256;
             }
@@ -68,7 +92,7 @@ void UartRs485Interface::RecBuffParse(void) {
             break;
 
           case CMD_GET_SENSOR_DATA:
-            printf("get sensor data response data ready! finger index : %d\n", rec_buffer_[index + 6]);
+            // printf("get sensor data response data ready! finger index : %d\n", rec_buffer_[index + 6]);
 
             memcpy(getsensordata_result_.data(), rec_buffer_ + index + 7, 25);
 
@@ -76,22 +100,22 @@ void UartRs485Interface::RecBuffParse(void) {
             break;
 
           case CMD_GET_ALL_ERROR_REPORT:
-            printf("get all error report response data ready! \n");
+            // printf("get all error report response data ready! \n");
             getallerrorreport_result_.res_[0] = rec_buffer_[index + 6];
             getallerrorreport_result_.res_[0] = rec_buffer_[index + 7];
             getallerrorreport_feedback_state_ = 1;
             break;
 
           case CMD_GET_ALL_TEMP_REPORT:
-            printf("get all temprature report response data ready! \n");
-            for (int i = 0; i < 8; i++) {
+            // printf("get all temprature report response data ready! \n");
+            for (int i = 0; i < 10; i++) {
               getalltempreport_result_[i] = rec_buffer_[index + 6 + i];
             }
             getalltempreport_feedback_state_ = 1;
             break;
 
           case CMD_GET_ALL_CURRENT_REPORT:
-            printf("get all current report response data ready! \n");
+            // printf("get all current report response data ready! \n");
             for (int i = 0; i < 10; i++) {
               // printf("all current data[%d]: %d \n", i, rec_buffer_[i]);
               getallcurrentreport_result_[i] = rec_buffer_[index + 6 + 2 * i] + rec_buffer_[index + 6 + 2 * i + 1] * 256;
@@ -100,7 +124,7 @@ void UartRs485Interface::RecBuffParse(void) {
             break;
 
           case CMD_GET_VENDOR_INFO:
-            printf("get vender info response data ready! \n");
+            // printf("get vender info response data ready! \n");
             for (int i = 0; i < 10; i++) {
               // printf("vendor info data[%d]: %d \n", i, rec_buffer_[i]);
               getvendorinfo_result_.productModel = (rec_buffer_[index + 6] == 1) ? "O12" : "O10";
@@ -148,6 +172,9 @@ void UartRs485Interface::ThreadReadRec(void) {
       usleep(20000);  // read 20ms a time
     }
     if (bytes_get > 0) {
+      if (show_data_details_.load()) {
+        PrintFrame(read_buf, bytes_get, false);
+      }
       // for(int i = 0; i < 8; i++) {
       //     printf("read_buf[%d] = %d\n", i, read_buf[i]);
       // }
@@ -181,6 +208,10 @@ void UartRs485Interface::InitDevice(void) {
   }
 }
 uint8_t UartRs485Interface::WriteDevice(uint8_t *data, uint8_t size) {
+  if (show_data_details_.load()) {
+    PrintFrame(data, size, true);
+  }
+
   return Rs485_device_ptr_.write(data, size);
 }
 

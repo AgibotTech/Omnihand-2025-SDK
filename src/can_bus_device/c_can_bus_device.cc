@@ -11,9 +11,10 @@
 #include "c_can_bus_device.h"
 
 #include <iostream>
+#include <utility>
 
 void CanBusDeviceBase::SetMsgMatchJudge(std::function<bool(unsigned int, unsigned int)> msg_matched_judge) {
-  msg_match_judge_ = msg_matched_judge;
+  msg_match_judge_ = std::move(msg_matched_judge);
 }
 
 CanfdFrame CanBusDeviceBase::SendRequestSynch(const CanfdFrame& req) {
@@ -37,9 +38,10 @@ CanfdFrame CanBusDeviceBase::SendRequestSynch(const CanfdFrame& req) {
 
     // 获取微秒
     auto now_us = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % 1000000;
-
+    struct tm tm_buf;
+    localtime_r(&now_time_t, &tm_buf);
     std::cout << "["
-              << std::put_time(std::localtime(&now_time_t), "%Y-%m-%d %H:%M:%S")
+              << std::put_time(&tm_buf, "%Y-%m-%d %H:%M:%S")
               << "." << std::dec << std::setfill('0') << std::setw(6) << now_us.count()
               << "] SND: " << req;
   }

@@ -96,21 +96,24 @@ class AGIBOT_EXPORT AgibotHandO10 {
   // 错误报告
   virtual JointMotorErrorReport GetErrorReport(unsigned char joint_motor_index) = 0;
   virtual std::vector<JointMotorErrorReport> GetAllErrorReport() = 0;
+#if !DISABLE_FUNC
   virtual void SetErrorReportPeriod(unsigned char joint_motor_index, uint16_t period) = 0;
   virtual void SetAllErrorReportPeriod(std::vector<uint16_t> vec_period) = 0;
-
+#endif
   // 温度报告
   virtual uint16_t GetTemperatureReport(unsigned char joint_motor_index) = 0;
   virtual std::vector<uint16_t> GetAllTemperatureReport() = 0;
+#if !DISABLE_FUNC
   virtual void SetTemperReportPeriod(unsigned char joint_motor_index, uint16_t period) = 0;
   virtual void SetAllTemperReportPeriod(std::vector<uint16_t> vec_period) = 0;
-
+#endif
   // 电流报告
   virtual int16_t GetCurrentReport(unsigned char joint_motor_index) = 0;
   virtual std::vector<uint16_t> GetAllCurrentReport() = 0;
+#if !DISABLE_FUNC
   virtual void SetCurrentReportPeriod(unsigned char joint_motor_index, uint16_t period) = 0;
   virtual void SetAllCurrentReportPeriod(std::vector<uint16_t> vec_period) = 0;
-
+#endif
   // 调试接口
   virtual void ShowDataDetails(bool show) const = 0;
 

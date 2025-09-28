@@ -211,14 +211,6 @@ class AgibotHandO10:
         """获取所有关节电机错误报告"""
         pass
 
-    def set_error_report_period(self, joint_motor_index: int, period: int) -> None:
-        """设置单个关节电机错误上报周期"""
-        pass
-
-    def set_all_error_report_periods(self, periods: List[int]) -> None:
-        """批量设置所有关节电机错误上报周期"""
-        pass
-
     # 温度监控
     def get_temperature_report(self, joint_motor_index: int) -> int:
         """获取单个关节电机温度报告"""
@@ -228,13 +220,6 @@ class AgibotHandO10:
         """获取所有关节电机温度报告"""
         pass
 
-    def set_temperature_report_period(self, joint_motor_index: int, period: int) -> None:
-        """设置单个关节电机温度上报周期"""
-        pass
-
-    def set_all_temperature_report_periods(self, periods: List[int]) -> None:
-        """批量设置所有关节电机温度上报周期"""
-        pass
 
     # 电流监控
     def get_current_report(self, joint_motor_index: int) -> int:
@@ -245,13 +230,6 @@ class AgibotHandO10:
         """获取所有关节电机电流报告"""
         pass
 
-    def set_current_report_period(self, joint_motor_index: int, period: int) -> None:
-        """设置单个关节电机电流上报周期"""
-        pass
-
-    def set_all_current_report_periods(self, periods: List[int]) -> None:
-        """批量设置所有关节电机电流上报周期"""
-        pass
 
     # 调试功能
     def show_data_details(self, show: bool) -> None:
@@ -509,21 +487,6 @@ def get_all_error_reports(self) -> List[JointMotorErrorReport]:
     Returns:
         List[JointMotorErrorReport]: 错误报告列表，长度为10
     """
-
-def set_error_report_period(self, joint_motor_index: int, period: int) -> None:
-    """设置单个关节电机错误上报周期
-
-    Args:
-        joint_motor_index: 关节电机索引 (1-10)
-        period: 上报周期（单位：ms）
-    """
-
-def set_all_error_report_periods(self, periods: List[int]) -> None:
-    """批量设置所有关节电机错误上报周期
-
-    Args:
-        periods: 上报周期列表，长度必须为10
-    """
 ```
 
 ### 温度监控
@@ -551,21 +514,6 @@ def get_all_temperature_reports(self) -> List[int]:
     Returns:
         List[int]: 温度值列表，长度为10
     """
-
-def set_temperature_report_period(self, joint_motor_index: int, period: int) -> None:
-    """设置单个关节电机温度上报周期
-
-    Args:
-        joint_motor_index: 关节电机索引 (1-10)
-        period: 上报周期（单位：ms）
-    """
-
-def set_all_temperature_report_periods(self, periods: List[int]) -> None:
-    """批量设置所有关节电机温度上报周期
-
-    Args:
-        periods: 上报周期列表，长度必须为10
-    """
 ```
 
 ### 电流监控
@@ -592,21 +540,6 @@ def get_all_current_reports(self) -> List[int]:
 
     Returns:
         List[int]: 电流值列表，长度为10
-    """
-
-def set_current_report_period(self, joint_motor_index: int, period: int) -> None:
-    """设置单个关节电机电流上报周期
-
-    Args:
-        joint_motor_index: 关节电机索引 (1-10)
-        period: 上报周期（单位：ms）
-    """
-
-def set_all_current_report_periods(self, periods: List[int]) -> None:
-    """批量设置所有关节电机电流上报周期
-
-    Args:
-        periods: 上报周期列表，长度必须为10
     """
 ```
 

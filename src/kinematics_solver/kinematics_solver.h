@@ -147,6 +147,11 @@ class OmnihandCtrl {
    */
   ~OmnihandCtrl();
 
+  bool flag_ = false;
+  void show_log(bool flag) {
+    flag_ = flag;
+  }
+
   /**
    * @brief Set a predefined hand gesture
    * @param gesture_num Gesture index

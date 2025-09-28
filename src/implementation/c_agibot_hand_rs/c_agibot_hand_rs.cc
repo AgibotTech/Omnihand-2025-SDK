@@ -11,7 +11,7 @@
 #define CANID_PRODUCT_ID 0x01
 
 #define DEGREE_OF_FREEDOM 10
-#define CHECK_TIME 5
+#define CHECK_TIME 500
 
 namespace YAML {
 template <>
@@ -268,7 +268,6 @@ std::vector<uint8_t> AgibotHandRsO10::GetTactileSensorData(EFinger eFinger) {
   handrs485_interface_->WriteDevice(getsensordata_cmd, sizeof(getsensordata_cmd));
   uint8_t check_time = CHECK_TIME;
   while (check_time--) {
-    usleep(100000);
     if (handrs485_interface_->getsensordata_feedback_state_) {
       const size_t FINGER_DATA_LENGTH = 16;
       const size_t PALM_DATA_LENGTH = 25;
@@ -286,6 +285,7 @@ std::vector<uint8_t> AgibotHandRsO10::GetTactileSensorData(EFinger eFinger) {
       handrs485_interface_->getsensordata_feedback_state_ = 0;
       return result;
     }
+    usleep(1000);
   }
   printf("get joint sensor data failed, finger type: %d\n", static_cast<uint8_t>(eFinger));
   return {};
@@ -566,5 +566,6 @@ void AgibotHandRsO10::SetDeviceId(unsigned char device_id) {
 
 void AgibotHandRsO10::ShowDataDetails(bool show) const {
   handrs485_interface_->ShowDataDetails(show);
+  kinematics_solver_ptr_->show_log(show);
   return;
 }

@@ -130,7 +130,7 @@ std::vector<int> OmnihandCtrl::ActiveJointPos2ActuatorInput(
   // check active_joint_pos size
 
   assert(active_joint_pos.size() == ActiveJointCount);
-  if (!CheckJointPos(active_joint_pos)) {
+  if (flag_ && !CheckJointPos(active_joint_pos)) {
     std::cout << "joint position over limit" << std::endl;
   }
   std::vector<double> hand_pos = active_joint_pos;

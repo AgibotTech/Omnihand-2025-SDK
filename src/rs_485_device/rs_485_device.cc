@@ -166,7 +166,7 @@ void UartRs485Interface::ThreadReadRec(void) {
   while (running_) {
     while (running_ && bytes_get == 0) {
       bytes_get = Rs485_device_ptr_.read(read_buf, sizeof(read_buf));
-      usleep(20000);  // read 20ms a time
+      usleep(500);  // read 20ms a time
     }
     if (bytes_get > 0) {
       if (show_data_details_.load()) {

@@ -1331,4 +1331,5 @@ unsigned int AgibotHandCanO10::GetMatchedRepId(unsigned int req_id) {
 
 void AgibotHandCanO10::ShowDataDetails(bool show) const {
   canfd_device_->ShowDataDetails(show);
+  kinematics_solver_ptr_->show_log(show);
 }

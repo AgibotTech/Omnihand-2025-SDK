@@ -7,18 +7,18 @@ file(GLOB IMPLEMENTATION_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/implementation/c_ag
 file(GLOB CAN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/zlg_usb_canfd/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/can_bus_device/socket_can/*.cc)
 file(GLOB RS485_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/rs_485_device/*.cc)
 
-add_library(omniHand25Can SHARED ${BASE_SOURCES} ${IMPLEMENTATION_SOURCES} ${CAN_SOURCES} ${RS485_SOURCES})
+add_library(omnihand2025 SHARED ${BASE_SOURCES} ${IMPLEMENTATION_SOURCES} ${CAN_SOURCES} ${RS485_SOURCES})
 
 target_include_directories(
-  omniHand25Can
+  omnihand2025
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
          ${CMAKE_CURRENT_SOURCE_DIR}/implementation
          ${serial_SOURCE_DIR}/include)
 
-set_target_properties(omniHand25Can PROPERTIES INSTALL_RPATH "$ORIGIN" BUILD_WITH_INSTALL_RPATH TRUE)
+set_target_properties(omnihand2025 PROPERTIES INSTALL_RPATH "$ORIGIN" BUILD_WITH_INSTALL_RPATH TRUE)
 
 target_link_libraries(
-  omniHand25Can
+  omnihand2025
   PRIVATE serial
           yaml-cpp::yaml-cpp)
 
@@ -28,12 +28,12 @@ target_link_libraries(
   endif()
 
   find_path(THIRD_PARTY_PATH zcan.h HINTS ${USER_PATH})
-  target_include_directories(omniHand25Can PUBLIC ${THIRD_PARTY_PATH})
-  target_link_directories(omniHand25Can PUBLIC ${THIRD_PARTY_PATH})
-  target_link_libraries(omniHand25Can PUBLIC usbcanfd)
+  target_include_directories(omnihand2025 PUBLIC ${THIRD_PARTY_PATH})
+  target_link_directories(omnihand2025 PUBLIC ${THIRD_PARTY_PATH})
+  target_link_libraries(omnihand2025 PUBLIC usbcanfd)
 
 
-install(TARGETS omniHand25Can DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(TARGETS omnihand2025 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 install(FILES c_agibot_hand_base.h proto.h export_symbols.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 

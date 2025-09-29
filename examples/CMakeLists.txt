@@ -15,7 +15,7 @@ target_include_directories(
 
 target_link_libraries(
   ${CUR_TARGET_NAME}
-  PRIVATE omniHand25Can)
+  PRIVATE omnihand2025)
 
   add_custom_command(TARGET ${CUR_TARGET_NAME} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory

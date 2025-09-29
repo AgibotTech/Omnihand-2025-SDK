@@ -38,8 +38,11 @@ std::unique_ptr<AgibotHandO10> AgibotHandO10::createHand(
   // 根据类型创建具体实例
   if (hardware_conf.device == "can") {
     hand = std::make_unique<AgibotHandCanO10>(hardware_conf.options);
-  } else {
+  } else if (hardware_conf.device == "rs485") {
     hand = std::make_unique<AgibotHandRsO10>(hardware_conf.options);
+  } else {
+    std::cerr << "Unsupported device type: " << hardware_conf.device << ". Defaults to can." << std::endl;
+    hand = std::make_unique<AgibotHandCanO10>(hardware_conf.options);
   }
 
   hand->init(device_id, hand_type);

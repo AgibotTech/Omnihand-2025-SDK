@@ -7,7 +7,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(agibot_hand_core, m) {
+PYBIND11_MODULE(omnihand_2025_core, m) {
   m.doc() = "AgibotHand Python Interface";
 
   // Bind CommuParams structure

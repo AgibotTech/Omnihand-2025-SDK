@@ -1,2 +1,2 @@
 include VERSION README.md LICENSE
-recursive-include agibot_hand *
+recursive-include omnihand_2025 *

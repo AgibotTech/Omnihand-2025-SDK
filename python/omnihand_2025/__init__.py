@@ -1,7 +1,7 @@
 # Copyright (c) 2025, Agibot Co., Ltd.
 # OmniHand 2025 SDK is licensed under Mulan PSL v2.
 
-from .agibot_hand_core import (
+from .omnihand_2025_core import (
     AgibotHandO10,  
     JointMotorErrorReport,
     MixCtrl,

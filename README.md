@@ -126,7 +126,7 @@ ll /dev/ttyUSB*
 sudo chmod a+rw /dev/ttyUSB0
 ```
 
-### Q2: Python packaging errors during source compilation?
+### Q3: Python packaging errors during source compilation?
 
 **A:** Check if the following dependencies are installed:
 

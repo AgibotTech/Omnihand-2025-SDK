@@ -25,7 +25,7 @@ Supports both CANFD/RS485 communication interfaces
 
 - Operating System: Ubuntu 22.04 (x86_64)
 - Compiler: gcc 11.4 or higher
-- Build Tool: CMake 3.16 or higher
+- Build Tool: CMake 3.24 or higher
 - Python: 3.10 or higher
 
 ### Installation

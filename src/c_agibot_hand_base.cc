@@ -41,7 +41,7 @@ std::unique_ptr<AgibotHandO10> AgibotHandO10::createHand(
 
   hand = std::make_unique<AgibotHandCanO10>(canfd_id);
 
-  hand->init(device_id, hand_type);
+  hand->Reset(device_id, hand_type);
 
   return hand;
 }

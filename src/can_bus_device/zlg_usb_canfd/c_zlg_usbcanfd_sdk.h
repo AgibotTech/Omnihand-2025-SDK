@@ -29,6 +29,8 @@ class ZlgUsbcanfdSDK : public CanBusDeviceBase {
 
   int SendFrame(unsigned int id, unsigned char* data, unsigned char length) override;
 
+  bool IsInit() override;
+
  private:
   unsigned char canfd_id_;
 };

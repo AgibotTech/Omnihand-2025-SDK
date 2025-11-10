@@ -42,7 +42,13 @@ AgibotHandCanO10::AgibotHandCanO10(unsigned char canfd_id) {
         "Unsupported CAN driver type: " + options.can_driver +
         ". Only 'zlg' and 'socket' are supported.");
   }
+  
+  if (!canfd_device_->IsInit()) {
+    is_init_ = false;
+    return;
+  }
 
+  is_init_ = true;
 #if !DISABLE_FUNC
   canfd_device_->SetCallback(std::bind(&AgibotHandCanO10::ProcessMsg, this, std::placeholders::_1));
 #endif

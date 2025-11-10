@@ -67,6 +67,13 @@ class CanBusDeviceBase {
   virtual ~CanBusDeviceBase() = default;
 
   /**
+   * @brief 析构函数
+   */
+  virtual bool IsInit() {
+    return true;
+  }
+
+  /**
    * @brief 打开设备
    * @return 操作结果：0~成功;-1~失败
    */

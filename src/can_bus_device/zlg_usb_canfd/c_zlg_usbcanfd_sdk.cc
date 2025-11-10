@@ -48,6 +48,10 @@ ZlgUsbcanfdSDK::~ZlgUsbcanfdSDK() {
   ZlgUsbcanfdSDK::CloseDevice();
 }
 
+bool ZlgUsbcanfdSDK::IsInit() {
+  return pthread_ == nullptr ? false : true;
+}
+
 int ZlgUsbcanfdSDK::OpenDevice() {
   /*打开设备*/
   if (VCI_OpenDevice(DEVICE_TYPE_USBCANFD, canfd_id_, 0)) {

@@ -16,9 +16,3 @@ target_include_directories(
 target_link_libraries(
   ${CUR_TARGET_NAME}
   PRIVATE omnihand2025)
-
-  add_custom_command(TARGET ${CUR_TARGET_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${CMAKE_CURRENT_SOURCE_DIR}/conf
-  ${CMAKE_BINARY_DIR}/conf
-)

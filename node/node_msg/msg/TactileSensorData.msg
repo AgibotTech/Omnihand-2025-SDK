@@ -1,1 +1,1 @@
-uint8[] tactile
+uint8[] tactiles

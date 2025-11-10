@@ -10,6 +10,7 @@ set(msg_files
   "msg/CurrentReport.msg"
   "msg/CurrentThreshold.msg"
   "msg/MixControl.msg"
+  "msg/MotorAngle.msg"
   "msg/MotorErrorReport.msg"
   "msg/MotorPos.msg"
   "msg/MotorVel.msg"

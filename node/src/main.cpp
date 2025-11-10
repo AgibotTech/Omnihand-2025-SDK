@@ -2,7 +2,7 @@
  * @Author: huangshiheng@agibot.com
  * @Date: 2025-11-06 14:15:12
  * @LastEditors: huangshiheng
- * @LastEditTime: 2025-11-10 16:57:47
+ * @LastEditTime: 2025-11-10 18:04:15
  * @FilePath: /Omnihand-2025-SDK/node/src/main.cpp
  * @Description: 
  * 
@@ -16,8 +16,8 @@ int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
 
   // 创建多个节点
-  auto left_hand_node = std::make_shared<omnihand_pro::OmniHandProNode>(1, 0, EHandType::eLeft);
-  auto right_hand_node = std::make_shared<omnihand_pro::OmniHandProNode>(2, 1, EHandType::eRight);
+  auto left_hand_node = std::make_shared<omnihand::OmniHandProNode>(1, 0, EHandType::eLeft);
+  auto right_hand_node = std::make_shared<omnihand::OmniHandProNode>(2, 1, EHandType::eRight);
 
   // 创建多线程执行器
   rclcpp::executors::MultiThreadedExecutor executor;

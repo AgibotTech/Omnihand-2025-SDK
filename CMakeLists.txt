@@ -68,6 +68,7 @@ if(BUILD_PYTHON_BINDING)
 endif()
 
 add_subdirectory(src)
+add_subdirectory(node)
 
 if(BUILD_PYTHON_BINDING)
   add_subdirectory(python)

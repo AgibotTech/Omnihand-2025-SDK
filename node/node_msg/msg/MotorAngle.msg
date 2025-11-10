@@ -1,2 +1,2 @@
 std_msgs/Header header
-int16[] vels
+float64[] angles

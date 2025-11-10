@@ -17,7 +17,7 @@ python_packages_path = os.path.join(project_root, "build/install/local/lib/pytho
 
 sys.path.append(python_packages_path)
 
-from omnihand_pro_node_msgs.msg import MotorPos
+from omnihand_node_msgs.msg import MotorPos
 
 
 class LeftMotorPosPublisher(Node):

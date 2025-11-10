@@ -32,6 +32,7 @@ OmniHandProNode::OmniHandProNode(uint8_t device_id, uint8_t canfd_id, EHandType 
   current_report_publisher_ = this->create_publisher<omnihand_node_msgs::msg::CurrentReport>(topic_prefix + "current_report", 10);
   current_threshold_publisher_ = this->create_publisher<omnihand_node_msgs::msg::CurrentThreshold>(topic_prefix + "current_threshold", 10);
   motor_error_report_publisher_ = this->create_publisher<omnihand_node_msgs::msg::MotorErrorReport>(topic_prefix + "motor_error_report", 10);
+  motor_angle_publisher_ = this->create_publisher<omnihand_node_msgs::msg::MotorAngle>(topic_prefix + "motor_angle", 10);
   motor_pos_publisher_ = this->create_publisher<omnihand_node_msgs::msg::MotorPos>(topic_prefix + "motor_pos", 10);
   motor_vel_publisher_ = this->create_publisher<omnihand_node_msgs::msg::MotorVel>(topic_prefix + "motor_vel", 10);
   tactile_sensor_publisher_ = this->create_publisher<omnihand_node_msgs::msg::TactileSensor>(topic_prefix + "tactile_sensor", 10);
@@ -254,6 +255,7 @@ void OmniHandProNode::publish_motor_angle() {
 
   auto angles = agibot_hand_->GetAllActiveJointAngles();
   msg.angles = angles;
+  motor_angle_publisher_->publish(msg);
 }
 
 } // namespace omnihand

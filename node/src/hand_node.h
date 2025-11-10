@@ -2,7 +2,7 @@
  * @Author: huangshiheng@agibot.com
  * @Date: 2025-11-06 17:29:45
  * @LastEditors: huangshiheng
- * @LastEditTime: 2025-11-10 19:37:03
+ * @LastEditTime: 2025-11-10 19:59:12
  * @FilePath: /Omnihand-2025-SDK/node/src/hand_node.h
  * @Description: 
  * 
@@ -39,11 +39,11 @@ class OmniHandProNode : public rclcpp::Node {
   rclcpp::Publisher<omnihand_node_msgs::msg::CurrentReport>::SharedPtr current_report_publisher_;         // 1HZ
   rclcpp::Publisher<omnihand_node_msgs::msg::CurrentThreshold>::SharedPtr current_threshold_publisher_;   // 1HZ
   rclcpp::Publisher<omnihand_node_msgs::msg::MotorErrorReport>::SharedPtr motor_error_report_publisher_;  // 1HZ
-  rclcpp::Publisher<omnihand_node_msgs::msg::MotorAngle>::SharedPtr motor_angle_publisher_;                 // 100HZ
+  rclcpp::Publisher<omnihand_node_msgs::msg::TemperatureReport>::SharedPtr temperature_report_publisher_; // 1HZ
+  rclcpp::Publisher<omnihand_node_msgs::msg::MotorAngle>::SharedPtr motor_angle_publisher_;               // 100HZ
   rclcpp::Publisher<omnihand_node_msgs::msg::MotorPos>::SharedPtr motor_pos_publisher_;                   // 100HZ
   rclcpp::Publisher<omnihand_node_msgs::msg::MotorVel>::SharedPtr motor_vel_publisher_;                   // 100HZ
   rclcpp::Publisher<omnihand_node_msgs::msg::TactileSensor>::SharedPtr tactile_sensor_publisher_;         // 100HZ
-  rclcpp::Publisher<omnihand_node_msgs::msg::TemperatureReport>::SharedPtr temperature_report_publisher_; // 1HZ
 
   // Subscribers
   rclcpp::Subscription<omnihand_node_msgs::msg::ControlMode>::SharedPtr control_mode_subscriber_;

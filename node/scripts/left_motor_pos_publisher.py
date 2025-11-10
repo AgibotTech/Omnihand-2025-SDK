@@ -62,8 +62,6 @@ class LeftMotorPosPublisher(Node):
             int(1100 + 250 * math.cos(self.position_counter * 0.11)),
             int(1300 + 300 * math.sin(self.position_counter * 0.14)),
             int(600 + 400 * math.cos(self.position_counter * 0.16)),
-            int(1400 + 300 * math.sin(self.position_counter * 0.07)),
-            int(1600 + 300 * math.cos(self.position_counter * 0.18))
         ]
 
         self.left_motor_pos_cmd_publisher.publish(msg)

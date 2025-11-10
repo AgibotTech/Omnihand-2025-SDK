@@ -158,6 +158,7 @@ struct CommuParams {
  */
 static std::shared_ptr<AgibotHandO10> CreateHand(
     unsigned char device_id = 1,
+    unsigned char canfd_id = 0,
     EHandType hand_type = EHandType::eLeft);
 ```
 

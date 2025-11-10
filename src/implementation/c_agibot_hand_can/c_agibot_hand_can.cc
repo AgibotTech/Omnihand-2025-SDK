@@ -30,7 +30,7 @@ struct convert<AgibotHandCanO10::Options> {
 };
 }  // namespace YAML
 
-AgibotHandCanO10::AgibotHandCanO10() {
+AgibotHandCanO10::AgibotHandCanO10(unsigned char canfd_id) {
   Options options;
 
   if (options.can_driver == "zlg") {

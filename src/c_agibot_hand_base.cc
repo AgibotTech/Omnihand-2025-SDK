@@ -1,3 +1,13 @@
+/*
+ * @Author: huangshiheng@agibot.com
+ * @Date: 2025-11-10 17:22:05
+ * @LastEditors: huangshiheng
+ * @LastEditTime: 2025-11-10 17:34:35
+ * @FilePath: /Omnihand-2025-SDK/src/c_agibot_hand_base.cc
+ * @Description: 
+ * 
+ * Copyright (c) 2025 by huangshiheng@agibot.com, All Rights Reserved. 
+ */
 // Copyright (c) 2025, Agibot Co., Ltd.
 // OmniHand 2025 SDK is licensed under Mulan PSL v2.
 
@@ -25,10 +35,11 @@ struct convert<AgibotHandO10::HardwareConf> {
 
 std::unique_ptr<AgibotHandO10> AgibotHandO10::createHand(
     unsigned char device_id,
+    unsigned char canfd_id,
     EHandType hand_type) {
   std::unique_ptr<AgibotHandO10> hand;
 
-  hand = std::make_unique<AgibotHandCanO10>();
+  hand = std::make_unique<AgibotHandCanO10>(canfd_id);
 
   hand->init(device_id, hand_type);
 

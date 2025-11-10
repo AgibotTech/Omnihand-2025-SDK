@@ -29,11 +29,8 @@ struct convert<AgibotHandRsO10::Options> {
 };
 }  // namespace YAML
 
-AgibotHandRsO10::AgibotHandRsO10(const YAML::Node& options_node) {
+AgibotHandRsO10::AgibotHandRsO10() {
   Options options;
-  if (options_node && !options_node.IsNull()) {
-    options = options_node.as<Options>();
-  }
 
   handrs485_interface_ =
       std::make_unique<UartRs485Interface>(options.uart_port, options.uart_baudrate);

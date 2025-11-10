@@ -37,8 +37,7 @@ class AGIBOT_EXPORT AgibotHandO10 {
    */
   static std::unique_ptr<AgibotHandO10> createHand(
       unsigned char device_id,
-      EHandType hand_type,
-      std::string_view cfg_path = "");
+      EHandType hand_type);
   /**
    * @brief 构造函数
    * @param device_id 设备Id

@@ -87,15 +87,13 @@ PYBIND11_MODULE(omnihand_2025_core, m) {
   py::class_<AgibotHandO10>(m, "AgibotHandO10")
       .def_static(
           "create_hand",
-          [](unsigned char device_id, int hand_type, std::string_view cfg_path) {
+          [](unsigned char device_id, int hand_type) {
             return AgibotHandO10::createHand(
                 device_id,
-                static_cast<EHandType>(hand_type),
-                cfg_path);
+                static_cast<EHandType>(hand_type));
           },
           py::arg("device_id") = DEFAULT_DEVICE_ID,
-          py::arg("hand_type") = 0,
-          py::arg("cfg_path") = "")
+          py::arg("hand_type") = 0)
       .def("set_device_id", &AgibotHandO10::SetDeviceId)
       .def("get_vendor_info", &AgibotHandO10::GetVendorInfo)
       .def("get_device_info", &AgibotHandO10::GetDeviceInfo)

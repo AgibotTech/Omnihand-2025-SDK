@@ -11,8 +11,7 @@ void positionControlDemo() {
   try {
     auto hand = AgibotHandO10::createHand(
         0x01,              // device_id = 1
-        EHandType::eLeft,  // 左手,
-        "./conf/hardware_conf.yaml");
+        EHandType::eLeft);
 
     // temperature （9 10 索引温一直是0 请查清楚）
     auto tm = hand->GetTemperatureReport(8);

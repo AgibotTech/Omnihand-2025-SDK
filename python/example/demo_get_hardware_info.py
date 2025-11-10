@@ -5,7 +5,7 @@ from omnihand_2025 import AgibotHandO10, EFinger, EControlMode,EHandType
 import time
 
 def main():
-    hand = AgibotHandO10.create_hand(cfg_path="./conf/hardware_conf.yaml")
+    hand = AgibotHandO10.create_hand()
     vendor_info = hand.get_vendor_info()
     print("Vendor Info:")
     print( vendor_info)

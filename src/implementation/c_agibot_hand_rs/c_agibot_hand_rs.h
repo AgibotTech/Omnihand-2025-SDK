@@ -23,7 +23,7 @@ class AGIBOT_EXPORT AgibotHandRsO10 : public AgibotHandO10 {
   };
 
  public:
-  explicit AgibotHandRsO10(const YAML::Node& options_node);
+  explicit AgibotHandRsO10();
 
   ~AgibotHandRsO10() override = default;
 

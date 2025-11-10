@@ -7,7 +7,7 @@ from enum import Enum
 
 
 def main():
-    hand = AgibotHandO10.create_hand(cfg_path="./conf/hardware_conf.yaml",hand_type=EHandType.LEFT)
+    hand = AgibotHandO10.create_hand(hand_type=EHandType.LEFT)
 
     cmds = [0,0.26,0,0,0,-0.35,0,0,0,0.37]
     hand.set_all_active_joint_angles(cmds)

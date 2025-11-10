@@ -30,11 +30,8 @@ struct convert<AgibotHandCanO10::Options> {
 };
 }  // namespace YAML
 
-AgibotHandCanO10::AgibotHandCanO10(const YAML::Node& options_node) {
+AgibotHandCanO10::AgibotHandCanO10() {
   Options options;
-  if (options_node && !options_node.IsNull()) {
-    options = options_node.as<Options>();
-  }
 
   if (options.can_driver == "zlg") {
     canfd_device_ = std::make_unique<ZlgUsbcanfdSDK>();

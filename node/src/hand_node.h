@@ -2,7 +2,7 @@
  * @Author: huangshiheng@agibot.com
  * @Date: 2025-11-06 17:29:45
  * @LastEditors: huangshiheng
- * @LastEditTime: 2025-11-10 19:59:12
+ * @LastEditTime: 2025-11-11 15:38:51
  * @FilePath: /Omnihand-2025-SDK/node/src/hand_node.h
  * @Description: 
  * 
@@ -40,10 +40,10 @@ class OmniHandProNode : public rclcpp::Node {
   rclcpp::Publisher<omnihand_node_msgs::msg::CurrentThreshold>::SharedPtr current_threshold_publisher_;   // 1HZ
   rclcpp::Publisher<omnihand_node_msgs::msg::MotorErrorReport>::SharedPtr motor_error_report_publisher_;  // 1HZ
   rclcpp::Publisher<omnihand_node_msgs::msg::TemperatureReport>::SharedPtr temperature_report_publisher_; // 1HZ
-  rclcpp::Publisher<omnihand_node_msgs::msg::MotorAngle>::SharedPtr motor_angle_publisher_;               // 100HZ
-  rclcpp::Publisher<omnihand_node_msgs::msg::MotorPos>::SharedPtr motor_pos_publisher_;                   // 100HZ
-  rclcpp::Publisher<omnihand_node_msgs::msg::MotorVel>::SharedPtr motor_vel_publisher_;                   // 100HZ
-  rclcpp::Publisher<omnihand_node_msgs::msg::TactileSensor>::SharedPtr tactile_sensor_publisher_;         // 100HZ
+  rclcpp::Publisher<omnihand_node_msgs::msg::MotorAngle>::SharedPtr motor_angle_publisher_;               // 10HZ
+  rclcpp::Publisher<omnihand_node_msgs::msg::MotorPos>::SharedPtr motor_pos_publisher_;                   // 10HZ
+  rclcpp::Publisher<omnihand_node_msgs::msg::MotorVel>::SharedPtr motor_vel_publisher_;                   // 10HZ
+  rclcpp::Publisher<omnihand_node_msgs::msg::TactileSensor>::SharedPtr tactile_sensor_publisher_;         // 10HZ
 
   // Subscribers
   rclcpp::Subscription<omnihand_node_msgs::msg::ControlMode>::SharedPtr control_mode_subscriber_;
@@ -74,13 +74,15 @@ class OmniHandProNode : public rclcpp::Node {
 
   // Timer callback functions
   void timer_1hz_callback();   // 1Hz消息发布
-  void timer_100hz_callback(); // 100Hz消息发布
+  void timer_10hz_callback(); // 100Hz消息发布
 
   // Timers for different frequencies
   rclcpp::TimerBase::SharedPtr timer_1hz_;   // 1Hz timer
-  rclcpp::TimerBase::SharedPtr timer_100hz_; // 100Hz timer
+  rclcpp::TimerBase::SharedPtr timer_10hz_; // 100Hz timer
 
   std::unique_ptr<AgibotHandO10> agibot_hand_;
+
+  std::mutex mutex_;
 };
 
 }  // namespace omnihand

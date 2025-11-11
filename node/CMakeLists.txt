@@ -49,7 +49,4 @@ target_link_libraries(omnihand_node
 # 安装可执行文件和消息库
 install(TARGETS omnihand_node DESTINATION bin)
 
-# 安装Python脚本
-install(PROGRAMS scripts/motor_pos_subscriber.py DESTINATION bin)
-
 ament_package()

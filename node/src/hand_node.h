@@ -2,7 +2,7 @@
  * @Author: huangshiheng@agibot.com
  * @Date: 2025-11-06 17:29:45
  * @LastEditors: huangshiheng
- * @LastEditTime: 2025-11-11 15:38:51
+ * @LastEditTime: 2025-11-11 17:30:30
  * @FilePath: /Omnihand-2025-SDK/node/src/hand_node.h
  * @Description: 
  * 
@@ -74,11 +74,11 @@ class OmniHandProNode : public rclcpp::Node {
 
   // Timer callback functions
   void timer_1hz_callback();   // 1Hz消息发布
-  void timer_10hz_callback(); // 100Hz消息发布
+  void timer_100hz_callback(); // 100Hz消息发布
 
   // Timers for different frequencies
   rclcpp::TimerBase::SharedPtr timer_1hz_;   // 1Hz timer
-  rclcpp::TimerBase::SharedPtr timer_10hz_; // 100Hz timer
+  rclcpp::TimerBase::SharedPtr timer_100hz_; // 100Hz timer
 
   std::unique_ptr<AgibotHandO10> agibot_hand_;
 

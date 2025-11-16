@@ -34,7 +34,7 @@ OmniHandProNode::OmniHandProNode(uint8_t device_id, uint8_t canfd_id, EHandType 
   motor_error_report_publisher_ = this->create_publisher<omnihand_node_msgs::msg::MotorErrorReport>(topic_prefix + "motor_error_report", 10);
   motor_angle_publisher_ = this->create_publisher<omnihand_node_msgs::msg::MotorAngle>(topic_prefix + "motor_angle", 10);
   motor_pos_publisher_ = this->create_publisher<omnihand_node_msgs::msg::MotorPos>(topic_prefix + "motor_pos", 10);
-  motor_vel_publisher_ = this->create_publisher<omnihand_node_msgs::msg::MotorVel>(topic_prefix + "motor_vel", 10);
+  // motor_vel_publisher_ = this->create_publisher<omnihand_node_msgs::msg::MotorVel>(topic_prefix + "motor_vel", 10);
   tactile_sensor_publisher_ = this->create_publisher<omnihand_node_msgs::msg::TactileSensor>(topic_prefix + "tactile_sensor", 10);
   temperature_report_publisher_ = this->create_publisher<omnihand_node_msgs::msg::TemperatureReport>(topic_prefix + "temperature_report", 10);
 
@@ -47,14 +47,14 @@ OmniHandProNode::OmniHandProNode(uint8_t device_id, uint8_t canfd_id, EHandType 
     topic_prefix + "mix_control_cmd", 10, std::bind(&OmniHandProNode::mix_control_callback, this, std::placeholders::_1));
   motor_pos_subscriber_ = this->create_subscription<omnihand_node_msgs::msg::MotorPos>(
     topic_prefix + "motor_pos_cmd", 100, std::bind(&OmniHandProNode::motor_pos_callback, this, std::placeholders::_1));
-  motor_vel_subscriber_ = this->create_subscription<omnihand_node_msgs::msg::MotorVel>(
-    topic_prefix + "motor_vel_cmd", 100, std::bind(&OmniHandProNode::motor_vel_callback, this, std::placeholders::_1));
+  // motor_vel_subscriber_ = this->create_subscription<omnihand_node_msgs::msg::MotorVel>(
+  //   topic_prefix + "motor_vel_cmd", 100, std::bind(&OmniHandProNode::motor_vel_callback, this, std::placeholders::_1));
   motor_angle_subscriber_ = this->create_subscription<omnihand_node_msgs::msg::MotorAngle>(
     topic_prefix + "motor_angle_cmd", 100, std::bind(&OmniHandProNode::motor_angle_callback, this, std::placeholders::_1));
 
   timer_1hz_ = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&OmniHandProNode::timer_1hz_callback, this));
 
-  timer_10hz_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&OmniHandProNode::timer_10hz_callback, this));
+  timer_100hz_ = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&OmniHandProNode::timer_100hz_callback, this));
 
   RCLCPP_INFO(this->get_logger(), "OmniHand Pro Node initialized device with ID %d", device_id);
 }
@@ -72,7 +72,7 @@ void OmniHandProNode::control_mode_callback(const omnihand_node_msgs::msg::Contr
     vec_ctrl_mode.push_back(static_cast<unsigned char>(mode));
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
+  // std::lock_guard<std::mutex> lock(mutex_);
   agibot_hand_->SetAllControlMode(vec_ctrl_mode);
 }
 
@@ -92,7 +92,7 @@ void OmniHandProNode::mix_control_callback(const omnihand_node_msgs::msg::MixCon
     vec_mix_ctrl.push_back(mix_ctrl);
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
+  // std::lock_guard<std::mutex> lock(mutex_);
   agibot_hand_->MixCtrlJointMotor(vec_mix_ctrl);
 }
 
@@ -104,7 +104,7 @@ void OmniHandProNode::current_threshold_callback(const omnihand_node_msgs::msg::
     vec_current_threshold.push_back(static_cast<int16_t>(threshold));
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
+  // std::lock_guard<std::mutex> lock(mutex_);
   agibot_hand_->SetAllCurrentThreshold(vec_current_threshold);
 }
 
@@ -117,7 +117,7 @@ void OmniHandProNode::motor_pos_callback(const omnihand_node_msgs::msg::MotorPos
   }
 
   RCLCPP_INFO(this->get_logger(), "Received motor position command with %zu positions: %s", msg->pos.size(), log_str.c_str());
-  std::lock_guard<std::mutex> lock(mutex_);
+  // std::lock_guard<std::mutex> lock(mutex_);
   agibot_hand_->SetAllJointMotorPosi(vec_pos);
 }
 
@@ -129,7 +129,7 @@ void OmniHandProNode::motor_vel_callback(const omnihand_node_msgs::msg::MotorVel
     vec_velo.push_back(static_cast<int16_t>(vel));
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
+  // std::lock_guard<std::mutex> lock(mutex_);
   agibot_hand_->SetAllJointMotorVelo(vec_velo);
 }
 
@@ -141,14 +141,14 @@ void OmniHandProNode::motor_angle_callback(const omnihand_node_msgs::msg::MotorA
     vec_angle.push_back(static_cast<double>(angle));
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
+  // std::lock_guard<std::mutex> lock(mutex_);
   agibot_hand_->SetAllActiveJointAngles(vec_angle);
 }
 
 
 // Timer callback implementations
 void OmniHandProNode::timer_1hz_callback() {
-  std::lock_guard<std::mutex> lock(mutex_);
+  // std::lock_guard<std::mutex> lock(mutex_);
   publish_control_mode();
   publish_current_report();
   publish_current_threshold();
@@ -156,10 +156,10 @@ void OmniHandProNode::timer_1hz_callback() {
   publish_temperature_report();
 }
 
-void OmniHandProNode::timer_10hz_callback() {
-  std::lock_guard<std::mutex> lock(mutex_);
+void OmniHandProNode::timer_100hz_callback() {
+  // std::lock_guard<std::mutex> lock(mutex_);
   publish_motor_pos();
-  publish_motor_vel();
+  // publish_motor_vel();
   publish_tactile_sensor();
   publish_motor_angle();
 }

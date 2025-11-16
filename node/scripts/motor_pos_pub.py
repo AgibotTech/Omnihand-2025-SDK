@@ -31,9 +31,8 @@ class LeftMotorPosPublisher(Node):
             '/agihand/omnihand/left/motor_pos_cmd',
             10
         )
-        
-        # 创建定时器，每100ms发布一次命令
-        self.timer = self.create_timer(4, self.publish_left_motor_pos_cmd)
+
+        self.timer = self.create_timer(1.5, self.publish_left_motor_pos_cmd)
         
         # 位置命令数据
         self.position_counter = 0
@@ -51,35 +50,24 @@ class LeftMotorPosPublisher(Node):
         import math
         self.position_counter += 1
 
-        msg.pos = [0, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094]
+        msg.pos = [500, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094]
         self.left_motor_pos_cmd_publisher.publish(msg)
-        time.sleep(0.5)
+        time.sleep(0.2)
 
-        msg.pos = [1500, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094]
+        msg.pos = [2000, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094]
         self.left_motor_pos_cmd_publisher.publish(msg)
-        time.sleep(0.5)
+        time.sleep(0.2)
 
         msg.pos = [500, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094]
         self.left_motor_pos_cmd_publisher.publish(msg)
-        time.sleep(0.5)
+        time.sleep(0.2)
 
-        msg.pos = [1000, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094]
+        msg.pos = [1500, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094]
         self.left_motor_pos_cmd_publisher.publish(msg)
 
         self.get_logger().debug(
             f'Published left motor position command: {msg.pos}'
         )
-
-    def publish_custom_positions(self, positions):
-        """发布自定义位置命令"""
-        msg = MotorPos()
-        msg.header.stamp = self.get_clock().now().to_msg()
-        msg.header.frame_id = "left_hand_frame"
-        msg.pos = positions
-        
-        self.left_motor_pos_cmd_publisher.publish(msg)
-        self.get_logger().info(f'Published custom positions: {positions}')
-
 def main(args=None):
     rclpy.init(args=args)
     

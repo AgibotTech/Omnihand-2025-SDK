@@ -7,57 +7,59 @@
 #include <thread>
 #include "c_agibot_hand_base.h"
 
+void ControlHand(std::unique_ptr<AgibotHandO10>& hand) {
+  std::cout << "Begin ControlHand" << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+  std::vector<int16_t> vec_pos1 {500, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094};
+  hand->SetAllJointMotorPosi(vec_pos1);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+  std::vector<int16_t> vec_pos2 {2000, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094};
+  hand->SetAllJointMotorPosi(vec_pos2);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+  std::vector<int16_t> vec_pos3 {500, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094};
+  hand->SetAllJointMotorPosi(vec_pos3);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+  std::vector<int16_t> vec_pos4 {1500, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094};
+  hand->SetAllJointMotorPosi(vec_pos4);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+}
+
+void GetHandInfo(std::unique_ptr<AgibotHandO10>& hand) {
+  std::cout << "Begin GetHandInfo" << std::endl;
+  int index = 0;
+  while (true) {
+    auto pos = hand->GetAllJointMotorPosi();
+    if (index % 1000 == 0) {
+      std::string joint_pos_str;
+      for (const auto& p : pos) {
+        joint_pos_str += std::to_string(p) + " ";
+      }
+      std::cout << "关节位置: [" << joint_pos_str << "]" << std::endl;
+    }
+    
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+
+    if (index / 1000 == 5) {
+      break;
+    }
+    index++;
+  }
+}
+
+
 void positionControlDemo() {
   try {
-    auto hand = AgibotHandO10::createHand(
-        0x01,              // device_id = 1
-        EHandType::eLeft,  // 左手,
-        "./conf/hardware_conf.yaml");
+    auto hand = AgibotHandO10::createHand(1, 0, EHandType::eLeft);
 
-    // temperature （9 10 索引温一直是0 请查清楚）
-    auto tm = hand->GetTemperatureReport(8);
-    std::cout << "8 temp: " << tm << std::endl;
+    std::thread control_thread(ControlHand, std::ref(hand));
+    std::thread info_thread(GetHandInfo, std::ref(hand));
 
-    auto tms = hand->GetAllTemperatureReport();
-    int idx = 1;
-    for (auto c : tms) {
-      std::cout << "temp " << idx++ << " : " << c << std::endl;
-    }
-
-    // current
-    auto ct = hand->GetCurrentReport(8);
-    std::cout << "8 current: " << ct << std::endl;
-
-    auto cts = hand->GetAllCurrentReport();
-    idx = 1;
-    for (auto c : cts) {
-      std::cout << "current " << idx++ << " : " << c << std::endl;
-    }
-
-    // error report (这个案例输出什么都没有，是空)
-    JointMotorErrorReport ep = hand->GetErrorReport(8);
-    std::cout << "8 error report : " << ep.overheat_ << std::endl;
-
-    auto eps = hand->GetAllErrorReport();
-    idx = 1;
-    for (auto c : eps) {
-      std::cout << "error report " << idx++ << " : " << c.overheat_ << std::endl;
-    }
-
-    // sensor
-    std::vector<uint8_t> a = hand->GetTactileSensorData(EFinger::eThumb);
-    int sum = 0;
-    for (auto& c : a) {
-      sum += c;
-    }
-    std::cout << a.size() << "拇指传感器数据: " << sum << std::endl;
-
-    std::vector<uint8_t> b = hand->GetTactileSensorData(EFinger::ePalm);
-    sum = 0;
-    for (auto& c : b) {
-      sum += c;
-    }
-    std::cout << b.size() << "掌心传感器数据: " << sum << std::endl;
+    control_thread.join();
+    info_thread.join();
 
   } catch (const std::exception& e) {
     std::cerr << "错误: " << e.what() << std::endl;

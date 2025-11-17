@@ -5,7 +5,7 @@ from omnihand_2025 import AgibotHandO10, EFinger, EControlMode,EHandType
 import time
 
 def main():
-    hand = AgibotHandO10.create_hand(cfg_path="./conf/hardware_conf.yaml")
+    hand = AgibotHandO10.create_hand()
 
     thumb_tactile_data = hand.get_tactile_sensor_data(EFinger.THUMB)
     print("Thumb tactile data: {} g".format(sum(thumb_tactile_data)))

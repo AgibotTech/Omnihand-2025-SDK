@@ -30,14 +30,11 @@ struct convert<AgibotHandCanO10::Options> {
 };
 }  // namespace YAML
 
-AgibotHandCanO10::AgibotHandCanO10(const YAML::Node& options_node) {
+AgibotHandCanO10::AgibotHandCanO10(unsigned char canfd_id) {
   Options options;
-  if (options_node && !options_node.IsNull()) {
-    options = options_node.as<Options>();
-  }
 
   if (options.can_driver == "zlg") {
-    canfd_device_ = std::make_unique<ZlgUsbcanfdSDK>();
+    canfd_device_ = std::make_unique<ZlgUsbcanfdSDK>(canfd_id);
   } else if (options.can_driver == "socket") {
     canfd_device_ = std::make_unique<CanBusDeviceSocketCan>();
   } else {
@@ -45,7 +42,13 @@ AgibotHandCanO10::AgibotHandCanO10(const YAML::Node& options_node) {
         "Unsupported CAN driver type: " + options.can_driver +
         ". Only 'zlg' and 'socket' are supported.");
   }
+  
+  if (!canfd_device_->IsInit()) {
+    is_init_ = false;
+    return;
+  }
 
+  is_init_ = true;
 #if !DISABLE_FUNC
   canfd_device_->SetCallback(std::bind(&AgibotHandCanO10::ProcessMsg, this, std::placeholders::_1));
 #endif

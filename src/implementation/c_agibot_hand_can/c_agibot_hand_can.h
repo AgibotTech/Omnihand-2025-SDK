@@ -20,7 +20,7 @@ class AGIBOT_EXPORT AgibotHandCanO10 : public AgibotHandO10 {
   };
 
  public:
-  explicit AgibotHandCanO10(const YAML::Node&);
+  explicit AgibotHandCanO10(unsigned char canfd_id);
 
   ~AgibotHandCanO10() override = default;
 

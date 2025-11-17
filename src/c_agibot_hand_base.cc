@@ -1,3 +1,13 @@
+/*
+ * @Author: huangshiheng@agibot.com
+ * @Date: 2025-11-10 17:22:05
+ * @LastEditors: huangshiheng
+ * @LastEditTime: 2025-11-10 17:34:35
+ * @FilePath: /Omnihand-2025-SDK/src/c_agibot_hand_base.cc
+ * @Description: 
+ * 
+ * Copyright (c) 2025 by huangshiheng@agibot.com, All Rights Reserved. 
+ */
 // Copyright (c) 2025, Agibot Co., Ltd.
 // OmniHand 2025 SDK is licensed under Mulan PSL v2.
 
@@ -25,27 +35,13 @@ struct convert<AgibotHandO10::HardwareConf> {
 
 std::unique_ptr<AgibotHandO10> AgibotHandO10::createHand(
     unsigned char device_id,
-    EHandType hand_type,
-    std::string_view cfg_path) {
+    unsigned char canfd_id,
+    EHandType hand_type) {
   std::unique_ptr<AgibotHandO10> hand;
 
-  HardwareConf hardware_conf;
-  if (!cfg_path.empty()) {
-    YAML::Node config = YAML::LoadFile(cfg_path.data());
-    hardware_conf = config["device"].as<HardwareConf>();
-  }
+  hand = std::make_unique<AgibotHandCanO10>(canfd_id);
 
-  // 根据类型创建具体实例
-  if (hardware_conf.device == "can") {
-    hand = std::make_unique<AgibotHandCanO10>(hardware_conf.options);
-  } else if (hardware_conf.device == "rs485") {
-    hand = std::make_unique<AgibotHandRsO10>(hardware_conf.options);
-  } else {
-    std::cerr << "Unsupported device type: " << hardware_conf.device << ". Defaults to can." << std::endl;
-    hand = std::make_unique<AgibotHandCanO10>(hardware_conf.options);
-  }
-
-  hand->init(device_id, hand_type);
+  hand->Reset(device_id, hand_type);
 
   return hand;
 }

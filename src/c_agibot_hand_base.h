@@ -37,8 +37,8 @@ class AGIBOT_EXPORT AgibotHandO10 {
    */
   static std::unique_ptr<AgibotHandO10> createHand(
       unsigned char device_id,
-      EHandType hand_type,
-      std::string_view cfg_path = "");
+      unsigned char canfd_id,
+      EHandType hand_type);
   /**
    * @brief 构造函数
    * @param device_id 设备Id
@@ -48,15 +48,14 @@ class AGIBOT_EXPORT AgibotHandO10 {
   AgibotHandO10() = default;
   virtual ~AgibotHandO10() = default;
 
+  bool Init() {
+    return is_init_;
+  }
+
   // 基本信息接口
   virtual VendorInfo GetVendorInfo() = 0;
   virtual DeviceInfo GetDeviceInfo() = 0;
   virtual void SetDeviceId(unsigned char device_id) = 0;
-  void init(unsigned char device_id, EHandType hand_type) {
-    device_id_ = device_id;
-    is_left_hand_ = (hand_type == EHandType::eLeft);
-    kinematics_solver_ptr_ = std::make_unique<OmnihandCtrl>(is_left_hand_);
-  }
 
   // 关节电机位置控制
   virtual void SetJointMotorPosi(unsigned char joint_motor_index, int16_t posi) = 0;
@@ -121,7 +120,15 @@ class AGIBOT_EXPORT AgibotHandO10 {
   // todo OTA
 
  protected:
+  void Reset(unsigned char device_id, EHandType hand_type) {
+    device_id_ = device_id;
+    is_left_hand_ = (hand_type == EHandType::eLeft);
+    kinematics_solver_ptr_ = std::make_unique<OmnihandCtrl>(is_left_hand_);
+  }
+
   std::unique_ptr<OmnihandCtrl> kinematics_solver_ptr_;
   unsigned char device_id_{DEFAULT_DEVICE_ID};
   bool is_left_hand_{true};
+
+  bool is_init_{false};
 };

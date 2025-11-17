@@ -73,7 +73,7 @@ def get_gesture_positions(gesture):
     return gesture_positions.get(gesture, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
 def main():
-    hand = AgibotHandO10.create_hand(cfg_path="./conf/hardware_conf.yaml", hand_type=EHandType.RIGHT)
+    hand = AgibotHandO10.create_hand(hand_type=EHandType.RIGHT)
     
     while True:
         print_menu()

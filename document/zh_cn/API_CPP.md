@@ -155,13 +155,12 @@ struct CommuParams {
     * @brief 创建灵巧手实例
     * @param device_id 设备ID，默认为1
     * @param hand_type 手类型，默认为左手
-    * @param cfg_path 配置文件路径（yaml 格式）
     * @return 灵巧手对象指针
     */
 static std::shared_ptr<AgibotHandO10> CreateHand(
     unsigned char device_id = 1,
-    EHandType hand_type = EHandType::eLeft,
-    const std::string& cfg_path = "");
+    unsigned char canfd_id = 0,
+    EHandType hand_type = EHandType::eLeft);
 ```
 
 传入的配置文件字段参考如下：

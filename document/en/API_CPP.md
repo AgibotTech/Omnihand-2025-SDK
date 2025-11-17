@@ -154,13 +154,12 @@ struct CommuParams {
  * @brief Creates a dexterous hand instance.
  * @param device_id The device ID, defaults to 1.
  * @param hand_type The hand type (left/right), defaults to left hand.
- * @param cfg_path The path to the configuration file (YAML format).
  * @return A shared pointer to the dexterous hand object.
  */
 static std::shared_ptr<AgibotHandO10> CreateHand(
     unsigned char device_id = 1,
-    EHandType hand_type = EHandType::eLeft,
-    const std::string& cfg_path = "");
+    unsigned char canfd_id = 0,
+    EHandType hand_type = EHandType::eLeft);
 ```
 
 Refer to the following examples for the configuration file fields:

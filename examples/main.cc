@@ -25,6 +25,9 @@ void ControlHand(std::unique_ptr<AgibotHandO10>& hand) {
   std::vector<int16_t> vec_pos4 {1500, 2081, 4094, 2029, 4094, 4094, 2048, 4094, 4000, 4094};
   hand->SetAllJointMotorPosi(vec_pos4);
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+  // std::vector<double> joint_pos{vec_pos4.begin(), vec_pos4.end()};
+  // hand->GetAllJointPos(joint_pos);
 }
 
 void GetHandInfo(std::unique_ptr<AgibotHandO10>& hand) {

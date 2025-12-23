@@ -50,6 +50,8 @@ class AGIBOT_EXPORT AgibotHandCanO10 : public AgibotHandO10 {
 
   std::vector<double> GetAllJointAngles() override;
 
+  std::vector<double> GetAllJointPos(const std::vector<double> &active_joint_pos) override;
+
 #if !DISABLE_FUNC
 
   void SetJointMotorTorque(unsigned char joint_motor_index, int16_t torque) override;

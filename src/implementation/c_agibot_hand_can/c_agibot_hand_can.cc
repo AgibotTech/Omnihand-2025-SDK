@@ -231,6 +231,10 @@ std::vector<double> AgibotHandCanO10::GetAllJointAngles() {
   return kinematics_solver_ptr_->GetAllJointPos(active_joint_angles);
 }
 
+std::vector<double> AgibotHandCanO10::GetAllJointPos(const std::vector<double> &active_joint_pos) {
+  return kinematics_solver_ptr_->GetAllJointPos(active_joint_pos);
+}
+
 #if !DISABLE_FUNC
 void AgibotHandCanO10::SetJointMotorTorque(unsigned char joint_motor_index, int16_t torque) {
   if (joint_motor_index > 0 && joint_motor_index <= DEGREE_OF_FREEDOM) {

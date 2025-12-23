@@ -67,6 +67,7 @@ class AGIBOT_EXPORT AgibotHandO10 {
   virtual void SetAllActiveJointAngles(std::vector<double> vec_angle) = 0;
   virtual std::vector<double> GetAllActiveJointAngles() = 0;
   virtual std::vector<double> GetAllJointAngles() = 0;
+  virtual std::vector<double> GetAllJointPos(const std::vector<double> &active_joint_pos) = 0;
 
   // 速度控制
   virtual void SetJointMotorVelo(unsigned char joint_motor_index, int16_t velo) = 0;

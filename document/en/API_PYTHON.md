@@ -261,27 +261,6 @@ class AgibotHandO10:
         pass
 ```
 
-Refer to the following examples for the configuration file fields:
-
-- CAN hardware driver example:
-
-```yaml
-device:
-  type: "can" # Hardware driver type, currently supports "can" and "rs485". Defaults to "can".
-  options:
-    can_driver: "zlg" # Specific CAN driver library, currently supports "zlg" and "socketcan". Defaults to "zlg".
-```
-
-- RS485 hardware driver example:
-
-```yaml
-device:
-  type: "rs485" # Hardware driver type, currently supports "can" and "rs485". Defaults to "can".
-  options:
-    uart_port: "/dev/ttyUSB0" # Serial device path. Defaults to "/dev/ttyUSB0".
-    uart_baudrate: 460800 # Baud rate.
-```
-
 ## Detailed API Reference
 
 ### Device Information

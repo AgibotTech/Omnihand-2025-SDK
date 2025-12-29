@@ -241,27 +241,6 @@ class AgibotHandO10:
         pass
 ```
 
-传入的配置文件字段参考如下：
-
-- can 硬件驱动示例
-
-```yaml
-device:
-  type: "can" #硬件驱动设备类型，目前支持 "can" 和 "rs485"， 默认为 "can"
-  options:
-    can_driver: "zlg" #具体的 can 驱动库，目前支持 "zlg" 和 "socketcan"， 默认为 "zlg"
-```
-
-- rs485 硬件驱动示例
-
-```yaml
-device:
-  type: "rs485" #硬件驱动设备类型，目前支持 "can" 和 "rs485"， 默认为 "can"
-  options:
-    uart_port = "/dev/ttyUSB0"   # 串口设备路径， 默认为 "/dev/ttyUSB0"
-    uart_baudrate = 460800       # 波特率
-```
-
 ## 详细 API 说明
 
 ### 设备信息相关

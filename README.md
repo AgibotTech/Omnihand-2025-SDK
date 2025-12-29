@@ -4,7 +4,7 @@ English | [中文](README.zh_CN.md)
 
 ## Overview
 
-OmniHand 2025 is a compact, high-DOF interactive dexterous hand featuring `10 active + 6 passive degrees of freedom`. Weighing only 500g, it utilizes CANFD/RS485 communication interfaces and is equipped with `400+ tactile points and 0.1N array resolution, with maximum fingertip force of 5N`. It's suitable for various humanoid robots and robotic arms. Its compact, lightweight design and rich tactile interaction capabilities make it valuable for interactive services, research, education, and light-duty operations.
+OmniHand 2025 is a compact, high-DOF interactive dexterous hand featuring `10 active + 6 passive degrees of freedom`. Weighing only 500g, it utilizes CANFD communication interfaces and is equipped with `400+ tactile points and 0.1N array resolution, with maximum fingertip force of 5N`. It's suitable for various humanoid robots and robotic arms. Its compact, lightweight design and rich tactile interaction capabilities make it valuable for interactive services, research, education, and light-duty operations.
 
 To facilitate rapid development and application, we provide the OmniHand Agile 2025 SDK development package, supporting both Python and C++ API interfaces for quick implementation of dexterous hand control and data acquisition functions.
 
@@ -16,10 +16,9 @@ To facilitate rapid development and application, we provide the OmniHand Agile 2
 
 #### Hardware Requirements
 
-Supports both CANFD/RS485 communication interfaces
+Supports both CANFD communication interfaces
 
 - CANFD: Currently supports ZLG USBCANFD series (Recommended: USBCANFD-100U-mini/USBCANFD-100U/USBCANFD-200U)
-- RS485: Standard RS485 interface
 
 #### Software Requirements
 
